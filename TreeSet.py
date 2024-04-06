@@ -1,7 +1,11 @@
-import TreeNode
-from random import randint
+"""
+TreeSet module.
 
-from TreeNode import *
+This module provides a TreeSet class for storing and managing a set of elements
+in a red-black tree data structure.
+"""
+
+from random import randint
 from data_utils import *
 
 E = TypeVar('E')
@@ -46,7 +50,8 @@ class TreeSet:
     def add(self, value: E) -> bool:
         """Inserts the given value into the TreeSet if value is not contained.
 
-        :param: Value to insert into the TreeSet
+        :param value: Value to insert into the TreeSet
+        :type value: E
         :return: True if the value have been added to the TreeSet else False
         :rtype: bool
         :raises AssertionError: If the given value's type does not match generic
@@ -82,23 +87,31 @@ class TreeSet:
         self.__fix_insertion(new_node)
         return True
 
-    def add_all(self, elements: Sequence[E]) -> bool:
+    def add_all(self, sequence: Sequence[E]) -> bool:
         """Inserts the given values into the TreeSet. If some value is
         already contained, it will not be inserted.
 
-        :param: Values to insert into the TreeSet.
-        :return: True if the value have been added to the TreeSet else False
+        :param sequence: Values to insert into the TreeSet
+        :type sequence: Sequence[E]
+        :return: True if the value has been added to the TreeSet else False
         :rtype: bool
         :raises AssertionError: If the given value's type does not match generic
         type
         """
         old_size = len(self)
-        for element in elements:
-            self.add(element)
+        for item in sequence:
+            self.add(item)
 
         return len(self) != old_size
 
     def remove(self, value: E) -> bool:
+        """Deletes the given value from the TreeSet if contained.
+
+        :param value: Value to delete
+        :type value: E
+        :return: True if value could be deleted else False
+        :rtype: bool
+        """
         if self.is_empty() or (root := self.__contains(value)).value != value:
             return False
 
@@ -147,6 +160,94 @@ class TreeSet:
         self.__size -= 1
         self.__fix_removal(successor if successor else root)
         return True
+
+    def clear(self) -> None:
+        """Clears the TreeSet from all its inserted elements."""
+        self.__root = None
+
+    def clone(self) -> 'TreeSet':
+        """Clones the current TreeSet and returns that clone.
+
+        :return: A shallow copy of the current TreeSet instance
+        :rtype: TreeSet
+        """
+        return TreeSet([node for node in self])
+
+    def is_empty(self) -> bool:
+        """Checks if the current TreeSet is empty or not.
+
+        :return: True if TreeSet is empty else False
+        :rtype: bool
+        """
+        return len(self) == 0
+
+    def contains(self, value: E) -> bool:
+        """Checks if a given value is contained into the current TreeSet
+        instance.
+
+        :param value: To check if it is contained
+        :type value: E
+        :return: True if value is contained else False
+        :rtype: bool
+        """
+        return value in self
+
+    def first(self) -> E:
+        """Returns the lowest element contained in the current TreeSet instance.
+
+        :return: Lowest contained element
+        :rtype: E
+        """
+        for node in self.__inorder(False):
+            return node.value
+
+    def last(self) -> E:
+        """Return the greatest element contained in the current TreeSet instance.
+
+        :return: Greatest contained element
+        :rtype: E
+        """
+        for node in self.__inorder(True):
+            return node.value
+
+    def iterator(self) -> Iterator[E]:
+        """Provides an iterator of the current TreeSet instance elements.
+
+        :return: TreeSet elements iterator
+        :rtype: Iterator[E]
+        """
+        return iter(self)
+
+    def descending_iterator(self) -> Iterator[E]:
+        """Provides a descending iterator of the current TreeSet instance
+        elements.
+
+        :return: TreeSet elements descending iterator
+        :rtype: Iterator[E]
+        """
+        return iter(reversed(self))
+
+    def lower(self, value: E) -> Union[E, None]:
+        """Returns the contiguous lower element of the given value from the
+        TreeSet.
+
+        :param value: Value to compare
+        :return: Greatest element lower than the given value. If it was not
+            possible, None will be returned.
+        :rtype: Union[E, None]
+        """
+        return self.__get_contiguous(value, False)
+
+    def higher(self, value: E) -> Union[E, None]:
+        """Returns the contiguous greater element of the given value from the
+        TreeSet.
+
+        :param value: Value to compare
+        :return: Lowest element greater than the given value. If it was not
+            possible, None will be returned.
+        :rtype: Union[E, None]
+        """
+        return self.__get_contiguous(value, True)
 
     def __contains(self, value: E) -> TreeNode:
         if not len(self):
@@ -204,12 +305,13 @@ class TreeSet:
     def __fix_removal(self, node: TreeNode) -> None:
         while node != self.__root and (not node or node.color == TreeSet.BLACK):
             if not node.parent:
+                # Si el padre de node es None, salimos del bucle
                 break
 
             if node == node.parent.left:
                 sibling = node.parent.right
                 if not sibling:
-
+                    # Si no hay hermano, salimos del bucle
                     break
 
                 if sibling and sibling.color == TreeSet.RED:
@@ -218,8 +320,13 @@ class TreeSet:
                     self.__left_rotation(node.parent)
                     sibling = node.parent.right
 
-                if ((not sibling.right or sibling.right.color == TreeSet.BLACK) and
-                        (not sibling.left or sibling.left.color == TreeSet.BLACK)):
+                if not sibling:
+                    break
+
+                if ((
+                        not sibling.right or sibling.right.color == TreeSet.BLACK) and
+                        (
+                                not sibling.left or sibling.left.color == TreeSet.BLACK)):
                     sibling.color = TreeSet.RED
                     node = node.parent
                 else:
@@ -236,6 +343,7 @@ class TreeSet:
             else:
                 sibling = node.parent.left
                 if not sibling:
+                    # Si no hay hermano, salimos del bucle
                     break
 
                 if sibling and sibling.color == TreeSet.RED:
@@ -244,8 +352,13 @@ class TreeSet:
                     self.__right_rotation(node.parent)
                     sibling = node.parent.left
 
-                if ((not sibling.right or sibling.right.color == TreeSet.BLACK) and
-                        (not sibling.left or sibling.left.color == TreeSet.BLACK)):
+                if not sibling:
+                    break
+
+                if ((
+                        not sibling.right or sibling.right.color == TreeSet.BLACK) and
+                        (
+                                not sibling.left or sibling.left.color == TreeSet.BLACK)):
                     sibling.color = TreeSet.RED
                     node = node.parent
                 else:
@@ -298,32 +411,6 @@ class TreeSet:
 
         other.right = node
         node.parent = other
-
-    def clear(self) -> None:
-        self.__root = None
-
-    def clone(self) -> 'TreeSet':
-        return TreeSet([node.value for node in self.__insertion_order()])
-
-    def is_empty(self) -> bool:
-        return len(self) == 0
-
-    def contains(self, value: E) -> bool:
-        return value in self
-
-    def first(self) -> E:
-        for node in self.__inorder(False):
-            return node.value
-
-    def last(self) -> E:
-        for node in self.__inorder(True):
-            return node.value
-
-    def lower(self, value: E) -> Union[E, None]:
-        return self.__get_contiguous(value, False)
-
-    def higher(self, value: E) -> Union[E, None]:
-        return self.__get_contiguous(value, True)
 
     def __get_contiguous(self, value: E, higher: bool) -> Union[E, None]:
         if (value != (self.first() if not higher else self.last())
@@ -381,14 +468,14 @@ class TreeSet:
                 break
 
     def __str__(self) -> str:
-        return f"{[str(value) for value in self]}"
+        return f"{[value for value in self]}"
 
     def __contains__(self, value) -> bool:
         return self.__contains(value).value == value
 
     def __eq__(self, other) -> bool:
         if isinstance(other, TreeSet):
-            for node in self.__insertion_order():
+            for node in self:
                 if node.value not in other:
                     return False
 
@@ -398,8 +485,8 @@ class TreeSet:
 
 
 if __name__ == "__main__":
-    # items = [randint(1, 100) for _ in range(15)]
+    # items = [randint(1, 100) for _ in range(10)]
     items = [8, 93, 18, 5, 32, 82, 78, 5, 6, 13, 20, 35, 92, 86, 95]
     t = TreeSet(items)
-    print([t.higher(value) for value in t])
-    print([t.lower(value) for value in t])
+    print(t)
+    print(t.clone())

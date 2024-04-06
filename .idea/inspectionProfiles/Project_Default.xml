@@ -5,6 +5,8 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="property.setter" />
+          <option value="object.add" />
+          <option value="object.remove" />
         </list>
       </option>
     </inspection_tool>
