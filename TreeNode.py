@@ -1,12 +1,13 @@
 from enum import Enum
 from functools import total_ordering
 from typing import *
+from data_utils import *
 
 
 @total_ordering
-class TreeNode:
+class TreeNode(Node):
     def __init__(self, value: Any, color: 'TreeNode.Color') -> None:
-        self.value = value
+        super().__init__(value)
         self.color = color
         self.parent = None
         self.left = None
@@ -15,14 +16,6 @@ class TreeNode:
     class Color(Enum):
         RED = 1
         BLACK = 0
-
-    @property
-    def value(self) -> Any:
-        return self.__value
-
-    @value.setter
-    def value(self, value: Any) -> None:
-        self.__value = value
 
     @property
     def color(self) -> Color:
@@ -62,7 +55,7 @@ class TreeNode:
         if isinstance(other, TreeNode):
             return self.value < other.value
         else:
-            raise False
+            return False
 
     def __str__(self) -> str:
         #return f"({self.value}, {self.color})"
