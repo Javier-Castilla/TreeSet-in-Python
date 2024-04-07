@@ -24,7 +24,7 @@ class TreeSet:
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
 
-    def __init__(self, class_type: Union[E, Sequence[E]]) -> None:
+    def __init__(self, class_type: E, sequence: Sequence[E] = None) -> None:
         """
         Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
@@ -35,17 +35,19 @@ class TreeSet:
         """
         self.__root = self.__first = self.__last = None
         self.__size = 0
+        self.class_type = class_type
 
-        if isinstance(class_type, Sequence):
-            if len(set(map(type, class_type))) != 1:
-                raise TypeError("Sequence elements type must be the same")
+        if sequence:
+            if isinstance(sequence, Sequence):
+                if len(set(map(type, sequence))) != 1:
+                    raise TypeError("Sequence elements type must be the same")
 
-            self.class_type = type(class_type[0])
+                if type(sequence[0]) != self.class_type:
+                    raise TypeError(
+                        f"Expected elements of type {self.class_type} ")
 
-            for item in class_type:
-                self.add(item)
-        else:
-            self.class_type = class_type
+                for item in sequence:
+                    self.add(item)
 
     def add(self, value: E) -> bool:
         """Inserts the given value into the TreeSet if value is not contained.
@@ -57,7 +59,7 @@ class TreeSet:
         :raises AssertionError: If the given value's type does not match generic
         type
         """
-        assert isinstance(value, self.class_type), \
+        assert type(value) == self.class_type, \
             f"Value type must be '{self.class_type}'"
 
         new_node = TreeNode(value, TreeSet.RED)
@@ -154,8 +156,8 @@ class TreeSet:
             else:
                 if prev := root.previous_node:
                     prev.next_node = root.next_node
-                if next := root.next_node:
-                    next.previous_node = root.previous_node
+                if next_node := root.next_node:
+                    next_node.previous_node = root.previous_node
 
         self.__size -= 1
         self.__fix_removal(successor if successor else root)
@@ -171,7 +173,7 @@ class TreeSet:
         :return: A shallow copy of the current TreeSet instance
         :rtype: TreeSet
         """
-        return TreeSet([node for node in self])
+        return TreeSet(self.class_type, [node for node in self])
 
     def is_empty(self) -> bool:
         """Checks if the current TreeSet is empty or not.
@@ -202,7 +204,8 @@ class TreeSet:
             return node.value
 
     def last(self) -> E:
-        """Return the greatest element contained in the current TreeSet instance.
+        """Return the greatest element contained in the current TreeSet
+        instance.
 
         :return: Greatest contained element
         :rtype: E
@@ -305,13 +308,11 @@ class TreeSet:
     def __fix_removal(self, node: TreeNode) -> None:
         while node != self.__root and (not node or node.color == TreeSet.BLACK):
             if not node.parent:
-                # Si el padre de node es None, salimos del bucle
                 break
 
             if node == node.parent.left:
                 sibling = node.parent.right
                 if not sibling:
-                    # Si no hay hermano, salimos del bucle
                     break
 
                 if sibling and sibling.color == TreeSet.RED:
@@ -323,10 +324,12 @@ class TreeSet:
                 if not sibling:
                     break
 
-                if ((
-                        not sibling.right or sibling.right.color == TreeSet.BLACK) and
+                if (
                         (
-                                not sibling.left or sibling.left.color == TreeSet.BLACK)):
+                                not sibling.right or sibling.right.color == TreeSet.BLACK)
+                        and (
+                        not sibling.left or sibling.left.color == TreeSet.BLACK)
+                ):
                     sibling.color = TreeSet.RED
                     node = node.parent
                 else:
@@ -343,7 +346,6 @@ class TreeSet:
             else:
                 sibling = node.parent.left
                 if not sibling:
-                    # Si no hay hermano, salimos del bucle
                     break
 
                 if sibling and sibling.color == TreeSet.RED:
@@ -355,10 +357,11 @@ class TreeSet:
                 if not sibling:
                     break
 
-                if ((
-                        not sibling.right or sibling.right.color == TreeSet.BLACK) and
-                        (
-                                not sibling.left or sibling.left.color == TreeSet.BLACK)):
+                if ((not sibling.right or sibling.right.color == TreeSet.BLACK)
+                        and (
+                                not sibling.left
+                                or sibling.left.color == TreeSet.BLACK)
+                ):
                     sibling.color = TreeSet.RED
                     node = node.parent
                 else:
@@ -487,6 +490,6 @@ class TreeSet:
 if __name__ == "__main__":
     # items = [randint(1, 100) for _ in range(10)]
     items = [8, 93, 18, 5, 32, 82, 78, 5, 6, 13, 20, 35, 92, 86, 95]
-    t = TreeSet(items)
+    t = TreeSet(int, items)
     print(t)
     print(t.clone())
