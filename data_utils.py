@@ -14,9 +14,13 @@ from typing import *
 
 
 class SimpleQueue:
+    """Class that represents a queue."""
+
     def __init__(self, value: Any = None) -> None:
+        """Constructor of the class."""
         self.__first = None
         self.__last = None
+        self.__current = None
 
         if value:
             self.enqueue(value)
@@ -25,8 +29,7 @@ class SimpleQueue:
         new_node = Node(value)
 
         if self.is_empty():
-            self.__first = new_node
-            self.__last = new_node
+            self.__first = self.__last = self.__current = new_node
         else:
             self.__last.next_node = new_node
             self.__last = new_node
@@ -38,10 +41,9 @@ class SimpleQueue:
         value = self.__first.value
 
         if self.__first == self.__last:
-            self.__first = None
-            self.__last = None
+            self.__first = self.__last = self.__current = None
         else:
-            self.__first = self.__first.next_node
+            self.__first = self.__current = self.__first.next_node
 
         return value
 
@@ -49,11 +51,16 @@ class SimpleQueue:
         return self.__last is None
 
     def __iter__(self):
-        current = self.__first
+        self.__current = self.__first
+        return self
 
-        while current is not None:
-            yield current
-            current = current.next_node
+    def __next__(self):
+        if not self.__current:
+            self.__current = self.__first
+            raise StopIteration
+        item = self.__current
+        self.__current = self.__current.next_node
+        return item
 
     def __str__(self):
         return f"{[node for node in self]}"
@@ -61,38 +68,36 @@ class SimpleQueue:
 
 class SimpleStack:
     def __init__(self, value: Any = None) -> None:
-        self.__first = None
+        self.__items = list()
+        self.__index = -1
 
         if value:
             self.push(value)
 
     def push(self, value: Any) -> None:
-        new_node = Node(value)
-
-        if self.is_empty():
-            self.__first = new_node
-        else:
-            new_node.next_node = self.__first
-            self.__first = new_node
+        self.__items.append(value)
+        self.__index += 1
 
     def pull(self) -> Any:
         if self.is_empty():
             raise IndexError("Stack is already empty")
 
-        value = self.__first.value
-        self.__first = self.__first.next_node
-
-        return value
+        self.__index -= 1
+        return self.__items.pop()
 
     def is_empty(self) -> bool:
-        return self.__first is None
+        return len(self.__items) == 0
 
     def __iter__(self):
-        current = self.__first
+        return self
 
-        while current is not None:
-            yield current
-            current = current.next_node
+    def __next__(self):
+        if self.__index < 0:
+            self.__index = len(self.__items) - 1
+            raise StopIteration
+        item = self.__items[self.__index]
+        self.__index -= 1
+        return item
 
     def __str__(self):
         return f"{[node for node in self]}"
@@ -192,3 +197,9 @@ class TreeNode(Node):
 
     def __repr__(self) -> str:
         return f"TreeNode({self.value}, {self.color})"
+
+if __name__ == "__main__":
+    stack = SimpleQueue()
+    stack.enqueue(1)
+    stack.enqueue(2)
+    stack.enqueue(3)

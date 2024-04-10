@@ -24,18 +24,20 @@ class TreeSet:
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
 
-    def __init__(self, class_type: E, sequence: Sequence[E] = None) -> None:
+    def __init__(self, generic_type: E, sequence: Sequence[E] = None) -> None:
         """
         Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
 
-        :param class_type: The generic type of the class or a sequence with
+        :param generic_type: The generic type of the class or a sequence with
         element to construct the TreeSet
-        :type class_type: Union[E, Sequence[E]]
+        :type generic_type: E
+        :param: sequence: A sequence to take items from and add them to the TreeSet
+        :type sequence: Sequence[E]
         """
         self.__root = self.__first = self.__last = None
         self.__size = 0
-        self.class_type = class_type
+        self.class_type = generic_type
 
         if sequence:
             if isinstance(sequence, Sequence):
