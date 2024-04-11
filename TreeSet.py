@@ -215,6 +215,21 @@ class TreeSet:
                 return i
         return None
 
+    def floor(self, value: E) -> Union[E, None]:
+        """Returns the greatest element in this set less than or
+          equal to the given element, or null if there is no such
+          element.
+
+        :param value: Value to compare
+        :return: greatest element in this set less than or
+        equal to the given element
+        :rtype: TreeSet
+        """
+        for i in reversed(self):
+            if i <= value:
+                return i
+        return None
+
     def first(self) -> E:
         """Returns the lowest element contained in the current TreeSet instance.
 
@@ -556,4 +571,4 @@ if __name__ == "__main__":
     print(t.pollFirst())
     print(t.pollLast())
     print(t.ceiling(10))
-    print(t.lower(10))
+    print(t.higher(10))
