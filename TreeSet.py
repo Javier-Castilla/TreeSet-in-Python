@@ -7,6 +7,7 @@ in a red-black tree data structure.
 
 from random import randint
 from data_utils import *
+from test_classes import *
 
 E = TypeVar('E')
 
@@ -24,7 +25,7 @@ class TreeSet:
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
 
-    def __init__(self, generic_type: E, sequence: Sequence[E] = None) -> None:
+    def __init__(self, generic_type: Any, sequence: Sequence[E] = None) -> None:
         """
         Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
@@ -40,11 +41,11 @@ class TreeSet:
         self.class_type = generic_type
 
         if sequence:
-            if isinstance(sequence, Sequence):
+            if isinstance(sequence, Collection):
                 if len(set(map(type, sequence))) != 1:
                     raise TypeError("Sequence elements type must be the same")
 
-                if type(sequence[0]) != self.class_type:
+                if type(next(iter(sequence))) != self.class_type:
                     raise TypeError(
                         f"Expected elements of type {self.class_type} ")
 
@@ -63,6 +64,9 @@ class TreeSet:
         """
         assert type(value) == self.class_type, \
             f"Value type must be '{self.class_type}'"
+
+        if not self.__check_comparable(value):
+            raise TypeError(f"class {type(value)} cannot be compared")
 
         new_node = TreeNode(value, TreeSet.RED)
 
@@ -196,6 +200,21 @@ class TreeSet:
         """
         return value in self
 
+    def ceiling(self, value: E) -> Union[E, None]:
+        """Returns the least element in this set greater than
+        or equal to the given element, or null if there is no
+        such element.
+
+        :param value: Value to compare
+        :return: least element in this set greater than or equal
+        to the given element
+        :rtype: TreeSet
+        """
+        for i in self:
+            if i >= value:
+                return i
+        return None
+
     def first(self) -> E:
         """Returns the lowest element contained in the current TreeSet instance.
 
@@ -214,6 +233,29 @@ class TreeSet:
         """
         for node in self.__inorder(True):
             return node.value
+
+    def pollFirst(self):
+        """Retrieves and removes the first (lowest) element, or returns None if this set is empty.
+
+        :return: The first (lowest) element, or None if this set is empty
+        :rtype: Union[E, None]
+        """
+        if self.is_empty():
+            return None
+        else:
+            first_value = next(self.iterator())
+            self.remove(first_value)
+            return first_value
+
+    def pollLast(self):
+        """Retrieves and removes the first (lowest) element, or returns None if this set is empty.
+
+        :return: The first (lowest) element, or None if this set is empty
+        :rtype: Union[E, None]"""
+        if self.is_empty():
+            return None
+        self.remove(item := next(iter(reversed(self))))
+        return item
 
     def iterator(self) -> Iterator[E]:
         """Provides an iterator of the current TreeSet instance elements.
@@ -241,7 +283,10 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        return self.__get_contiguous(value, False)
+        for i in reversed(self):
+            if i < value:
+                return i
+        return None
 
     def higher(self, value: E) -> Union[E, None]:
         """Returns the contiguous greater element of the given value from the
@@ -252,7 +297,19 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        return self.__get_contiguous(value, True)
+        for i in self:
+            if i > value:
+                return i
+        return None
+
+    def __check_comparable(self, value: E) -> bool:
+        try:
+            value == value
+            value < value
+            value > value
+            return True
+        except:
+            return False
 
     def __contains(self, value: E) -> TreeNode:
         if not len(self):
@@ -490,8 +547,13 @@ class TreeSet:
 
 
 if __name__ == "__main__":
-    # items = [randint(1, 100) for _ in range(10)]
-    items = [8, 93, 18, 5, 32, 82, 78, 5, 6, 13, 20, 35, 92, 86, 95]
+    items = {randint(1, 100) for _ in range(10)}
+    #items = [Test1() for _ in range(10)]
+    #items = [8, 93, 18, 5, 32, 82, 78, 5, 6, 13, 20, 35, 92, 86, 95]
     t = TreeSet(int, items)
-    print(t)
-    print(t.clone())
+    print("Items", items)
+    print("TreeSet:", t)
+    print(t.pollFirst())
+    print(t.pollLast())
+    print(t.ceiling(10))
+    print(t.lower(10))
