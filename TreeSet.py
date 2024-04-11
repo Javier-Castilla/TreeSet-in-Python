@@ -504,7 +504,15 @@ class TreeSet:
             first_value = next(self.iterator())
             self.remove(first_value)
             return first_value
+    def pollLast(self):
+        """Retrieves and removes the first (lowest) element, or returns None if this set is empty.
 
+        :return: The first (lowest) element, or None if this set is empty
+        :rtype: Union[E, None]"""
+        if self.is_empty():
+            return None
+        self.remove(item := next(iter(reversed(self))))
+        return item
     def __inorder(self, reversed: bool) -> E:
         stack = SimpleStack()
         current = self.__root
