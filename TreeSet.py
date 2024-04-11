@@ -90,6 +90,80 @@ class TreeSet:
             yield node.value
             yield from self.iterator(node.right)
 
+    def balance_tree(self, node):
+        if node is None:
+            return None
+
+        # Caso 1: El nodo es rojo, pero su padre es negro (o es la raíz)
+        if node.parent is None or node.parent.color == "BLACK":
+            return node
+
+        parent = node.parent
+        grandparent = parent.parent
+        uncle = None
+
+        # Caso 2: El tío del nodo es rojo
+        if parent == grandparent.left:
+            uncle = grandparent.right
+        else:
+            uncle = grandparent.left
+
+        if uncle is not None and uncle.color == "RED":
+            parent.color = "BLACK"
+            uncle.color = "BLACK"
+            grandparent.color = "RED"
+            return self.balance_tree(grandparent)
+
+        # Caso 3: El tío del nodo es negro o no existe
+        if parent == grandparent.left:
+            if node == parent.right:
+                self.rotate_left(parent)
+                node = parent
+                parent = node.parent
+            self.rotate_right(grandparent)
+        else:
+            if node == parent.left:
+                self.rotate_right(parent)
+                node = parent
+                parent = node.parent
+            self.rotate_left(grandparent)
+
+        parent.color = "BLACK"
+        grandparent.color = "RED"
+
+        return node
+
+    def rotate_left(self, node):
+        # Rotación a la izquierda
+        right_child = node.right
+        node.right = right_child.left
+        if right_child.left is not None:
+            right_child.left.parent = node
+        right_child.parent = node.parent
+        if node.parent is None:
+            self.root = right_child
+        elif node == node.parent.left:
+            node.parent.left = right_child
+        else:
+            node.parent.right = right_child
+        right_child.left = node
+        node.parent = right_child
+
+    def rotate_right(self, node):
+        # Rotación a la derecha
+        left_child = node.left
+        node.left = left_child.right
+        if left_child.right is not None:
+            left_child.right.parent = node
+        left_child.parent = node.parent
+        if node.parent is None:
+            self.root = left_child
+        elif node == node.parent.right:
+            node.parent.right = left_child
+        else:
+            node.parent.left = left_child
+        left_child.right = node
+        node.parent = left_child
 if __name__ == "__main__":
     my_tree = TreeSet()
     # AGREGAR ELEMENTOS
