@@ -7,7 +7,8 @@ in a red-black tree data structure.
 
 from random import randint
 from data_utils import *
-from test_classes import *
+import matplotlib.pyplot as plt
+import tkinter as tk
 
 E = TypeVar('E')
 
@@ -25,7 +26,7 @@ class TreeSet:
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
 
-    def __init__(self, generic_type: Any, sequence: Sequence[E] = None) -> None:
+    def __init__(self, generic_type: Any, sequence: Collection[E] = None) -> None:
         """
         Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
@@ -152,7 +153,10 @@ class TreeSet:
             else:
                 successor = root.left
                 if root.parent:
-                    root.parent.left = successor
+                    if root.parent.left == root:
+                        root.parent.left = successor
+                    else:
+                        root.parent.right = successor
                     successor.parent = root.parent
                 else:
                     self.__root = successor
@@ -179,7 +183,11 @@ class TreeSet:
         :return: A shallow copy of the current TreeSet instance
         :rtype: TreeSet
         """
-        return TreeSet(self.class_type, [node for node in self])
+        clone_tree = TreeSet(self.class_type)
+        for value in self:
+            clone_tree.add(value)
+
+        return clone_tree
 
     def is_empty(self) -> bool:
         """Checks if the current TreeSet is empty or not.
@@ -213,6 +221,7 @@ class TreeSet:
         for i in self:
             if i >= value:
                 return i
+
         return None
 
     def floor(self, value: E) -> Union[E, None]:
@@ -221,13 +230,14 @@ class TreeSet:
           element.
 
         :param value: Value to compare
-        :return: greatest element in this set less than or
+        :return: the greatest element in this set less than or
         equal to the given element
         :rtype: TreeSet
         """
         for i in reversed(self):
             if i <= value:
                 return i
+
         return None
 
     def first(self) -> E:
@@ -236,8 +246,7 @@ class TreeSet:
         :return: Lowest contained element
         :rtype: E
         """
-        for node in self.__inorder(False):
-            return node.value
+        return next(self.iterator())
 
     def last(self) -> E:
         """Return the greatest element contained in the current TreeSet
@@ -246,30 +255,31 @@ class TreeSet:
         :return: Greatest contained element
         :rtype: E
         """
-        for node in self.__inorder(True):
-            return node.value
+        return next(self.descending_iterator())
 
     def pollFirst(self):
-        """Retrieves and removes the first (lowest) element, or returns None if this set is empty.
+        """Retrieves and removes the first (lowest) element, or returns None
+        if this set is empty.
 
         :return: The first (lowest) element, or None if this set is empty
         :rtype: Union[E, None]
         """
         if self.is_empty():
             return None
-        else:
-            first_value = next(self.iterator())
-            self.remove(first_value)
-            return first_value
+
+        self.remove(item := next(self.iterator()))
+        return item
 
     def pollLast(self):
-        """Retrieves and removes the first (lowest) element, or returns None if this set is empty.
+        """Retrieves and removes the first (lowest) element, or returns None
+        if this set is empty.
 
         :return: The first (lowest) element, or None if this set is empty
         :rtype: Union[E, None]"""
         if self.is_empty():
             return None
-        self.remove(item := next(iter(reversed(self))))
+
+        self.remove(item := next(self.descending_iterator()))
         return item
 
     def iterator(self) -> Iterator[E]:
@@ -301,6 +311,7 @@ class TreeSet:
         for i in reversed(self):
             if i < value:
                 return i
+
         return None
 
     def higher(self, value: E) -> Union[E, None]:
@@ -315,6 +326,7 @@ class TreeSet:
         for i in self:
             if i > value:
                 return i
+
         return None
 
     def __check_comparable(self, value: E) -> bool:
@@ -489,29 +501,6 @@ class TreeSet:
         other.right = node
         node.parent = other
 
-    def __get_contiguous(self, value: E, higher: bool) -> Union[E, None]:
-        if (value != (self.first() if not higher else self.last())
-                and (root := self.__contains(value)).value == value):
-            parent = None
-            current = root.left if not higher else root.right
-            while current:
-                parent = current
-                current = current.right if not higher else current.left
-
-            if parent:
-                current = parent
-            else:
-                current = root.parent
-                while current and (
-                        (current.value >= root.value) if not higher
-                        else (current.value <= root.value)
-                ):
-                    current = current.parent
-
-            return current.value if current.value != root.value else None
-        else:
-            return None
-
     def __insertion_order(self):
         current = self.__first
         while current:
@@ -560,15 +549,67 @@ class TreeSet:
         else:
             return False
 
+    def draw_tree(self):
+        root = tk.Tk()
+        root.title("Árbol Rojo-Negro")
+        root.geometry("200x80")
+        root.resizable(False, False)
+
+        number = tk.StringVar()
+        number.set("0")  # Valor inicial del número
+
+        label = tk.Label(root, text="Número de elementos:")
+        label.pack()
+
+        entry = tk.Entry(root, textvariable=number)
+        entry.pack()
+
+        button = tk.Button(root, text="Dibujar Árbol Aleatorio", command=lambda: self.__draw_random_tree(number))
+        button.pack()
+
+        root.mainloop()
+
+    def __draw_random_tree(self, number):
+        items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        items = items[:int(number.get())]
+        self.clear()
+        #for item in [randint(1, 1000) for _ in range(int(number.get()))]:
+        for item in items:
+            self.add(item)
+        self.__draw()
+
+    def __draw(self):
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1) # Ajustar los márgenes del subplot
+        self.__draw_node(ax, self.__root)
+        self.__draw_edges(ax, self.__root)
+        ax.axis('off') # Ocultar ejes
+        plt.show()
+
+    def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
+        if node is not None:
+            color = "red" if node.color == self.RED else "black"
+            ax.plot([x], [y], marker='o', markersize=40, color=color, zorder=2) # Dibujar nodo con un tamaño mayor y detrás de las líneas
+            ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center', color='white', zorder=3) # Etiquetar nodo
+            if node.left:
+                self.__draw_node(ax, node.left, x-dx, y-dy, dx/2, dy*2)
+            if node.right:
+                self.__draw_node(ax, node.right, x+dx, y-dy, dx/2, dy*2)
+
+    def __draw_edges(self, ax, node, x=0, y=0, dx=1, dy=1):
+        if node is not None:
+            if node.left:
+                ax.plot([x, x-dx], [y, y-dy], color='black', zorder=1) # Dibujar conexión izquierda en negro y detrás de los nodos
+                self.__draw_edges(ax, node.left, x-dx, y-dy, dx/2, dy*2)
+            if node.right:
+                ax.plot([x, x+dx], [y, y-dy], color='black', zorder=1) # Dibujar conexión derecha en negro y detrás de los nodos
+                self.__draw_edges(ax, node.right, x+dx, y-dy, dx/2, dy*2)
+
 
 if __name__ == "__main__":
-    items = {randint(1, 100) for _ in range(10)}
+    #items = [randint(1, 1000) for _ in range(10)]
+    items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
     #items = [Test1() for _ in range(10)]
-    #items = [8, 93, 18, 5, 32, 82, 78, 5, 6, 13, 20, 35, 92, 86, 95]
-    t = TreeSet(int, items)
-    print("Items", items)
-    print("TreeSet:", t)
-    print(t.pollFirst())
-    print(t.pollLast())
-    print(t.ceiling(10))
-    print(t.higher(10))
+    #items = {98, 3, 4, 2, 37, 78, 47, 16, 81, 23}
+    t = TreeSet(str, items)
+    t.draw_tree()
