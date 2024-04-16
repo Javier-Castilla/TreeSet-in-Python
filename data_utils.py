@@ -198,11 +198,3 @@ class TreeNode(Node):
     def __repr__(self) -> str:
         return f"TreeNode({self.value}, {self.color})"
 
-if __name__ == "__main__":
-    stack = SimpleQueue()
-    stack.enqueue(1)
-    stack.enqueue(2)
-    stack.enqueue(3)
-
-    for item in stack:
-        print(item)

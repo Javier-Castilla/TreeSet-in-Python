@@ -10,7 +10,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from TreeSet import TreeSet
 
 if __name__ == "__main__":
-    items = [randint(0, 100) for _ in range(30)]
+    items = [randint(0, 100) for _ in range(50)]
     t = TreeSet(int, items)
     print(t, items)
     t.draw_tree()

@@ -183,7 +183,7 @@ class TreeSet:
         Returns the number of elements in this set
 
         :return: Number of elements in this set
-        :rtype: integer
+        :rtype: int
         """
         return self.__size
 
