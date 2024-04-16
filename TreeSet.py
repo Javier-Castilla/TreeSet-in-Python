@@ -5,7 +5,12 @@ This module provides a TreeSet class for storing and managing a set of elements
 in a red-black tree data structure.
 """
 
+import tkinter as tk
 from random import randint
+
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from data_utils import *
 
 E = TypeVar('E')
@@ -23,8 +28,9 @@ class TreeSet:
 
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
+    
 
-    def __init__(self, generic_type: E, sequence: Sequence[E] = None) -> None:
+    def __init__(self, generic_type: Any, sequence: Collection[E] = None) -> None:
         """
         Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
@@ -40,11 +46,11 @@ class TreeSet:
         self.class_type = generic_type
 
         if sequence:
-            if isinstance(sequence, Sequence):
+            if isinstance(sequence, Collection):
                 if len(set(map(type, sequence))) != 1:
                     raise TypeError("Sequence elements type must be the same")
 
-                if type(sequence[0]) != self.class_type:
+                if type(next(iter(sequence))) != self.class_type:
                     raise TypeError(
                         f"Expected elements of type {self.class_type} ")
 
@@ -63,6 +69,9 @@ class TreeSet:
         """
         assert type(value) == self.class_type, \
             f"Value type must be '{self.class_type}'"
+
+        if not self.__check_comparable(value):
+            raise TypeError(f"class {type(value)} cannot be compared")
 
         new_node = TreeNode(value, TreeSet.RED)
 
@@ -148,7 +157,10 @@ class TreeSet:
             else:
                 successor = root.left
                 if root.parent:
-                    root.parent.left = successor
+                    if root.parent.left == root:
+                        root.parent.left = successor
+                    else:
+                        root.parent.right = successor
                     successor.parent = root.parent
                 else:
                     self.__root = successor
@@ -164,37 +176,16 @@ class TreeSet:
         self.__size -= 1
         self.__fix_removal(successor if successor else root)
         return True
-    
-    def ceiling(self, value: E) -> Union[E, None]:
-        """Returns the least element in this set greater than 
-        or equal to the given element, or null if there is no 
-        such element.
 
-        :param value: Value to compare
-        :return: least element in this set greater than or equal 
-        to the given element
-        :rtype: TreeSet
+
+    def size(self):
         """
-        for i in self:
-            if i >= value: 
-                return i
-        return None
-    
-    def floor(self, value: E) -> Union[E, None]:
-        """Returns the greatest element in this set less than or
-          equal to the given element, or null if there is no such
-          element.
+        Returns the number of elements in this set
 
-        :param value: Value to compare
-        :return: greatest element in this set less than or
-        equal to the given element
-        :rtype: TreeSet
+        :return: Number of elements in this set
+        :rtype: integer
         """
-        for i in reversed(self):
-            if i <= value: 
-                return i
-        return None
-
+        return self.__size
 
     def clear(self) -> None:
         """Clears the TreeSet from all its inserted elements."""
@@ -206,7 +197,11 @@ class TreeSet:
         :return: A shallow copy of the current TreeSet instance
         :rtype: TreeSet
         """
-        return TreeSet(self.class_type, [node for node in self])
+        clone_tree = TreeSet(self.class_type)
+        for value in self:
+            clone_tree.add(value)
+
+        return clone_tree
 
     def is_empty(self) -> bool:
         """Checks if the current TreeSet is empty or not.
@@ -227,14 +222,45 @@ class TreeSet:
         """
         return value in self
 
+    def ceiling(self, value: E) -> Union[E, None]:
+        """Returns the least element in this set greater than
+        or equal to the given element, or null if there is no
+        such element.
+
+        :param value: Value to compare
+        :return: least element in this set greater than or equal
+        to the given element
+        :rtype: TreeSet
+        """
+        for i in self:
+            if i >= value:
+                return i
+
+        return None
+
+    def floor(self, value: E) -> Union[E, None]:
+        """Returns the greatest element in this set less than or
+          equal to the given element, or null if there is no such
+          element.
+
+        :param value: Value to compare
+        :return: the greatest element in this set less than or
+        equal to the given element
+        :rtype: TreeSet
+        """
+        for i in reversed(self):
+            if i <= value:
+                return i
+
+        return None
+
     def first(self) -> E:
         """Returns the lowest element contained in the current TreeSet instance.
 
         :return: Lowest contained element
         :rtype: E
         """
-        for node in self.__inorder(False):
-            return node.value
+        return next(self.iterator())
 
     def last(self) -> E:
         """Return the greatest element contained in the current TreeSet
@@ -243,8 +269,32 @@ class TreeSet:
         :return: Greatest contained element
         :rtype: E
         """
-        for node in self.__inorder(True):
-            return node.value
+        return next(self.descending_iterator())
+
+    def pollFirst(self):
+        """Retrieves and removes the first (lowest) element, or returns None
+        if this set is empty.
+
+        :return: The first (lowest) element, or None if this set is empty
+        :rtype: Union[E, None]
+        """
+        if self.is_empty():
+            return None
+
+        self.remove(item := next(self.iterator()))
+        return item
+
+    def pollLast(self):
+        """Retrieves and removes the first (lowest) element, or returns None
+        if this set is empty.
+
+        :return: The first (lowest) element, or None if this set is empty
+        :rtype: Union[E, None]"""
+        if self.is_empty():
+            return None
+
+        self.remove(item := next(self.descending_iterator()))
+        return item
 
     def iterator(self) -> Iterator[E]:
         """Provides an iterator of the current TreeSet instance elements.
@@ -273,8 +323,9 @@ class TreeSet:
         :rtype: Union[E, None]
         """
         for i in reversed(self):
-            if i < value: 
+            if i < value:
                 return i
+
         return None
 
     def higher(self, value: E) -> Union[E, None]:
@@ -287,9 +338,19 @@ class TreeSet:
         :rtype: Union[E, None]
         """
         for i in self:
-            if i > value: 
+            if i > value:
                 return i
+
         return None
+
+    def __check_comparable(self, value: E) -> bool:
+        try:
+            value == value
+            value < value
+            value > value
+            return True
+        except:
+            return False
 
     def __contains(self, value: E) -> TreeNode:
         if not len(self):
@@ -454,29 +515,6 @@ class TreeSet:
         other.right = node
         node.parent = other
 
-    def __get_contiguous(self, value: E, higher: bool) -> Union[E, None]:
-        if (value != (self.first() if not higher else self.last())
-                and (root := self.__contains(value)).value == value):
-            parent = None
-            current = root.left if not higher else root.right
-            while current:
-                parent = current
-                current = current.right if not higher else current.left
-
-            if parent:
-                current = parent
-            else:
-                current = root.parent
-                while current and (
-                        (current.value >= root.value) if not higher
-                        else (current.value <= root.value)
-                ):
-                    current = current.parent
-
-            return current.value if current.value != root.value else None
-        else:
-            return None
-
     def __insertion_order(self):
         current = self.__first
         while current:
@@ -524,11 +562,31 @@ class TreeSet:
             return True
         else:
             return False
+        
+    def draw_tree(self):
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
+        print(self.__root.value)
+        self.__draw_node(ax, self.__root)
+        self.__draw_edges(ax, self.__root)
+        plt.show()
 
+    def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
+        if node is not None:
+            color = "red" if node.color == self.RED else "black"
+            ax.plot([x], [y], marker='o', markersize=40, color=color, zorder=2)
+            ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center', color='white', zorder=3) 
+            if node.left:
+                self.__draw_node(ax, node.left, x-dx, y-dy, dx/2, dy*2)
+            if node.right:
+                self.__draw_node(ax, node.right, x+dx, y-dy, dx/2, dy*2)
 
-if __name__ == "__main__":
-    # items = [randint(1, 100) for _ in range(10)]
-    items = [8, 93, 18, 5, 32, 82, 78, 5, 6, 13, 20, 35, 92, 86, 95]
-    t = TreeSet(int, items)
-    print(t)
-    print(t.clone())
+    def __draw_edges(self, ax, node, x=0, y=0, dx=1, dy=1):
+        if node is not None:
+            if node.left:
+                ax.plot([x, x-dx], [y, y-dy], color='black', zorder=1)
+                self.__draw_edges(ax, node.left, x-dx, y-dy, dx/2, dy*2)
+            if node.right:
+                ax.plot([x, x+dx], [y, y-dy], color='black', zorder=1)
+                self.__draw_edges(ax, node.right, x+dx, y-dy, dx/2, dy*2)
+

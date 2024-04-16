@@ -58,7 +58,7 @@ class SimpleQueue:
         if not self.__current:
             self.__current = self.__first
             raise StopIteration
-        item = self.__current
+        item = self.__current.value
         self.__current = self.__current.next_node
         return item
 
@@ -203,3 +203,6 @@ if __name__ == "__main__":
     stack.enqueue(1)
     stack.enqueue(2)
     stack.enqueue(3)
+
+    for item in stack:
+        print(item)

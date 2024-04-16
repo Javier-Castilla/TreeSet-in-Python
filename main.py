@@ -1,12 +1,16 @@
-from TreeSet import TreeSet
+import time
+import tkinter as tk
 from random import randint
+from tkinter import ttk
 
+import matplotlib.pyplot as plt
+import networkx as nx
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+from TreeSet import TreeSet
 
 if __name__ == "__main__":
-    #items = [randint(0, 100) for _ in range(12)]
-    t = TreeSet(int)
-    t.add(10)
-    t.add(5)
-    t.add(15)
-    print(t)
-    print(t.floor(6))
+    items = [randint(0, 100) for _ in range(30)]
+    t = TreeSet(int, items)
+    print(t, items)
+    t.draw_tree()
