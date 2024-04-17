@@ -314,6 +314,47 @@ class TreeSet:
 
         return None
 
+    def lowerNew(self, value: E) -> Union[E, None]:
+        """Returns the contiguous lower element of the given value from the
+        TreeSet.
+
+        :param value: Value to compare
+        :return: Greatest element lower than the given value. If it was not
+            possible, None will be returned.
+        :rtype: Union[E, None]
+        """
+        parent = None
+        current = self.__root
+
+        while current:
+            if current.value < value:
+                break
+
+            parent = current
+            current = current.left if value < current.value else current.right
+
+        if not current:
+            current = parent.right
+        else:
+            current = current.right
+
+        parent = None
+
+        while current:
+            parent = current
+            current = current.left if value < current.value else current.right
+
+            if current and value <= current.value:
+                break
+
+        if parent:
+            result = parent.value
+        elif current:
+            result = current.parent.value
+
+        return result if result < value else None
+
+
     def higher(self, value: E) -> Union[E, None]:
         """Returns the contiguous greater element of the given value from the
         TreeSet.
@@ -570,12 +611,13 @@ class TreeSet:
         root.mainloop()
 
     def __draw_random_tree(self, number):
-        items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        """items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
         items = items[:int(number.get())]
         self.clear()
         #for item in [randint(1, 1000) for _ in range(int(number.get()))]:
         for item in items:
             self.add(item)
+        self.__draw()"""
         self.__draw()
 
     def __draw(self):
@@ -607,9 +649,24 @@ class TreeSet:
 
 
 if __name__ == "__main__":
-    #items = [randint(1, 1000) for _ in range(10)]
-    items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+    items = [randint(1, 1000) for _ in range(10)]
+    #items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
     #items = [Test1() for _ in range(10)]
-    #items = {98, 3, 4, 2, 37, 78, 47, 16, 81, 23}
-    t = TreeSet(str, items)
+    items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
+    t = TreeSet(int, items)
+    print("Items", items)
+    print("Tree:", t)
+    print(t.lower(400))
+    print(t.lowerNew(400))
+    print("===================")
     t.draw_tree()
+
+    """for _ in range(10):
+        items = [randint(1, 1000) for _ in range(10)]
+        t = TreeSet(int, items)
+        print("Items", items)
+        print("Tree:", t)
+        print(t.lower(400))
+        print(t.lowerNew(400))
+        print("===================")
+        #t.draw_tree()"""
