@@ -232,11 +232,24 @@ class TreeSet:
         to the given element
         :rtype: TreeSet
         """
-        for i in self:
-            if i >= value:
-                return i
-
-        return None
+        node = self.__root
+        aux = None
+        while(True):
+            if node.value > value:
+                if not node.left:
+                    return node.value
+                if node.left.value < value:
+                    aux = node.value                    
+                node = node.left
+            elif node.value < value:
+                if not node.right:
+                    if aux != None:
+                        return aux
+                    else:
+                        return node.value
+                node = node.right
+            else:
+                return node.value
 
     def floor(self, value: E) -> Union[E, None]:
         """Returns the greatest element in this set less than or
@@ -248,11 +261,24 @@ class TreeSet:
         equal to the given element
         :rtype: TreeSet
         """
-        for i in reversed(self):
-            if i <= value:
-                return i
-
-        return None
+        node = self.__root
+        aux = None
+        while(True):
+            if node.value > value:
+                if not node.left:
+                    if aux != None:
+                        return aux
+                    else:
+                        return node.value
+                node = node.left
+            elif node.value < value:
+                if not node.right:
+                    return node.value
+                if node.right.value > value:
+                    aux = node.value               
+                node = node.right
+            else:
+                return node.value
 
     def first(self) -> E:
         """Returns the lowest element contained in the current TreeSet instance.
@@ -322,11 +348,24 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        for i in reversed(self):
-            if i < value:
-                return i
-
-        return None
+        
+        node = self.__root
+        aux = None
+        while(True):
+            if node.value >= value:
+                if not node.left:
+                    if aux != None:
+                        return aux
+                    else:
+                        return None
+                node = node.left
+            elif node.value < value:
+                if not node.right:
+                    return node.value
+                if node.right.value >= value:
+                    aux = node.value                    
+                node = node.right
+        
 
     def higher(self, value: E) -> Union[E, None]:
         """Returns the contiguous greater element of the given value from the
@@ -337,11 +376,22 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        for i in self:
-            if i > value:
-                return i
-
-        return None
+        node = self.__root
+        aux = None
+        while(True):
+            if node.value > value:
+                if not node.left:
+                    return node.value
+                if node.left.value <= value:
+                    aux = node.value                    
+                node = node.left
+            elif node.value <= value:
+                if not node.right:
+                    if aux != None:
+                        return aux
+                    else:
+                        return None
+                node = node.right
 
     def __check_comparable(self, value: E) -> bool:
         try:
