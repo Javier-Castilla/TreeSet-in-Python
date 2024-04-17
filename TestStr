@@ -1,1 +1,101 @@
+import unittest
+from TreeSet import *
+class TestInt(unittest.TestCase):
+        def setUp(self):
+            self.tree_set = TreeSet(str)
 
+        def test_add_single_element(self):
+            """Tests adding a single element to an empty TreeSet."""
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.size(), 1)
+            self.assertTrue("A" in self.tree_set)
+
+        def test_add_all_empty_sequence(self):
+            """Tests adding from an empty sequence ."""
+            self.tree_set.add_all([])
+            self.assertEqual(self.tree_set.size(), 0)
+
+        def test_add_all_multiple_elements(self):
+            """Tests adding from a sequence with multiple elements ."""
+            values = ["C", "A", "F", "G", "I", "B"]
+            original_size = self.tree_set.size()  # Track initial size
+            self.tree_set.add_all(values)
+
+            expected_list = sorted(values)
+            self.assertEqual(self.tree_set.size(), len(expected_list) + original_size)  # Consider initial size
+            self.assertListEqual(list(self.tree_set), expected_list)
+
+        def test_add_all_duplicates(self):
+            """Tests adding from a sequence with duplicates."""
+            values = ["C", "C", "F", "F", "I", "B"]
+            original_size = self.tree_set.size()  # Track initial size
+            self.tree_set.add_all(values)
+
+            expected_list = sorted(set(values))
+
+        def test_remove_from_empty_set(self):
+            """Tests removing from an empty TreeSet."""
+            self.assertFalse(self.tree_set.remove("A"))
+            self.assertEqual(self.tree_set.size(), 0)
+
+        def test_remove_non_existent_element(self):
+            """Tests removing a non-existent element."""
+            self.tree_set.add("C")
+            self.tree_set.add("A")
+
+            self.assertFalse(self.tree_set.remove("B"))
+            self.assertEqual(self.tree_set.size(), 2)
+            self.assertTrue("C" in self.tree_set)
+            self.assertTrue("A" in self.tree_set)
+
+        def test_remove_leaf_node(self):
+            """Tests removing a leaf node."""
+            self.tree_set.add("B")
+            self.tree_set.add("D")
+
+            self.assertTrue(self.tree_set.remove("B"))
+            self.assertEqual(self.tree_set.size(), 1)
+            self.assertFalse("B" in self.tree_set)
+            self.assertTrue("D" in self.tree_set)
+
+        def test_remove_node_with_single_child(self):
+            """Tests removing a node with a single child."""
+            self.tree_set.add("B")
+            self.tree_set.add("D")
+            self.tree_set.add("A")
+
+            self.assertTrue(self.tree_set.remove("B"))
+            self.assertEqual(self.tree_set.size(), 2)
+            self.assertFalse("B" in self.tree_set)
+            self.assertTrue("A" in self.tree_set)
+            self.assertTrue("D" in self.tree_set)
+
+        def test_remove_node_with_two_children(self):
+            """Tests removing a node with two children (replaces with successor)."""
+            self.tree_set.add("B")
+            self.tree_set.add("A")
+            self.tree_set.add("D")
+            self.tree_set.add("C")
+
+            self.assertTrue(self.tree_set.remove("B"))
+            self.assertEqual(self.tree_set.size(), 3)
+            self.assertFalse("B" in self.tree_set)
+            self.assertTrue("A" in self.tree_set)
+            self.assertTrue("C" in self.tree_set)
+            self.assertTrue("D" in self.tree_set)
+
+        def test_remove_root_node(self):
+            """Tests removing the root node ."""
+            self.tree_set.add("B")
+            self.tree_set.add("A")
+            self.tree_set.add("D")
+
+            self.assertTrue(self.tree_set.remove("B"))
+            self.assertEqual(self.tree_set.size(), 2)
+            self.assertFalse("B" in self.tree_set)
+            self.assertTrue("A" in self.tree_set)
+            self.assertTrue("D" in self.tree_set)
+
+
+if __name__ == '__main__':
+    unittest.main()
