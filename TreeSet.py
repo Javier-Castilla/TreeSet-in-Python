@@ -323,37 +323,20 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        parent = None
         current = self.__root
+        other = None
 
         while current:
-            if current.value < value:
-                break
-
-            parent = current
-            current = current.left if value < current.value else current.right
-
-        if not current:
-            current = parent.right
-        else:
-            current = current.right
-
-        parent = None
-
-        while current:
-            parent = current
-            current = current.left if value < current.value else current.right
-
-            if current and value <= current.value:
-                break
-
-        if parent:
-            result = parent.value
-        elif current:
-            result = current.parent.value
-
-        return result if result < value else None
-
+            if value <= current.value:
+                if not current.left:
+                    return other.value if other else None
+                current = current.left
+            else:
+                if not current.right:
+                    return current.value
+                if current.right.value >= value:
+                    other = current
+                current = current.right
 
     def higher(self, value: E) -> Union[E, None]:
         """Returns the contiguous greater element of the given value from the
@@ -364,11 +347,20 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        for i in self:
-            if i > value:
-                return i
+        current = self.__root
+        other = None
 
-        return None
+        while current:
+            if value <= current.value:
+                if not current.left:
+                    return other
+                current = current.left
+            else:
+                if not current.right:
+                    return current.value
+                if current.right.value >= value:
+                    other = current
+                current = current.right
 
     def __check_comparable(self, value: E) -> bool:
         try:
@@ -582,8 +574,8 @@ class TreeSet:
 
     def __eq__(self, other) -> bool:
         if isinstance(other, TreeSet):
-            for node in self:
-                if node.value not in other:
+            for value in self:
+                if value not in other:
                     return False
 
             return True
@@ -652,16 +644,16 @@ if __name__ == "__main__":
     items = [randint(1, 1000) for _ in range(10)]
     #items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
     #items = [Test1() for _ in range(10)]
-    items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
+    #items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
     t = TreeSet(int, items)
     print("Items", items)
     print("Tree:", t)
     print(t.lower(400))
     print(t.lowerNew(400))
     print("===================")
-    t.draw_tree()
+    #t.draw_tree()
 
-    """for _ in range(10):
+    for _ in range(10):
         items = [randint(1, 1000) for _ in range(10)]
         t = TreeSet(int, items)
         print("Items", items)
@@ -669,4 +661,4 @@ if __name__ == "__main__":
         print(t.lower(400))
         print(t.lowerNew(400))
         print("===================")
-        #t.draw_tree()"""
+        #t.draw_tree()
