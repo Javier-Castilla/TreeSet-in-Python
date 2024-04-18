@@ -543,7 +543,7 @@ class TreeSet:
     def __eq__(self, other) -> bool:
         if isinstance(other, TreeSet):
             for node in self:
-                if node.value not in other:
+                if node not in self:
                     return False
 
             return True

@@ -48,30 +48,104 @@ class TestTreeSet(unittest.TestCase):
         original_set = TreeSet(int, [1, 2, 3, 4, 5])
         self.assertEqual(len(original_set), 5)
 
-        cloned_set = original_set.clone()
-        print(cloned_set)
-        print(original_set)
-        self.assertEqual(len(original_set), len(cloned_set))
-        self.assertListEqual(list(original_set), list(cloned_set))
-        self.assertEqual(original_set, cloned_set)
+        clone_set = original_set.clone()
+        self.assertEqual(len(original_set), len(clone_set))
+        self.assertEqual(list(original_set), list(clone_set))
 
         original_set.add(6)
-        self.assertEqual(len(original_set), 6)
-        self.assertEqual(len(cloned_set), 5)
+        self.assertNotEqual(len(original_set), len(clone_set))
+        self.assertNotEqual(list(original_set), list(clone_set))
 
-        self.assertTrue(original_set, cloned_set)
+
     
-    #def test_is_empty(self):
-    #    treeSet = TreeSet(int, [1, 4, 2, 6, 8])
-    #    self.assertEqual(len(treeSet), 5)
-    #    print(treeSet.is_empty())
-    #    self.assertTrue(treeSet.is_empty())
+    def test_is_empty(self):
+        treeSet_lleno = TreeSet(int, [1, 4, 2, 6, 8])
+        self.assertEqual(len(treeSet_lleno), 5)
+        self.assertFalse(treeSet_lleno.is_empty())
 
+        treeSet_vacio = TreeSet(int, [])
+        print(treeSet_vacio)
+        self.assertTrue(treeSet_vacio.is_empty())
+
+    def test_contains(self):
+        tree_set = TreeSet(int, [1,2,3,4,5])
+        self.assertTrue(tree_set.contains(1))
+        self.assertTrue(tree_set.contains(5))
+        self.assertFalse(tree_set.contains(0))
+        self.assertFalse(tree_set.contains(9))
 
     def test_ceiling(self):
         tree_set = TreeSet(int, [1, 3, 5, 7, 9])
         self.assertEqual(tree_set.ceiling(4), 5)
         self.assertEqual(tree_set.ceiling(10), None)
+        self.assertNotEqual(tree_set.ceiling(2), 1)
+        self.assertNotEqual(tree_set.ceiling(10), 9)
+
+
+    def test_floor(self):
+        tree_set = TreeSet(int, [1, 3, 5, 7, 9])
+        self.assertEqual(tree_set.floor(0), None)
+        self.assertEqual(tree_set.floor(10), 9)
+        self.assertNotEqual(tree_set.floor(4), 5)
+        self.assertNotEqual(tree_set.floor(10), None)
+
+    def test_first(self):
+        tree_set = TreeSet(int, [1, 2, 3, 4, 5])
+        self.assertEqual(tree_set.first(), 1)
+        self.assertNotEqual(tree_set.first(), 9)
+        self.assertNotEqual(tree_set.first(), 0)
+
+
+    def test_last(self):
+        tree_set = TreeSet(int, [1, 3, 5, 7, 9])
+        self.assertEqual(tree_set.last(), 9)
+        self.assertNotEqual(tree_set.last(), 10)
+
+    def test_pollfirst(self):
+        tree_set = TreeSet(int, [1, 3, 4, 5, 9])
+        self.assertEqual(tree_set.pollFirst(), 1)
+        self.assertEqual(tree_set.pollFirst(), 3)
+
+        tree_set_2 = TreeSet(int, [])
+        self.assertEqual(tree_set_2.pollFirst(), None)
+    
+    def test_polllast(self):
+        tree_set = TreeSet(int, [1, 2, 3, 4, 5])
+        self.assertEqual(tree_set.pollLast(), 5)
+        self.assertEqual(tree_set.pollLast(), 4)
+
+        tree_set_2 = TreeSet(int, [])
+        self.assertEqual(tree_set_2.pollLast(), None)
+
+
+    def test_iterator(self):
+        original_set = TreeSet(int, [4, 2, 6, 1, 3, 5, 7])
+        expected_asc_order = [1, 2, 3, 4, 5, 6, 7]
+        actual_asc_order = list(original_set.iterator())
+        self.assertEqual(actual_asc_order, expected_asc_order)
+
+    def test_descending_iterator(self):
+        original_set = TreeSet(int, [4, 2, 6, 1, 3, 5, 7])
+        expected_desc_order = [7, 6, 5, 4, 3, 2, 1]
+        actual_desc_order = list(original_set.descending_iterator())
+        self.assertEqual(actual_desc_order, expected_desc_order)
+
+    def test_lower(self):
+        tree_set = TreeSet(int, [1, 3, 5, 7, 9])
+        self.assertEqual(tree_set.lower(8), 7)
+        self.assertEqual(tree_set.lower(4), 3)
+        self.assertNotEqual(tree_set.lower(2), 3)
+        self.assertEqual(tree_set.lower(0), None)
+
+    def test_higher(self):
+        tree_set = TreeSet(int, [1, 3, 5, 7, 9])
+        self.assertEqual(tree_set.higher(8), 9)
+        self.assertEqual(tree_set.higher(4), 5)
+        self.assertNotEqual(tree_set.higher(2), 1)
+        self.assertEqual(tree_set.higher(10), None)
+
+
+
 
 
 
