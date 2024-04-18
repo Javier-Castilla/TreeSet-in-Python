@@ -198,32 +198,6 @@ class TreeNode(Node):
     def __repr__(self) -> str:
         return f"TreeNode({self.value}, {self.color})"
 
-
-    class MyLinkedList:
-        def __init__(self) -> None:
-            self.__first = self.__last = None
-            self.__len = 0
-
-        def append(self, value: Any) -> None:
-            new_node = Node(value)
-
-            if self.is_empty():
-                self.__first = self.__last = new_node
-            else:
-                self.__last.next_node =  new_node
-                self.__last = new_node
-            self.__len += 1
-
-
-        def remove(self, value: Any) -> None:
-
-
-        def is_empty(self):
-            return len(self) == 0
-
-        def __len__(self) -> int:
-            return self.__len
-
 if __name__ == "__main__":
     stack = SimpleQueue()
     stack.enqueue(1)

@@ -219,11 +219,25 @@ class TreeSet:
         to the given element
         :rtype: TreeSet
         """
-        for i in self:
-            if i >= value:
-                return i
+        current = self.__root
+        other = None
 
-        return None
+        while current:
+            if current.value > value:
+                if not current.left:
+                    return current.value
+                if current.left.value < value:
+                    other = current
+                current = current.left
+            elif current.value < value:
+                if not current.right:
+                    if other:
+                        return other.value
+                    else:
+                        return current.value
+                current = current.right
+            else:
+                return current.value
 
     def floor(self, value: E) -> Union[E, None]:
         """Returns the greatest element in this set less than or
@@ -235,11 +249,25 @@ class TreeSet:
         equal to the given element
         :rtype: TreeSet
         """
-        for i in reversed(self):
-            if i <= value:
-                return i
+        current = self.__root
+        other = None
 
-        return None
+        while current:
+            if current.value > value:
+                if not current.left:
+                    if other:
+                        return other.value
+                    else:
+                        return current.value
+                current = current.left
+            elif current.value < value:
+                if not current.right:
+                    return current.value
+                if current.right.value > value:
+                    other = current
+                current = current.right
+            else:
+                return current.value
 
     def first(self) -> E:
         """Returns the lowest element contained in the current TreeSet instance.
@@ -247,6 +275,9 @@ class TreeSet:
         :return: Lowest contained element
         :rtype: E
         """
+        if self.is_empty():
+            return None
+
         return next(self.iterator())
 
     def last(self) -> E:
@@ -256,9 +287,12 @@ class TreeSet:
         :return: Greatest contained element
         :rtype: E
         """
+        if self.is_empty():
+            return None
+
         return next(self.descending_iterator())
 
-    def pollFirst(self):
+    def poll_first(self):
         """Retrieves and removes the first (lowest) element, or returns None
         if this set is empty.
 
@@ -271,7 +305,7 @@ class TreeSet:
         self.remove(item := next(self.iterator()))
         return item
 
-    def pollLast(self):
+    def poll_last(self):
         """Retrieves and removes the first (lowest) element, or returns None
         if this set is empty.
 
@@ -310,7 +344,7 @@ class TreeSet:
         :rtype: Union[E, None]
         """
         if self.is_empty() or self.first() > value:
-            ...
+            return None
 
         current = self.__root
         other = None
@@ -349,7 +383,7 @@ class TreeSet:
                 if current.left.value <= value:
                     other = current
                 current = current.left
-            elif current.value <= value:
+            else:
                 if not current.right:
                     if other:
                         return other.value
@@ -608,43 +642,47 @@ class TreeSet:
 
     def __draw(self):
         fig, ax = plt.subplots()
-        fig.subplots_adjust(left=0, bottom=0, right=1, top=1) # Ajustar los márgenes del subplot
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1)  # Ajustar los márgenes del subplot
         self.__draw_node(ax, self.__root)
         self.__draw_edges(ax, self.__root)
-        ax.axis('off') # Ocultar ejes
+        ax.axis('off')  # Ocultar ejes
         plt.show()
 
     def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
         if node is not None:
             color = "red" if node.color == self.RED else "black"
-            ax.plot([x], [y], marker='o', markersize=40, color=color, zorder=2) # Dibujar nodo con un tamaño mayor y detrás de las líneas
-            ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center', color='white', zorder=3) # Etiquetar nodo
+            ax.plot([x], [y], marker='o', markersize=40, color=color,
+                    zorder=2)  # Dibujar nodo con un tamaño mayor y detrás de las líneas
+            ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center', color='white',
+                    zorder=3)  # Etiquetar nodo
             if node.left:
-                self.__draw_node(ax, node.left, x-dx, y-dy, dx/2, dy*2)
+                self.__draw_node(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
             if node.right:
-                self.__draw_node(ax, node.right, x+dx, y-dy, dx/2, dy*2)
+                self.__draw_node(ax, node.right, x + dx, y - dy, dx / 2, dy * 2)
 
     def __draw_edges(self, ax, node, x=0, y=0, dx=1, dy=1):
         if node is not None:
             if node.left:
-                ax.plot([x, x-dx], [y, y-dy], color='black', zorder=1) # Dibujar conexión izquierda en negro y detrás de los nodos
-                self.__draw_edges(ax, node.left, x-dx, y-dy, dx/2, dy*2)
+                ax.plot([x, x - dx], [y, y - dy], color='black',
+                        zorder=1)  # Dibujar conexión izquierda en negro y detrás de los nodos
+                self.__draw_edges(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
             if node.right:
-                ax.plot([x, x+dx], [y, y-dy], color='black', zorder=1) # Dibujar conexión derecha en negro y detrás de los nodos
-                self.__draw_edges(ax, node.right, x+dx, y-dy, dx/2, dy*2)
+                ax.plot([x, x + dx], [y, y - dy], color='black',
+                        zorder=1)  # Dibujar conexión derecha en negro y detrás de los nodos
+                self.__draw_edges(ax, node.right, x + dx, y - dy, dx / 2, dy * 2)
 
 
 if __name__ == "__main__":
     items = [randint(1, 1000) for _ in range(10)]
-    #items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-    #items = [Test1() for _ in range(10)]
-    #items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
+    # items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+    # items = [Test1() for _ in range(10)]
+    # items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
     t = TreeSet(int, items)
     print("Items", items)
     print("Tree:", t)
     print(t.lower(400))
     print("===================")
-    #t.draw_tree()
+    # t.draw_tree()
 
     for _ in range(10):
         items = [randint(1, 1000) for _ in range(10)]
@@ -653,4 +691,4 @@ if __name__ == "__main__":
         print("Tree:", t)
         print(t.lower(400))
         print("===================")
-        #t.draw_tree()
+        # t.draw_tree()
