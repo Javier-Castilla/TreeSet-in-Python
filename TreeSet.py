@@ -10,6 +10,7 @@ from data_utils import *
 from treeset_exceptions import *
 import matplotlib.pyplot as plt
 import tkinter as tk
+from test_classes import *
 
 E = TypeVar('E')
 
@@ -177,6 +178,7 @@ class TreeSet:
     def clear(self) -> None:
         """Clears the TreeSet from all its inserted elements."""
         self.__root = None
+        self.__size = 0
 
     def clone(self) -> 'TreeSet':
         """Clones the current TreeSet and returns that clone.
@@ -208,6 +210,63 @@ class TreeSet:
         :rtype: bool
         """
         return value in self
+
+    def lower(self, value: E) -> Union[E, None]:
+        """Returns the contiguous lower element of the given value from the
+        TreeSet.
+
+        :param value: Value to compare
+        :return: Greatest element lower than the given value. If it was not
+            possible, None will be returned.
+        :rtype: Union[E, None]
+        """
+        if self.is_empty() or self.first() > value:
+            return None
+
+        current = self.__root
+        other = None
+
+        while current:
+            if value <= current.value:
+                if not current.left:
+                    return other.value if other else None
+                current = current.left
+            else:
+                if not current.right:
+                    return current.value
+                if current.right.value >= value:
+                    other = current
+                current = current.right
+
+    def higher(self, value: E) -> Union[E, None]:
+        """Returns the contiguous greater element of the given value from the
+        TreeSet.
+
+        :param value: Value to compare
+        :return: Lowest element greater than the given value. If it was not
+            possible, None will be returned.
+        :rtype: Union[E, None]
+        """
+        if self.is_empty() or self.last() < value:
+            return None
+
+        current = self.__root
+        other = None
+
+        while current:
+            if current.value > value:
+                if not current.left:
+                    return current.value
+                if current.left.value <= value:
+                    other = current
+                current = current.left
+            else:
+                if not current.right:
+                    if other:
+                        return other.value
+                    else:
+                        return None
+                current = current.right
 
     def ceiling(self, value: E) -> Union[E, None]:
         """Returns the least element in this set greater than
@@ -333,63 +392,6 @@ class TreeSet:
         :rtype: Iterator[E]
         """
         return iter(reversed(self))
-
-    def lower(self, value: E) -> Union[E, None]:
-        """Returns the contiguous lower element of the given value from the
-        TreeSet.
-
-        :param value: Value to compare
-        :return: Greatest element lower than the given value. If it was not
-            possible, None will be returned.
-        :rtype: Union[E, None]
-        """
-        if self.is_empty() or self.first() > value:
-            return None
-
-        current = self.__root
-        other = None
-
-        while current:
-            if value <= current.value:
-                if not current.left:
-                    return other.value if other else None
-                current = current.left
-            else:
-                if not current.right:
-                    return current.value
-                if current.right.value >= value:
-                    other = current
-                current = current.right
-
-    def higher(self, value: E) -> Union[E, None]:
-        """Returns the contiguous greater element of the given value from the
-        TreeSet.
-
-        :param value: Value to compare
-        :return: Lowest element greater than the given value. If it was not
-            possible, None will be returned.
-        :rtype: Union[E, None]
-        """
-        if self.is_empty() or self.last() < value:
-            return None
-
-        current = self.__root
-        other = None
-
-        while current:
-            if current.value > value:
-                if not current.left:
-                    return current.value
-                if current.left.value <= value:
-                    other = current
-                current = current.left
-            else:
-                if not current.right:
-                    if other:
-                        return other.value
-                    else:
-                        return None
-                current = current.right
 
     def __check_comparable(self, value: E) -> bool:
         try:
@@ -562,7 +564,7 @@ class TreeSet:
         other.right = node
         node.parent = other
 
-    def __insertion_order(self):
+    def __insertion_order(self) -> None:
         current = self.__first
         while current:
             yield current
@@ -579,18 +581,18 @@ class TreeSet:
         for node in self.__inorder(True):
             yield node.value
 
-    def __inorder(self, reversed: bool) -> E:
+    def __inorder(self, reverse: bool) -> E:
         stack = SimpleStack()
         current = self.__root
 
         while True:
             if current:
                 stack.push(current)
-                current = current.left if not reversed else current.right
+                current = current.left if not reverse else current.right
             elif not stack.is_empty():
                 current = stack.pull()
                 yield current
-                current = current.right if not reversed else current.left
+                current = current.right if not reverse else current.left
             else:
                 break
 
@@ -613,20 +615,48 @@ class TreeSet:
     def draw_tree(self):
         root = tk.Tk()
         root.title("Árbol Rojo-Negro")
-        root.geometry("200x80")
+        root.geometry("400x200")
         root.resizable(False, False)
 
-        number = tk.StringVar()
-        number.set("0")  # Valor inicial del número
+        value = tk.StringVar()
+        value.set("")
 
-        label = tk.Label(root, text="Número de elementos:")
-        label.pack()
+        label = tk.Label(root, text="Nodo:")
+        label.grid(row=0, column=0)
 
-        entry = tk.Entry(root, textvariable=number)
-        entry.pack()
+        entry = tk.Entry(root, textvariable=value)
+        entry.grid(row=1, column=0)
 
-        button = tk.Button(root, text="Dibujar Árbol Aleatorio", command=lambda: self.__draw_random_tree(number))
-        button.pack()
+        buttons = list()
+
+        insert = tk.Button(root, text="Insertar Valor", command=lambda: (self.add(int(value.get())), plt.close('all'), self.__draw()))
+        buttons.append(insert)
+        delete = tk.Button(root, text="Eliminar Valor", command=lambda: (self.remove(int(value.get())), plt.close('all'), self.__draw()))
+        buttons.append(delete)
+        clear = tk.Button(root, text="Borrar Árbol", command=lambda: (self.clear(), plt.close('all'), self.__draw()))
+        buttons.append(clear)
+        lower = tk.Button(root, text="Lower", command=lambda: (print(self.lower(int(value.get())))))
+        buttons.append(lower)
+        higher = tk.Button(root, text="Higher", command=lambda: (print(self.higher(int(value.get())))))
+        buttons.append(higher)
+        ceiling = tk.Button(root, text="Ceiling", command=lambda: (print(self.ceiling(int(value.get())))))
+        buttons.append(ceiling)
+        floor = tk.Button(root, text="Floor", command=lambda: (print(self.floor(int(value.get())))))
+        buttons.append(floor)
+        first = tk.Button(root, text="First", command=lambda: (print(self.first())))
+        buttons.append(first)
+        last = tk.Button(root, text="Last", command=lambda: (print(self.last())))
+        buttons.append(last)
+        poll_first = tk.Button(root, text="Poll First", command=lambda: (print(self.poll_first()), plt.close('all'), self.__draw()))
+        buttons.append(poll_first)
+        poll_last = tk.Button(root, text="Poll Last", command=lambda: (print(self.poll_last()), plt.close('all'), self.__draw()))
+        buttons.append(poll_last)
+        size = tk.Button(root, text="Size", command=lambda: (print(len(self))))
+
+        row = 0
+        for button in buttons:
+            button.grid(row=row, column=1)
+            row += 1
 
         root.mainloop()
 
@@ -680,15 +710,22 @@ if __name__ == "__main__":
     t = TreeSet(int, items)
     print("Items", items)
     print("Tree:", t)
-    print(t.lower(400))
+    print(t.lower(0))
     print("===================")
-    # t.draw_tree()
+    #t.draw_tree()
 
-    for _ in range(10):
-        items = [randint(1, 1000) for _ in range(10)]
-        t = TreeSet(int, items)
-        print("Items", items)
-        print("Tree:", t)
-        print(t.lower(400))
-        print("===================")
-        # t.draw_tree()
+    t = TreeSet(Test3)
+    t.add(Test3())
+
+    def loop_test():
+        t = TreeSet(int)
+        for _ in range(10):
+            items = [randint(1, 1000) for _ in range(10)]
+            t = TreeSet(int, items)
+            print("Items", items)
+            print("Tree:", t)
+            print(t.lower(0))
+            print("===================")
+            # t.draw_tree()
+
+    #loop_test()
