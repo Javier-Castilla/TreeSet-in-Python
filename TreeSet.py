@@ -234,6 +234,8 @@ class TreeSet:
         """
         node = self.__root
         aux = None
+        if self.is_empty() or self.last() < value:
+            return None
         while(True):
             if node.value > value:
                 if not node.left:
@@ -263,9 +265,10 @@ class TreeSet:
         """
         node = self.__root
         aux = None
-        if self.first() < value:
+        if self.is_empty() or self.first > value:
             return None
         while(True):
+            print(node)
             if node.value > value:
                 if not node.left:
                     if aux != None:
@@ -353,6 +356,8 @@ class TreeSet:
         
         node = self.__root
         aux = None
+        if self.is_empty() or self.first() > value:
+            return None
         while(True):
             if node.value >= value:
                 if not node.left:
@@ -380,6 +385,8 @@ class TreeSet:
         """
         node = self.__root
         aux = None
+        if self.is_empty() or self.first() > value:
+            return None
         while(True):
             if node.value > value:
                 if not node.left:
@@ -618,30 +625,60 @@ class TreeSet:
     def draw_buttons(self):
         root = tk.Tk()
         root.title("Árbol Rojo-Negro")
-        root.geometry("200x100")
+        root.geometry("400x200")
         root.resizable(False, False)
 
         node = tk.StringVar()
         node.set("0")  # Valor inicial del número
 
-        label = tk.Label(root, text="Nodo a Insertar:")
-        label.pack()
+        label = tk.Label(root, text="Nodo a Tratar:")
+
 
         entry = tk.Entry(root, textvariable=node)
-        entry.pack()
+        
 
-        button = tk.Button(root, text="Insertar Nodo", command=lambda: [self.add(int(node.get())), plt.close('all'), self.draw_tree()])
-        button.pack()
+        insert_button = tk.Button(root, text="Insertar Nodo", command=lambda: [self.add(int(node.get())), plt.close('all'), self.draw_tree()])
+        delete_button = tk.Button(root, text="Eliminar Nodo", command=lambda: [self.remove(int(node.get())), plt.close('all'), self.draw_tree()])
+        clear_button = tk.Button(root, text="Borrar Árbol", command=lambda: [self.clear(), plt.close('all'), self.draw_tree()])
+        lower_button = tk.Button(root, text="Lower", command=lambda: [print(self.lower(int(node.get())))])
+        higher_button = tk.Button(root, text="Higher", command=lambda: [print(self.higher(int(node.get())))])
+        ceiling_button = tk.Button(root, text="Ceiling", command=lambda: [print(self.ceiling(int(node.get())))])
+        floor_button = tk.Button(root, text="Floor", command=lambda: [print(self.floor(int(node.get())))])
+        contains_button = tk.Button(root, text="Contains", command=lambda: [print(self.contains(int(node.get())))])
+        first_button = tk.Button(root, text="First", command=lambda: [print(self.first())])
+        last_button = tk.Button(root, text="Last", command=lambda: [print(self.last())])
+        isEmpty_button = tk.Button(root, text="IsEmpty", command=lambda: [print(self.is_empty())])
+        Pollfirst_button = tk.Button(root, text="Poll_first_button", command=lambda: [print(self.pollFirst()), plt.close('all'), self.draw_tree()])
+        Polllast_button = tk.Button(root, text="Poll_last_button", command=lambda: [print(self.pollLast()), plt.close('all'), self.draw_tree()])
+        size_button = tk.Button(root, text="Size", command=lambda: [print(self.size())])
+        
+        label.grid(row=0,column=0)
+        entry.grid(row=0,column=1)   
+        
+        insert_button.grid(row=2,column=0)
+        delete_button.grid(row=2,column=1)  
+        clear_button.grid(row=2,column=2)    
 
-        button2 = tk.Button(root, text="Eliminar Nodo", command=lambda: [self.remove(int(node.get())), plt.close('all'), self.draw_tree()])
-        button2.pack()
+        lower_button.grid(row=3,column=0)
+        higher_button.grid(row=3,column=1)  
+        ceiling_button.grid(row=3,column=2) 
+        floor_button.grid(row=3,column=3)  
 
+        contains_button.grid(row=4,column=0)
+        first_button.grid(row=4,column=1)  
+        last_button.grid(row=4,column=2) 
+        isEmpty_button.grid(row=4,column=3)    
+
+        Pollfirst_button.grid(row=5,column=0)
+        Polllast_button.grid(row=5,column=1)  
+        size_button.grid(row=5,column=2) 
+
+        self.draw_tree()
         root.mainloop()
 
     def draw_tree(self):
         fig, ax = plt.subplots()
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
-        print(self.__root.value)
         self.__draw_node(ax, self.__root)
         self.__draw_edges(ax, self.__root)
         plt.show()
