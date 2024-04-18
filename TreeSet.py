@@ -7,6 +7,7 @@ in a red-black tree data structure.
 
 from random import randint
 from data_utils import *
+from treeset_exceptions import *
 import matplotlib.pyplot as plt
 import tkinter as tk
 
@@ -67,7 +68,7 @@ class TreeSet:
             f"Value type must be '{self.class_type}'"
 
         if not self.__check_comparable(value):
-            raise TypeError(f"class {type(value)} cannot be compared")
+            raise NonComparableObject(f"class {type(value)} cannot be compared")
 
         new_node = TreeNode(value, TreeSet.RED)
 
@@ -308,21 +309,9 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        for i in reversed(self):
-            if i < value:
-                return i
+        if self.is_empty() or self.first() > value:
+            ...
 
-        return None
-
-    def lowerNew(self, value: E) -> Union[E, None]:
-        """Returns the contiguous lower element of the given value from the
-        TreeSet.
-
-        :param value: Value to compare
-        :return: Greatest element lower than the given value. If it was not
-            possible, None will be returned.
-        :rtype: Union[E, None]
-        """
         current = self.__root
         other = None
 
@@ -347,28 +336,33 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
+        if self.is_empty() or self.last() < value:
+            return None
+
         current = self.__root
         other = None
 
         while current:
-            if value <= current.value:
+            if current.value > value:
                 if not current.left:
-                    return other
-                current = current.left
-            else:
-                if not current.right:
                     return current.value
-                if current.right.value >= value:
+                if current.left.value <= value:
                     other = current
+                current = current.left
+            elif current.value <= value:
+                if not current.right:
+                    if other:
+                        return other.value
+                    else:
+                        return None
                 current = current.right
 
     def __check_comparable(self, value: E) -> bool:
         try:
-            value == value
             value < value
             value > value
             return True
-        except:
+        except TypeError:
             return False
 
     def __contains(self, value: E) -> TreeNode:
@@ -649,7 +643,6 @@ if __name__ == "__main__":
     print("Items", items)
     print("Tree:", t)
     print(t.lower(400))
-    print(t.lowerNew(400))
     print("===================")
     #t.draw_tree()
 
@@ -659,6 +652,5 @@ if __name__ == "__main__":
         print("Items", items)
         print("Tree:", t)
         print(t.lower(400))
-        print(t.lowerNew(400))
         print("===================")
         #t.draw_tree()
