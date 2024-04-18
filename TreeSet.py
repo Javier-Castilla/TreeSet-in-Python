@@ -263,6 +263,8 @@ class TreeSet:
         """
         node = self.__root
         aux = None
+        if self.first() < value:
+            return None
         while(True):
             if node.value > value:
                 if not node.left:
@@ -612,7 +614,30 @@ class TreeSet:
             return True
         else:
             return False
-        
+    
+    def draw_buttons(self):
+        root = tk.Tk()
+        root.title("Árbol Rojo-Negro")
+        root.geometry("200x100")
+        root.resizable(False, False)
+
+        node = tk.StringVar()
+        node.set("0")  # Valor inicial del número
+
+        label = tk.Label(root, text="Nodo a Insertar:")
+        label.pack()
+
+        entry = tk.Entry(root, textvariable=node)
+        entry.pack()
+
+        button = tk.Button(root, text="Insertar Nodo", command=lambda: [self.add(int(node.get())), plt.close('all'), self.draw_tree()])
+        button.pack()
+
+        button2 = tk.Button(root, text="Eliminar Nodo", command=lambda: [self.remove(int(node.get())), plt.close('all'), self.draw_tree()])
+        button2.pack()
+
+        root.mainloop()
+
     def draw_tree(self):
         fig, ax = plt.subplots()
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
