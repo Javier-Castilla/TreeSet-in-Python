@@ -178,7 +178,7 @@ class TestInt(unittest.TestCase):
         def test_ceiling_elements_only_smaller(self):
             """Test ceiling method when set contains only elements smaller than the given value."""
             self.tree_set.add_all([2, 5, 7])
-            #self.assertEqual(self.tree_set.ceiling(10), None)
+            self.assertEqual(self.tree_set.ceiling(10), None)
 
         def test_floor_empty_set(self):
             """Test floor method on an empty set."""
@@ -187,7 +187,7 @@ class TestInt(unittest.TestCase):
         def test_floor_smaller_than_min(self):
             """Test floor method when the value is smaller than the minimum value in the set."""
             self.tree_set.add(5)
-            #self.assertEqual(self.tree_set.floor(3), None)
+            self.assertEqual(self.tree_set.floor(3), None)
 
         def test_floor_equal_to_value_in_set(self):
             """Test floor method when the value is equal to a value in the set."""
@@ -244,6 +244,86 @@ class TestInt(unittest.TestCase):
             self.assertEqual(self.tree_set.size(), 0)
             self.assertEqual(list(self.tree_set), [])
 
+        def test_iterator_multiple_elements(self):
+            """Test iterator  method for multiple elements."""
+            self.tree_set.add_all([15, 20, 25])
+            elements = [elem for elem in self.tree_set.iterator()]
+            self.assertListEqual(elements, [15, 20, 25])
+
+        def test_iterator_empty_set(self):
+            """Test iterator method on an empty set."""
+            elements = [elem for elem in self.tree_set.iterator()]
+            self.assertListEqual(elements, [])
+
+        def test_iterator_single_element(self):
+            """Test iterator method with a single element."""
+            self.tree_set.add(10)
+            elements = [elem for elem in self.tree_set.iterator()]
+            self.assertListEqual(elements, [10])
+
+        def test_descending_iterator_empty_set(self):
+            """Test descending_iterator method on an empty set."""
+            elements = [elem for elem in self.tree_set.descending_iterator()]
+            self.assertListEqual(elements, [])
+
+        def test_descending_iterator_single_element(self):
+            """Test descending_iterator method with a single element."""
+            self.tree_set.add(10)
+            elements = [elem for elem in self.tree_set.descending_iterator()]
+            self.assertListEqual(elements, [10])
+
+
+        def test_descending_iterator_multiples_elements(self):
+            """Test descending_iterator method with multiple elements."""
+            self.tree_set.add_all([12, 13, 30])
+            elements = [elem for elem in self.tree_set.descending_iterator()]
+            self.assertListEqual(elements, [30, 13, 12])
+
+        def test_lower_empty(self):
+            """Test lower that an empty set"""
+            self.assertIsNone(self.tree_set.lower(10))
+
+        def test_lower_smaller_than_min(self):
+            """Test lower method when the value is smaller than the minimum value in the set."""
+            self.tree_set.add(5)
+            self.assertIsNone(self.tree_set.lower(3))
+
+        def test_lower_equal_to_value_in_set(self):
+            """Test lower method when the value is equal to a value in the set."""
+            self.tree_set.add_all([5, 10])
+            self.assertEqual(self.tree_set.lower(5), None)
+
+        def test_lower_greater_than_max(self):
+            """Test lower method when the value is greater than the maximum value in the set."""
+            self.tree_set.add(5)
+            self.tree_set.add(10)
+            self.assertEqual(self.tree_set.lower(15), 10)
+
+        def test_lower_between_values(self):
+            """Test lower method when the value is between two values in the set."""
+            self.tree_set.add(5)
+            self.tree_set.add(10)
+            self.tree_set.add(15)
+            self.assertEqual(self.tree_set.lower(12), 10)
+
+        def test_higher_empty_set(self):
+            """Test higher method on an empty set."""
+            self.assertIsNone(self.tree_set.higher(10))
+
+        def test_higher_greater_than_max(self):
+            """Test higher method when the value is greater than the maximum value in the set."""
+            self.tree_set.add_all([5, 10, 15])
+            self.assertIsNone(self.tree_set.higher(20))
+
+        def test_higher_elements_greater_than_value(self):
+            """Test higher method when set contains elements greater than the given value."""
+            self.tree_set.add_all([5, 10, 15])
+            self.assertEqual(self.tree_set.higher(8), 10)
+
+        def test_higher_elements_only_smaller(self):
+            """Test higher method when set contains only elements smaller than the given value."""
+            self.tree_set.add_all([2, 5, 7])
+            self.assertEqual(self.tree_set.higher(10), None)
 
 if __name__ == '__main__':
     unittest.main()
