@@ -69,7 +69,7 @@ class TreeSet:
             f"Value type must be '{self.class_type}'"
 
         if not self.__check_comparable(value):
-            raise NonComparableObject(f"class {type(value)} cannot be compared")
+            raise NonComparableObjectError(f"class {type(value)} cannot be compared")
 
         new_node = TreeNode(value, TreeSet.RED)
 
@@ -84,12 +84,12 @@ class TreeSet:
             if parent:
                 new_node.parent = parent
 
-            if len(self) == 0:
+            if self.is_empty():
                 self.__first = self.__last = new_node
             else:
-
                 self.__last.next_node = new_node
                 new_node.previous_node = self.__last
+                self.__last = new_node
 
         else:
             return False
@@ -175,6 +175,9 @@ class TreeSet:
         self.__fix_removal(successor if successor else root)
         return True
 
+    def size(self) -> int:
+        return self.__size
+
     def clear(self) -> None:
         """Clears the TreeSet from all its inserted elements."""
         self.__root = None
@@ -187,8 +190,8 @@ class TreeSet:
         :rtype: TreeSet
         """
         clone_tree = TreeSet(self.class_type)
-        for value in self:
-            clone_tree.add(value)
+        for value in self.insertion_order():
+            clone_tree.add(value.value)
 
         return clone_tree
 
@@ -335,7 +338,7 @@ class TreeSet:
         :rtype: E
         """
         if self.is_empty():
-            return None
+            raise NoSuchElementError()
 
         return next(self.iterator())
 
@@ -347,11 +350,11 @@ class TreeSet:
         :rtype: E
         """
         if self.is_empty():
-            return None
+            raise NoSuchElementError()
 
         return next(self.descending_iterator())
 
-    def poll_first(self):
+    def poll_first(self) -> E:
         """Retrieves and removes the first (lowest) element, or returns None
         if this set is empty.
 
@@ -359,19 +362,19 @@ class TreeSet:
         :rtype: Union[E, None]
         """
         if self.is_empty():
-            return None
+            raise NoSuchElementError()
 
         self.remove(item := next(self.iterator()))
         return item
 
-    def poll_last(self):
+    def poll_last(self) -> E:
         """Retrieves and removes the first (lowest) element, or returns None
         if this set is empty.
 
         :return: The first (lowest) element, or None if this set is empty
         :rtype: Union[E, None]"""
         if self.is_empty():
-            return None
+            raise NoSuchElementError()
 
         self.remove(item := next(self.descending_iterator()))
         return item
@@ -564,7 +567,7 @@ class TreeSet:
         other.right = node
         node.parent = other
 
-    def __insertion_order(self) -> None:
+    def insertion_order(self) -> E:
         current = self.__first
         while current:
             yield current
@@ -707,16 +710,11 @@ if __name__ == "__main__":
     # items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
     # items = [Test1() for _ in range(10)]
     # items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
-    t = TreeSet(int, items)
-    print("Items", items)
-    print("Tree:", t)
-    print(t.lower(0))
-    print("===================")
+    t = TreeSet(int, set([num for num in range(10)]))
     #t.draw_tree()
-
-    t = TreeSet(Test3)
-    t.add(Test3())
-
+    #t = TreeSet(Test3)
+    #t.add(Test3())
+    print(t)
     def loop_test():
         t = TreeSet(int)
         for _ in range(10):
