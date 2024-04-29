@@ -25,22 +25,18 @@ class TestManyItemsTreeSet(unittest.TestCase):
 
     def test_higher(self):
         for index, item in enumerate(self.ordered_items[:-1]):
-            print(index, item)
             self.assertEqual(self.tree.higher(item), self.ordered_items[index + 1], "Wrong higher value")
 
     def test_lower(self):
         for index, item in enumerate(self.ordered_items[1:]):
-            print(index, item)
-            self.assertEqual(self.tree.higher(item), self.ordered_items[index - 1], "Wrong lower value")
+            self.assertEqual(self.tree.lower(item), self.ordered_items[index], "Wrong lower value")
 
     def test_ceiling(self):
-        for index, item in enumerate(self.ordered_items[1:]):
-            print(index, item)
+        for index, item in enumerate(self.ordered_items):
             self.assertEqual(self.tree.ceiling(item), self.ordered_items[index], "Wrong ceiling value")
 
     def test_floor(self):
-        for index, item in enumerate(self.ordered_items[1:]):
-            print(index, item)
+        for index, item in enumerate(self.ordered_items):
             self.assertEqual(self.tree.floor(item), self.ordered_items[index], "Wrong ceiling value")
 
     def test_first(self):
@@ -51,6 +47,7 @@ class TestManyItemsTreeSet(unittest.TestCase):
 
     def test_poll_first(self):
         items_len = self.tree.size()
+
         for index in range(items_len):
             self.assertEqual(self.tree.poll_first(), self.ordered_items[index], "Wrong deleted first value from TreeSet")
 
@@ -59,8 +56,8 @@ class TestManyItemsTreeSet(unittest.TestCase):
     def test_poll_last(self):
         items_len = self.tree.size()
 
-        for index in range(self.tree.size()):
-            self.assertEqual(self.tree.poll_first(), self.ordered_items[items_len - index], "Wrong deleted last value from TreeSet")
+        for index in range(items_len - 1, -1, -1):
+            self.assertEqual(self.tree.poll_last(), self.ordered_items[index], "Wrong deleted last value from TreeSet")
 
         self.assertEqual(self.tree.size(), 0, "TreeSet size must be 0 after deleting all items")
 
