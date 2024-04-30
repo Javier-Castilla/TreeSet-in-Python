@@ -28,7 +28,32 @@ class TreeSet:
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
 
-    def __init__(self, generic_type: Any, sequence: Collection[E] = None) -> None:
+    def __type_validation(function):
+        """Decorator used to validate item type when adding or deleting it from a TreeSet.
+        This decorator should not be used with other object instance but a TreeSet.
+
+        :param function: function used of the TreeSet
+        :return: function return statement
+        """
+        def check_comparable(value: E) -> bool:
+            return value.__eq__ is not object.__eq__ \
+                and value.__lt__ is not object.__lt__ \
+                and value.__gt__ is not object.__gt__
+
+        def wrapper(self, item):
+            assert type(item) == self.class_type(), \
+                f"Value type must be '{self.class_type()}'"
+
+            if not check_comparable(item):
+                raise NonComparableObjectError(
+                    f"class {type(item)} cannot be compared")
+
+            return function(self, item)
+
+        return wrapper
+
+    def __init__(self, generic_type: Any,
+                 sequence: Collection[E] = None) -> None:
         """
         Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
@@ -41,20 +66,21 @@ class TreeSet:
         """
         self.__root = self.__first = self.__last = None
         self.__size = 0
-        self.class_type = generic_type
+        self.__class_type = generic_type
 
         if sequence:
             if isinstance(sequence, Collection):
                 if len(set(map(type, sequence))) != 1:
                     raise TypeError("Sequence elements type must be the same")
 
-                if type(next(iter(sequence))) != self.class_type:
+                if type(next(iter(sequence))) != self.__class_type:
                     raise TypeError(
-                        f"Expected elements of type {self.class_type} ")
+                        f"Expected elements of type {self.__class_type} ")
 
                 for item in sequence:
                     self.add(item)
 
+    @__type_validation
     def add(self, value: E) -> bool:
         """Inserts the given value into the TreeSet if value is not contained.
 
@@ -65,12 +91,6 @@ class TreeSet:
         :raises AssertionError: If the given value's type does not match generic
         type
         """
-        assert type(value) == self.class_type, \
-            f"Value type must be '{self.class_type}'"
-
-        if not self.__check_comparable(value):
-            raise NonComparableObjectError(f"class {type(value)} cannot be compared")
-
         new_node = TreeNode(value, TreeSet.RED)
 
         if (parent := self.__contains(value)) != new_node:
@@ -115,6 +135,7 @@ class TreeSet:
 
         return len(self) != old_size
 
+    @__type_validation
     def remove(self, value: E) -> bool:
         """Deletes the given value from the TreeSet if contained.
 
@@ -189,9 +210,9 @@ class TreeSet:
         :return: A shallow copy of the current TreeSet instance
         :rtype: TreeSet
         """
-        clone_tree = TreeSet(self.class_type)
-        for value in self.insertion_order():
-            clone_tree.add(value.value)
+        clone_tree = TreeSet(self.__class_type)
+        for node in self.insertion_order():
+            clone_tree.add(node.value)
 
         return clone_tree
 
@@ -214,16 +235,7 @@ class TreeSet:
         """
         return value in self
 
-    def tree_type(self, function):
-        def wrapper(self, item):
-            assert type(item) == cls.class_type, \
-                f"Value type must be '{cls.class_type}'"
-
-            function(item)
-
-        return wrapper
-
-    @tree_type
+    @__type_validation
     def lower(self, value: E) -> Union[E, None]:
         """Returns the contiguous lower element of the given value from the
         TreeSet.
@@ -251,6 +263,7 @@ class TreeSet:
                     other = current
                 current = current.right
 
+    @__type_validation
     def higher(self, value: E) -> Union[E, None]:
         """Returns the contiguous greater element of the given value from the
         TreeSet.
@@ -260,9 +273,6 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        assert type(value) == self.class_type, \
-            f"Value type must be '{self.class_type}'"
-
         if self.is_empty() or self.last() < value:
             return None
 
@@ -284,6 +294,7 @@ class TreeSet:
                         return None
                 current = current.right
 
+    @__type_validation
     def ceiling(self, value: E) -> Union[E, None]:
         """Returns the least element in this set greater than
         or equal to the given element, or null if there is no
@@ -294,6 +305,9 @@ class TreeSet:
         to the given element
         :rtype: TreeSet
         """
+        if self.is_empty() or self.last() < value:
+            return None
+
         current = self.__root
         other = None
 
@@ -314,6 +328,9 @@ class TreeSet:
             else:
                 return current.value
 
+        return None
+
+    @__type_validation
     def floor(self, value: E) -> Union[E, None]:
         """Returns the greatest element in this set less than or
           equal to the given element, or null if there is no such
@@ -324,6 +341,9 @@ class TreeSet:
         equal to the given element
         :rtype: TreeSet
         """
+        if self.is_empty() or self.first() > value:
+            return None
+
         current = self.__root
         other = None
 
@@ -408,9 +428,6 @@ class TreeSet:
         :rtype: Iterator[E]
         """
         return iter(reversed(self))
-
-    def __check_comparable(self, value: E) -> bool:
-        return getattr(value, "__eq__") is not object.__eq__
 
     def __contains(self, value: E) -> TreeNode:
         if not len(self):
@@ -623,6 +640,9 @@ class TreeSet:
         else:
             return False
 
+    def class_type(self) -> type[E]:
+        return self.__class_type
+
     def draw_tree(self):
         root = tk.Tk()
         root.title("Árbol Rojo-Negro")
@@ -641,30 +661,45 @@ class TreeSet:
         buttons = list()
 
         insert = tk.Button(root, text="Insertar Valor",
-                           command=lambda: (self.add(int(value.get())), plt.close('all'), self.__draw()))
+                           command=lambda: (
+                           self.add(int(value.get())), plt.close('all'),
+                           self.__draw()))
         buttons.append(insert)
         delete = tk.Button(root, text="Eliminar Valor",
-                           command=lambda: (self.remove(int(value.get())), plt.close('all'), self.__draw()))
+                           command=lambda: (
+                           self.remove(int(value.get())), plt.close('all'),
+                           self.__draw()))
         buttons.append(delete)
-        clear = tk.Button(root, text="Borrar Árbol", command=lambda: (self.clear(), plt.close('all'), self.__draw()))
+        clear = tk.Button(root, text="Borrar Árbol", command=lambda: (
+        self.clear(), plt.close('all'), self.__draw()))
         buttons.append(clear)
-        lower = tk.Button(root, text="Lower", command=lambda: (print(self.lower(int(value.get())))))
+        lower = tk.Button(root, text="Lower",
+                          command=lambda: (print(self.lower(int(value.get())))))
         buttons.append(lower)
-        higher = tk.Button(root, text="Higher", command=lambda: (print(self.higher(int(value.get())))))
+        higher = tk.Button(root, text="Higher", command=lambda: (
+            print(self.higher(int(value.get())))))
         buttons.append(higher)
-        ceiling = tk.Button(root, text="Ceiling", command=lambda: (print(self.ceiling(int(value.get())))))
+        ceiling = tk.Button(root, text="Ceiling", command=lambda: (
+            print(self.ceiling(int(value.get())))))
         buttons.append(ceiling)
-        floor = tk.Button(root, text="Floor", command=lambda: (print(self.floor(int(value.get())))))
+        floor = tk.Button(root, text="Floor",
+                          command=lambda: (print(self.floor(int(value.get())))))
         buttons.append(floor)
-        first = tk.Button(root, text="First", command=lambda: (print(self.first())))
+        first = tk.Button(root, text="First",
+                          command=lambda: (print(self.first())))
         buttons.append(first)
-        last = tk.Button(root, text="Last", command=lambda: (print(self.last())))
+        last = tk.Button(root, text="Last",
+                         command=lambda: (print(self.last())))
         buttons.append(last)
         poll_first = tk.Button(root, text="Poll First",
-                               command=lambda: (print(self.poll_first()), plt.close('all'), self.__draw()))
+                               command=lambda: (
+                               print(self.poll_first()), plt.close('all'),
+                               self.__draw()))
         buttons.append(poll_first)
         poll_last = tk.Button(root, text="Poll Last",
-                              command=lambda: (print(self.poll_last()), plt.close('all'), self.__draw()))
+                              command=lambda: (
+                              print(self.poll_last()), plt.close('all'),
+                              self.__draw()))
         buttons.append(poll_last)
         size = tk.Button(root, text="Size", command=lambda: (print(len(self))))
 
@@ -687,7 +722,8 @@ class TreeSet:
 
     def __draw(self):
         fig, ax = plt.subplots()
-        fig.subplots_adjust(left=0, bottom=0, right=1, top=1)  # Ajustar los márgenes del subplot
+        fig.subplots_adjust(left=0, bottom=0, right=1,
+                            top=1)  # Ajustar los márgenes del subplot
         self.__draw_node(ax, self.__root)
         self.__draw_edges(ax, self.__root)
         ax.axis('off')  # Ocultar ejes
@@ -698,7 +734,8 @@ class TreeSet:
             color = "red" if node.color == self.RED else "black"
             ax.plot([x], [y], marker='o', markersize=40, color=color,
                     zorder=2)  # Dibujar nodo con un tamaño mayor y detrás de las líneas
-            ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center', color='white',
+            ax.text(x, y, str(node.value), fontsize=12, ha='center',
+                    va='center', color='white',
                     zorder=3)  # Etiquetar nodo
             if node.left:
                 self.__draw_node(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
@@ -714,7 +751,8 @@ class TreeSet:
             if node.right:
                 ax.plot([x, x + dx], [y, y - dy], color='black',
                         zorder=1)  # Dibujar conexión derecha en negro y detrás de los nodos
-                self.__draw_edges(ax, node.right, x + dx, y - dy, dx / 2, dy * 2)
+                self.__draw_edges(ax, node.right, x + dx, y - dy, dx / 2,
+                                  dy * 2)
 
 
 if __name__ == "__main__":
