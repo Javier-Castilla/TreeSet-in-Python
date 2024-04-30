@@ -214,6 +214,16 @@ class TreeSet:
         """
         return value in self
 
+    def tree_type(self, function):
+        def wrapper(self, item):
+            assert type(item) == cls.class_type, \
+                f"Value type must be '{cls.class_type}'"
+
+            function(item)
+
+        return wrapper
+
+    @tree_type
     def lower(self, value: E) -> Union[E, None]:
         """Returns the contiguous lower element of the given value from the
         TreeSet.
@@ -250,6 +260,9 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
+        assert type(value) == self.class_type, \
+            f"Value type must be '{self.class_type}'"
+
         if self.is_empty() or self.last() < value:
             return None
 
@@ -397,12 +410,7 @@ class TreeSet:
         return iter(reversed(self))
 
     def __check_comparable(self, value: E) -> bool:
-        try:
-            value < value
-            value > value
-            return True
-        except TypeError:
-            return False
+        return getattr(value, "__eq__") is not object.__eq__
 
     def __contains(self, value: E) -> TreeNode:
         if not len(self):
@@ -632,9 +640,11 @@ class TreeSet:
 
         buttons = list()
 
-        insert = tk.Button(root, text="Insertar Valor", command=lambda: (self.add(int(value.get())), plt.close('all'), self.__draw()))
+        insert = tk.Button(root, text="Insertar Valor",
+                           command=lambda: (self.add(int(value.get())), plt.close('all'), self.__draw()))
         buttons.append(insert)
-        delete = tk.Button(root, text="Eliminar Valor", command=lambda: (self.remove(int(value.get())), plt.close('all'), self.__draw()))
+        delete = tk.Button(root, text="Eliminar Valor",
+                           command=lambda: (self.remove(int(value.get())), plt.close('all'), self.__draw()))
         buttons.append(delete)
         clear = tk.Button(root, text="Borrar Árbol", command=lambda: (self.clear(), plt.close('all'), self.__draw()))
         buttons.append(clear)
@@ -650,9 +660,11 @@ class TreeSet:
         buttons.append(first)
         last = tk.Button(root, text="Last", command=lambda: (print(self.last())))
         buttons.append(last)
-        poll_first = tk.Button(root, text="Poll First", command=lambda: (print(self.poll_first()), plt.close('all'), self.__draw()))
+        poll_first = tk.Button(root, text="Poll First",
+                               command=lambda: (print(self.poll_first()), plt.close('all'), self.__draw()))
         buttons.append(poll_first)
-        poll_last = tk.Button(root, text="Poll Last", command=lambda: (print(self.poll_last()), plt.close('all'), self.__draw()))
+        poll_last = tk.Button(root, text="Poll Last",
+                              command=lambda: (print(self.poll_last()), plt.close('all'), self.__draw()))
         buttons.append(poll_last)
         size = tk.Button(root, text="Size", command=lambda: (print(len(self))))
 
@@ -711,10 +723,12 @@ if __name__ == "__main__":
     # items = [Test1() for _ in range(10)]
     # items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
     t = TreeSet(int, set([num for num in range(10)]))
-    #t.draw_tree()
-    #t = TreeSet(Test3)
-    #t.add(Test3())
+    # t.draw_tree()
+    # t = TreeSet(Test3)
+    # t.add(Test3())
     print(t)
+
+
     def loop_test():
         t = TreeSet(int)
         for _ in range(10):
@@ -726,4 +740,4 @@ if __name__ == "__main__":
             print("===================")
             # t.draw_tree()
 
-    #loop_test()
+    # loop_test()
