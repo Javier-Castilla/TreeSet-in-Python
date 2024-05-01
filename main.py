@@ -1,5 +1,6 @@
 import unittest
 from TreeSet import *
+from test_classes import *
 
 def suite():
     loader = unittest.TestLoader()
@@ -10,5 +11,8 @@ def suite():
 
 
 if __name__ == "__main__":
-    runner = unittest.TextTestRunner()
-    runner.run(suite())
+    """runner = unittest.TextTestRunner()
+    runner.run(suite())"""
+
+    print(id(object.__eq__))
+    print(id(int.__eq__))

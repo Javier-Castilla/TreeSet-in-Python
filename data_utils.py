@@ -139,16 +139,16 @@ class Node:
 
 @total_ordering
 class TreeNode(Node):
-    def __init__(self, value: Any, color: 'TreeNode.Color') -> None:
+    class Color(Enum):
+        RED = 1
+        BLACK = 0
+
+    def __init__(self, value: Any, color: 'TreeNode.Color' = Color.RED) -> None:
         super().__init__(value)
         self.color = color
         self.parent = None
         self.left = None
         self.right = None
-
-    class Color(Enum):
-        RED = 1
-        BLACK = 0
 
     @property
     def color(self) -> Color:
@@ -200,9 +200,9 @@ class TreeNode(Node):
 
 if __name__ == "__main__":
     stack = SimpleQueue()
-    stack.enqueue(1)
-    stack.enqueue(2)
-    stack.enqueue(3)
+    stack.enqueue(n1 := TreeNode(1))
+    stack.enqueue(n2 := TreeNode(2))
+    stack.enqueue(n3 := TreeNode(3))
 
     for item in stack:
-        print(item)
+        print(repr(item))

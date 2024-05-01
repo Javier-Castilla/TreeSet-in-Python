@@ -1,5 +1,6 @@
 import unittest
 from TreeSet import *
+from test_classes import *
 
 class TestManyItemsTreeSet(unittest.TestCase):
     def setUp(self) -> None:

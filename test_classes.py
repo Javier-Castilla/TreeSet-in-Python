@@ -1,23 +1,13 @@
+from functools import total_ordering
 from typing import *
 
 
-class Test1:
+class NonComparable:
     def __init__(self):
         ...
 
 
-class Test2:
-    def __init__(self):
-        ...
-
-    def __eq__(self, other):
-        return True
-
-    def __lt__(self, other):
-        return True
-
-
-class Test3:
+class ComparableLtAndEq:
     def __init__(self):
         ...
 
@@ -28,9 +18,16 @@ class Test3:
         return True
 
 
-class Test4:
+@total_ordering
+class ComparableTotalOrdering:
     def __init__(self):
         ...
+
+    def __eq__(self, other):
+        return True
+
+    def __lt__(self, other):
+        return True
 
 
 T = TypeVar('T')
