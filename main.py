@@ -11,8 +11,5 @@ def suite():
 
 
 if __name__ == "__main__":
-    """runner = unittest.TextTestRunner()
-    runner.run(suite())"""
-
-    print(id(object.__eq__))
-    print(id(int.__eq__))
+    runner = unittest.TextTestRunner()
+    runner.run(suite())

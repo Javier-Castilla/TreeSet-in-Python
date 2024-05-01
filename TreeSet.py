@@ -218,6 +218,9 @@ class TreeSet:
         :return: A shallow copy of the current TreeSet instance
         :rtype: TreeSet
         """
+        if (self.is_empty()):
+            return TreeSet(self.__class_type)
+
         current_stack = SimpleStack(self.__root)
         copy_stack = SimpleStack(copy_root := TreeNode(self.__root.value, self.__root.color))
 
