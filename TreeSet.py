@@ -109,7 +109,7 @@ class TreeSet:
         :raises AssertionError: If the given value's type does not match generic
         type
         """
-        new_node = TreeNode(value, TreeSet.RED)
+        new_node = TreeNode(value)
 
         if (parent := self.__contains(value)) != new_node:
             if not parent:
