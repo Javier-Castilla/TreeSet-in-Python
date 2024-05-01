@@ -265,10 +265,9 @@ class TreeSet:
         """
         node = self.__root
         aux = None
-        if self.is_empty() or self.first > value:
+        if self.is_empty() or self.first() > value:
             return None
         while(True):
-            print(node)
             if node.value > value:
                 if not node.left:
                     if aux != None:
@@ -701,4 +700,7 @@ class TreeSet:
             if node.right:
                 ax.plot([x, x+dx], [y, y-dy], color='black', zorder=1)
                 self.__draw_edges(ax, node.right, x+dx, y-dy, dx/2, dy*2)
+
+    def __get_color__(self, value):
+        return self.__contains(value).color
 
