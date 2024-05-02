@@ -2,6 +2,7 @@
 import unittest
 
 from TreeSet import *
+import json
 
 
 class TestInt(unittest.TestCase):
@@ -333,67 +334,48 @@ class TestInt(unittest.TestCase):
         def test_first_element_black(self):
             """Test first node in the tree black."""
             self.tree_set.add(1)
-            self.assertEqual(self.tree_set.__get_color__(1), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set._TreeSet__get_color(1), TreeNode.Color.BLACK)
 
         def test_right_child_red(self):
             """Test right child of root in the tree red."""
             self.tree_set.add(2)
             self.tree_set.add(3)
-            self.assertEqual(self.tree_set.__get_color__(3), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set._TreeSet__get_color(3), TreeNode.Color.RED)
 
         def test_left_child_red(self):
             """Test left child of root in the tree red."""
             self.tree_set.add(2)
             self.tree_set.add(1)
-            self.assertEqual(self.tree_set.__get_color__(1), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set._TreeSet__get_color(1), TreeNode.Color.RED)
 
         def test_root_recolor(self):
             """Test recolor of the root when in is changed."""
             self.tree_set.add(1)
-            self.assertEqual(self.tree_set.__get_color__(1), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set._TreeSet__get_color(1), TreeNode.Color.BLACK)
             self.tree_set.add(2)
             self.tree_set.add(3)
-            self.assertEqual(self.tree_set.__get_color__(1), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set._TreeSet__get_color(1), TreeNode.Color.RED)
 
         def test_left_rotation_recolor(self):
             """Test nodes recolors and propagations when a new node is inserted."""
             self.tree_set.add_all([1,2,3,4,5,6,7])
-            self.assertEqual(self.tree_set.__get_color__(1), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(2), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(3), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(4), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(5), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(6), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(7), TreeNode.Color.RED)
+            tree_colors = self.tree_set._TreeSet__array_color()
+            real_colors = [TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED]
             self.tree_set.add(8)
-            self.assertEqual(self.tree_set.__get_color__(1), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(2), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(3), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(4), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(5), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(6), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(7), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(8), TreeNode.Color.RED)
+            tree_colors = self.tree_set._TreeSet__array_color()
+            real_colors = [TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED]
+            self.assertEqual(tree_colors, real_colors)
 
         def test_right_rotation_recolor(self):
             """Test nodes recolors and propagations when a new node is inserted."""
             self.tree_set.add_all([8,7,6,5,4,3,2])
-            self.assertEqual(self.tree_set.__get_color__(2), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(3), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(4), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(5), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(6), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(7), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(8), TreeNode.Color.BLACK)
+            tree_colors = self.tree_set._TreeSet__array_color()
+            real_colors = [TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.BLACK]
+            self.assertEqual(tree_colors, real_colors)
             self.tree_set.add(1)
-            self.assertEqual(self.tree_set.__get_color__(1), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(2), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(3), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(4), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(5), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(6), TreeNode.Color.BLACK)
-            self.assertEqual(self.tree_set.__get_color__(7), TreeNode.Color.RED)
-            self.assertEqual(self.tree_set.__get_color__(8), TreeNode.Color.BLACK)
+            tree_colors = self.tree_set._TreeSet__array_color()
+            real_colors = [TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK]
+            self.assertEqual(tree_colors, real_colors)
 
 if __name__ == '__main__':
     unittest.main()
