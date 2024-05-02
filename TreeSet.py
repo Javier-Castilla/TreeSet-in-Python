@@ -28,7 +28,7 @@ class TreeSet:
 
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
-    
+
 
     def __init__(self, generic_type: Any, sequence: Collection[E] = None) -> None:
         """
@@ -99,6 +99,8 @@ class TreeSet:
         self.__size += 1
         self.__fix_insertion(new_node)
         return True
+
+
 
     def add_all(self, sequence: Sequence[E]) -> bool:
         """Inserts the given values into the TreeSet. If some value is
@@ -190,6 +192,7 @@ class TreeSet:
     def clear(self) -> None:
         """Clears the TreeSet from all its inserted elements."""
         self.__root = None
+        self.__size = 0
 
     def clone(self) -> 'TreeSet':
         """Clones the current TreeSet and returns that clone.
@@ -220,6 +223,7 @@ class TreeSet:
         :return: True if value is contained else False
         :rtype: bool
         """
+
         return value in self
 
     def ceiling(self, value: E) -> Union[E, None]:
@@ -232,26 +236,25 @@ class TreeSet:
         to the given element
         :rtype: TreeSet
         """
-        node = self.__root
-        aux = None
         if self.is_empty() or self.last() < value:
             return None
-        while(True):
+
+        node = self.__root
+        aux = None
+        while node:
             if node.value > value:
                 if not node.left:
-                    return node.value
+                    return node.value if aux is None else aux
                 if node.left.value < value:
-                    aux = node.value                    
+                    aux = node.value
                 node = node.left
             elif node.value < value:
                 if not node.right:
-                    if aux != None:
-                        return aux
-                    else:
-                        return node.value
+                    return aux if aux is not None else node.value
                 node = node.right
             else:
                 return node.value
+        return None  # Return None if no element found
 
     def floor(self, value: E) -> Union[E, None]:
         """Returns the greatest element in this set less than or
@@ -263,14 +266,16 @@ class TreeSet:
         equal to the given element
         :rtype: TreeSet
         """
-        node = self.__root
-        aux = None
+
         if self.is_empty() or self.first() > value:
             return None
-        while(True):
+
+        node = self.__root
+        aux = None
+        while True:
             if node.value > value:
                 if not node.left:
-                    if aux != None:
+                    if aux is not None:
                         return aux
                     else:
                         return node.value
@@ -279,7 +284,7 @@ class TreeSet:
                 if not node.right:
                     return node.value
                 if node.right.value > value:
-                    aux = node.value               
+                    aux = node.value
                 node = node.right
             else:
                 return node.value
@@ -290,7 +295,9 @@ class TreeSet:
         :return: Lowest contained element
         :rtype: E
         """
-        return next(self.iterator())
+
+        return next(self.iterator()) if self.__size != 0 else None
+
 
     def last(self) -> E:
         """Return the greatest element contained in the current TreeSet
@@ -352,11 +359,11 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        
-        node = self.__root
-        aux = None
+
         if self.is_empty() or self.first() > value:
             return None
+        node = self.__root
+        aux = None
         while(True):
             if node.value >= value:
                 if not node.left:
@@ -369,9 +376,9 @@ class TreeSet:
                 if not node.right:
                     return node.value
                 if node.right.value >= value:
-                    aux = node.value                    
+                    aux = node.value
                 node = node.right
-        
+
 
     def higher(self, value: E) -> Union[E, None]:
         """Returns the contiguous greater element of the given value from the
@@ -382,16 +389,16 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        node = self.__root
-        aux = None
         if self.is_empty() or self.first() > value:
             return None
+        node = self.__root
+        aux = None
         while(True):
             if node.value > value:
                 if not node.left:
                     return node.value
                 if node.left.value <= value:
-                    aux = node.value                    
+                    aux = node.value
                 node = node.left
             elif node.value <= value:
                 if not node.right:
@@ -609,12 +616,13 @@ class TreeSet:
         return f"{[value for value in self]}"
 
     def __contains__(self, value) -> bool:
-        return self.__contains(value).value == value
+        node = self.__contains(value)
+        return node is not None and node.value == value
 
     def __eq__(self, other) -> bool:
         if isinstance(other, TreeSet):
             for node in self:
-                if node.value not in other:
+                if node not in self:
                     return False
 
             return True

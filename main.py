@@ -4,13 +4,11 @@ from random import randint
 from tkinter import ttk
 
 import matplotlib.pyplot as plt
-import networkx as nx
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from TreeSet import TreeSet
 
 if __name__ == "__main__":
-    items = [randint(0, 100) for _ in range(50)]
-    t = TreeSet(int, items)
-    print(t, items)
-    t.draw_tree()
+    t = TreeSet(int)
+    t.add_all([1,2,3,4])
+    t.draw_buttons()
