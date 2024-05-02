@@ -702,5 +702,14 @@ class TreeSet:
                 self.__draw_edges(ax, node.right, x+dx, y-dy, dx/2, dy*2)
 
     def __get_color__(self, value):
+        if self.__contains ==None:
+            return None
         return self.__contains(value).color
+    
+    def __array_color__(self):
+        array = []
+        for i in self:
+            array.append(self.__get_color__(i))
+        return array
+            
 
