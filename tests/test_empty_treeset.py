@@ -18,6 +18,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         tree_clone = self.tree.clone()
         self.assertEqual(self.tree, tree_clone, "TreeSets must be equal")
         self.assertEqual(tree_clone.size(), 0, "Empty tree clone size must be 0")
+        self.assertTrue(self.tree.is_empty(), "Cloned tree must be empty")
 
     def test_first(self):
         with self.assertRaises(NoSuchElementError):
@@ -28,10 +29,16 @@ class TestEmptyTreeSet(unittest.TestCase):
             self.tree.last()
 
     def test_iterator(self):
-        self.assertEqual([], [value for value in self.tree.iterator()], "Wrong values given by TreeSet iterator")
+        self.assertEqual(
+            [], [value for value in self.tree.iterator()],
+            "Wrong values given by TreeSet iterator"
+        )
 
     def test_descending_iterator(self):
-        self.assertEqual([], [value for value in self.tree.descending_iterator()], "Wrong values given by TreeSet descending iterator")
+        self.assertEqual(
+            [], [value for value in self.tree.descending_iterator()],
+            "Wrong values given by TreeSet descending iterator"
+        )
 
     def test1_add(self):
         self.tree.add(1)
@@ -59,6 +66,7 @@ class TestEmptyTreeSet(unittest.TestCase):
     def test2_add_all(self):
         with self.assertRaises(AssertionError):
             self.tree.add_all([str(num) for num in range(10)])
+
 
 if __name__ == '__main__':
     unittest.main()

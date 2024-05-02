@@ -176,22 +176,22 @@ class TreeSet:
     @staticmethod
     def __check_comparable(function):
         def wrapper(self, *args):
-            value_type = type(args[0]) if not isinstance(args[0], type) else args[0]
+            item = args[0]
+            value_type = type(item) if not isinstance(item, type) else item
             if value_type.__eq__ is object.__eq__ \
                     and value_type.__lt__ is object.__lt__ \
                     and value_type.__gt__ is object.__gt__:
                 raise NonComparableObjectError(
-                    f"class {type(args[0])} cannot be compared")
+                    f"class {value_type} cannot be compared")
 
             return function(self, *args)
 
         return wrapper
 
     @__check_comparable
-    def __init__(self, generic_type: Any,
+    def __init__(self, generic_type: type,
                  sequence: Collection[E] = None) -> None:
-        """
-        Initialize an empty TreeSet if type is given or constructs one with the
+        """Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
 
         :param generic_type: The generic type of the class or a sequence with
@@ -343,7 +343,7 @@ class TreeSet:
         :return: A shallow copy of the current TreeSet instance
         :rtype: TreeSet
         """
-        if (self.is_empty()):
+        if self.is_empty():
             return TreeSet(self.__class_type)
 
         current_stack = SimpleStack(self.__root)
