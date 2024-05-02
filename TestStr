@@ -1,5 +1,8 @@
 import unittest
+
 from TreeSet import *
+
+
 class TestInt(unittest.TestCase):
         def setUp(self):
             self.tree_set = TreeSet(str)
@@ -52,7 +55,6 @@ class TestInt(unittest.TestCase):
             """Tests removing a leaf node."""
             self.tree_set.add("B")
             self.tree_set.add("D")
-
             self.assertTrue(self.tree_set.remove("B"))
             self.assertEqual(self.tree_set.size(), 1)
             self.assertFalse("B" in self.tree_set)
@@ -96,6 +98,295 @@ class TestInt(unittest.TestCase):
             self.assertTrue("A" in self.tree_set)
             self.assertTrue("D" in self.tree_set)
 
+        def test_size_empty(self):
+            """Tests size of an empty set."""
+            self.assertEqual(self.tree_set.size(), 0)
 
-if __name__ == '__main__':
-    unittest.main()
+        def test_size_adding_one_element(self):
+            """Tests size after adding one element."""
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.size(), 1)
+
+        def test_size_adding_multiple_elements(self):
+            """Tests size after adding multiple elements."""
+
+            values = TreeSet(str, ["G", "E", "C", "B", "A"])
+            self.assertEqual(values.size(), 5)
+
+        def test_clear(self):
+            """Tests clearing the TreeSet from all its inserted elements."""
+            values = TreeSet(str, ["A", "B", "C", "D", "E"])
+            self.assertEqual(len(values), 5)
+
+            self.assertNotEqual(values.clear(), 5)
+            self.assertEqual(values.clear(), None)
+
+        def test_clone_multiple_elements(self):
+            """Tests cloning  multiples elements TreeSet."""
+            self.tree_set.add_all(["E", "M", "P"])
+            cloned_tree_set = self.tree_set.clone()
+            self.assertEqual(self.tree_set.size(), cloned_tree_set.size())
+            for value in self.tree_set:
+                self.assertTrue(cloned_tree_set.contains(value))
+
+        def test_clone_one_element(self):
+            """Tests cloning  one element TreeSet."""
+            self.tree_set.add("C")
+            cloned_tree_set = self.tree_set.clone()
+            self.assertEqual(self.tree_set.size(), cloned_tree_set.size())
+            for value in self.tree_set:
+                self.assertTrue(cloned_tree_set.contains(value))
+
+        def test_is_empty(self):
+            """Test the is_empty method for different scenarios"""
+            self.assertTrue(self.tree_set.is_empty())
+            self.tree_set.add_all(["N", "M", "R"])
+            self.assertFalse(self.tree_set.is_empty())
+            self.tree_set.remove("M")
+            self.assertFalse(self.tree_set.is_empty())
+
+        def test_contains_empty_set(self):
+            """Tests contains method on an empty TreeSet."""
+            self.assertFalse(self.tree_set.contains("B"))
+
+        def test_contains_single_element(self):
+            """Tests contains method on a TreeSet with a single element."""
+            self.tree_set.add("C")
+            self.assertTrue(self.tree_set.contains("C"))
+            self.assertFalse(self.tree_set.contains("E"))
+
+        def test_contains_multiple_elements(self):
+            """Tests contains method on a TreeSet with multiple elements."""
+            self.tree_set.add_all(["A", "B", "C", "D", "E"])
+            self.assertTrue(self.tree_set.contains("A"))
+            self.assertTrue(self.tree_set.contains("C"))
+            self.assertFalse(self.tree_set.contains("G"))
+
+        def test_ceiling_empty_set(self):
+            """Test ceiling method on an empty set."""
+            self.assertIsNone(self.tree_set.ceiling("A"))
+
+        def test_ceiling_elements_greater_equal(self):
+            """Test ceiling method when set contains elements greater than or equal to the given value."""
+            self.tree_set.add_all(["A", "B", "G", "O"])
+            self.assertEqual(self.tree_set.ceiling("A"), "A")
+            self.assertEqual(self.tree_set.ceiling("C"), "G")
+
+        def test_ceiling_elements_only_greater(self):
+            """Test ceiling method when set contains only elements greater than the given value."""
+            self.tree_set.add_all(["C", "D", "Z"])
+            self.assertEqual(self.tree_set.ceiling("A"), "C")
+
+        def test_ceiling_elements_only_smaller(self):
+            """Test ceiling method when set contains only elements smaller than the given value."""
+            self.tree_set.add_all(["A", "B", "C"])
+            self.assertEqual(self.tree_set.ceiling("X"), None)
+
+        def test_floor_empty_set(self):
+            """Test floor method on an empty set."""
+            self.assertIsNone(self.tree_set.floor("A"))
+
+        def test_floor_smaller_than_min(self):
+            """Test floor method when the value is smaller than the minimum value in the set."""
+            self.tree_set.add("C")
+            self.assertEqual(self.tree_set.floor("A"), None)
+
+        def test_floor_equal_to_value_in_set(self):
+            """Test floor method when the value is equal to a value in the set."""
+            self.tree_set.add("A")
+            self.tree_set.add("D")
+            self.assertEqual(self.tree_set.floor("A"), "A")
+
+        def test_floor_greater_than_max(self):
+            """Test floor method when the value is greater than the maximum value in the set."""
+            self.tree_set.add("A")
+            self.tree_set.add("C")
+            self.assertEqual(self.tree_set.floor("G"), "C")
+
+        def test_floor_between_values(self):
+            """Test floor method when the value is between two values in the set."""
+            self.tree_set.add("A")
+            self.tree_set.add("B")
+            self.tree_set.add("N")
+            self.assertEqual(self.tree_set.floor("D"), "B")
+
+        def test_poll_first_empty_set(self):
+            """Test pollFirst method on an empty set."""
+            self.assertIsNone(self.tree_set.pollFirst())
+
+        def test_poll_first_non_empty_set(self):
+            """Test pollFirst method on a non-empty set."""
+            self.tree_set.add_all(["A", "B", "C"])
+            self.assertEqual(self.tree_set.pollFirst(), "A")
+            self.assertEqual(self.tree_set.size(), 2)
+            self.assertEqual(list(self.tree_set), ["B", "C"])
+
+        def test_poll_first_single_element_set(self):
+            """Test pollFirst method on a set with a single element."""
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.pollFirst(), "A")
+            self.assertEqual(self.tree_set.size(), 0)
+            self.assertEqual(list(self.tree_set), [])
+
+        def test_poll_last_empty_set(self):
+            """Test pollLast method on an empty set."""
+            self.assertIsNone(self.tree_set.pollLast())
+
+        def test_poll_last_non_empty_set(self):
+            """Test pollLast method on a non-empty set."""
+            self.tree_set.add_all(["A", "C", "D"])
+            self.assertEqual(self.tree_set.pollLast(), "D")
+            self.assertEqual(self.tree_set.size(), 2)
+            self.assertEqual(list(self.tree_set), ["A", "C"])
+
+        def test_poll_last_single_element_set(self):
+            """Test pollLast method on a set with a single element."""
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.pollLast(), "A")
+            self.assertEqual(self.tree_set.size(), 0)
+            self.assertEqual(list(self.tree_set), [])
+
+        def test_iterator_multiple_elements(self):
+            """Test iterator  method for multiple elements."""
+            self.tree_set.add_all(["A", "B", "C"])
+            elements = [elem for elem in self.tree_set.iterator()]
+            self.assertListEqual(elements, ["A", "B", "C"])
+
+        def test_iterator_empty_set(self):
+            """Test iterator method on an empty set."""
+            elements = [elem for elem in self.tree_set.iterator()]
+            self.assertListEqual(elements, [])
+
+        def test_iterator_single_element(self):
+            """Test iterator method with a single element."""
+            self.tree_set.add("A")
+            elements = [elem for elem in self.tree_set.iterator()]
+            self.assertListEqual(elements, ["A"])
+
+        def test_descending_iterator_empty_set(self):
+            """Test descending_iterator method on an empty set."""
+            elements = [elem for elem in self.tree_set.descending_iterator()]
+            self.assertListEqual(elements, [])
+
+        def test_descending_iterator_single_element(self):
+            """Test descending_iterator method with a single element."""
+            self.tree_set.add("A")
+            elements = [elem for elem in self.tree_set.descending_iterator()]
+            self.assertListEqual(elements, ["A"])
+
+        def test_descending_iterator_multiples_elements(self):
+            """Test descending_iterator method with multiple elements."""
+            self.tree_set.add_all(["N", "M", "Ñ"])
+            elements = [elem for elem in self.tree_set.descending_iterator()]
+            self.assertListEqual(elements, ["Ñ", "N", "M"])
+
+        def test_lower_empty(self):
+            """Test lower that an empty set"""
+            self.assertIsNone(self.tree_set.lower("A"))
+
+        def test_lower_smaller_than_min(self):
+            """Test lower method when the value is smaller than the minimum value in the set."""
+            self.tree_set.add("C")
+            self.assertIsNone(self.tree_set.lower("B"))
+
+        def test_lower_equal_to_value_in_set(self):
+            """Test lower method when the value is equal to a value in the set."""
+            self.tree_set.add_all(["A", "C"])
+            self.assertEqual(self.tree_set.lower("A"), None)
+
+        def test_lower_greater_than_max(self):
+            """Test lower method when the value is greater than the maximum value in the set."""
+            self.tree_set.add("A")
+            self.tree_set.add("B")
+            self.assertEqual(self.tree_set.lower("D"), "B")
+
+        def test_lower_between_values(self):
+            """Test lower method when the value is between two values in the set."""
+            self.tree_set.add("A")
+            self.tree_set.add("B")
+            self.tree_set.add("C")
+            self.assertEqual(self.tree_set.lower("L"), "C")
+
+        def test_higher_empty_set(self):
+            """Test higher method on an empty set."""
+            self.assertIsNone(self.tree_set.higher("A"))
+
+        def test_higher_greater_than_max(self):
+            """Test higher method when the value is greater than the maximum value in the set."""
+            self.tree_set.add_all(["A", "C", "R"])
+            self.assertIsNone(self.tree_set.higher("X"))
+
+        def test_higher_elements_greater_than_value(self):
+            """Test higher method when set contains elements greater than the given value."""
+            self.tree_set.add_all(["A", "B", "Z"])
+            self.assertEqual(self.tree_set.higher("E"), "Z")
+
+        def test_higher_elements_only_smaller(self):
+            """Test higher method when set contains only elements smaller than the given value."""
+            self.tree_set.add_all(["A", "N", "Ñ"])
+            self.assertEqual(self.tree_set.higher("B"), "N")
+
+        def test_first_element_black(self):
+            """Test first node in the tree black."""
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.__get_color__("A"), TreeNode.Color.BLACK)
+
+        def test_right_child_red(self):
+            """Test right child of root in the tree red."""
+            self.tree_set.add("B")
+            self.tree_set.add("C")
+            self.assertEqual(self.tree_set.__get_color__("C"), TreeNode.Color.RED)
+
+        def test_left_child_red(self):
+            """Test left child of root in the tree red."""
+            self.tree_set.add("B")
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.__get_color__("A"), TreeNode.Color.RED)
+
+        def test_root_recolor(self):
+            """Test recolor of the root when in is changed."""
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.__get_color__("A"), TreeNode.Color.BLACK)
+            self.tree_set.add("B")
+            self.tree_set.add("C")
+            self.assertEqual(self.tree_set.__get_color__("A"), TreeNode.Color.RED)
+
+        def test_left_rotation_recolor(self):
+            """Test nodes recolors and propagations when a new node is inserted."""
+            self.tree_set.add_all(["A","B","C","D","E","F","G"])
+            self.assertEqual(self.tree_set.__get_color__("A"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("B"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("C"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("D"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("E"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("F"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("G"), TreeNode.Color.RED)
+            self.tree_set.add("H")
+            self.assertEqual(self.tree_set.__get_color__("A"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("B"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("C"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("D"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("E"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("F"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("G"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("H"), TreeNode.Color.RED)
+
+        def test_right_rotation_recolor(self):
+            """Test nodes recolors and propagations when a new node is inserted."""
+            self.tree_set.add_all(["H","G","F","E","D","C","B"])
+            self.assertEqual(self.tree_set.__get_color__("B"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("C"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("D"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("E"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("F"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("G"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("H"), TreeNode.Color.BLACK)
+            self.tree_set.add("A")
+            self.assertEqual(self.tree_set.__get_color__("A"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("B"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("C"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("D"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("E"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("F"), TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set.__get_color__("G"), TreeNode.Color.RED)
+            self.assertEqual(self.tree_set.__get_color__("H"), TreeNode.Color.BLACK)
