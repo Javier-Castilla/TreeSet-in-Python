@@ -15,6 +15,130 @@ from test_classes import *
 E = TypeVar('E')
 
 
+class TreeSetDrawing:
+
+    def __init__(self, tree: 'TreeSet') -> None:
+        self.__tree = tree
+        self.draw_tree()
+
+    def draw_tree(self):
+        root = tk.Tk()
+        root.title("Árbol Rojo-Negro")
+        root.geometry("230x350")
+        root.resizable(False, False)
+
+        value = tk.StringVar()
+        value.set("")
+
+        label = tk.Label(root, text="Nodo:")
+        label.grid(row=0, column=0)
+
+        entry = tk.Entry(root, textvariable=value)
+        entry.grid(row=1, column=0)
+
+        buttons = list()
+
+        insert = tk.Button(root, text="Insertar Valor",
+                           command=lambda: (
+                               self.__tree.add(int(value.get())), plt.close('all'),
+                               self.__draw()))
+        buttons.append(insert)
+        delete = tk.Button(root, text="Eliminar Valor",
+                           command=lambda: (
+                               self.__tree.remove(int(value.get())), plt.close('all'),
+                               self.__draw()))
+        buttons.append(delete)
+        clear = tk.Button(root, text="Borrar Árbol", command=lambda: (
+            self.__tree.clear(), plt.close('all'), self.__draw()))
+        buttons.append(clear)
+        lower = tk.Button(root, text="Lower",
+                          command=lambda: (print(self.__tree.lower(int(value.get())))))
+        buttons.append(lower)
+        higher = tk.Button(root, text="Higher", command=lambda: (
+            print(self.__tree.higher(int(value.get())))))
+        buttons.append(higher)
+        ceiling = tk.Button(root, text="Ceiling", command=lambda: (
+            print(self.__tree.ceiling(int(value.get())))))
+        buttons.append(ceiling)
+        floor = tk.Button(root, text="Floor",
+                          command=lambda: (print(self.__tree.floor(int(value.get())))))
+        buttons.append(floor)
+        first = tk.Button(root, text="First",
+                          command=lambda: (print(self.__tree.first())))
+        buttons.append(first)
+        last = tk.Button(root, text="Last",
+                         command=lambda: (print(self.__tree.last())))
+        buttons.append(last)
+        poll_first = tk.Button(root, text="Poll First",
+                               command=lambda: (
+                                   print(self.__tree.poll_first()), plt.close('all'),
+                                   self.__draw()))
+        buttons.append(poll_first)
+        poll_last = tk.Button(root, text="Poll Last",
+                              command=lambda: (
+                                  print(self.__tree.poll_last()), plt.close('all'),
+                                  self.__draw()))
+        buttons.append(poll_last)
+        size = tk.Button(root, text="Size", command=lambda: (print(len(self))))
+        buttons.append(size)
+        random = tk.Button(root, text="Random Tree",
+                           command=lambda: (plt.close('all'),
+                                            self.__draw_random_tree(int(value.get())))
+                           )
+        buttons.append(random)
+
+        row = 0
+        for button in buttons:
+            button.grid(row=row, column=1)
+            row += 1
+
+        root.mainloop()
+
+    def __draw_random_tree(self, number):
+        """items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        items = items[:int(number.get())]
+        self.clear()
+        #for item in [randint(1, 1000) for _ in range(int(number.get()))]:
+        for item in items:
+            self.add(item)
+        self.__draw()"""
+        self.__draw()
+
+    def __draw(self):
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(left=0, bottom=0, right=1,
+                            top=1)  # Ajustar los márgenes del subplot
+        self.__draw_node(ax, self.__tree._TreeSet__root)
+        self.__draw_edges(ax, self.__tree._TreeSet__root)
+        ax.axis('off')  # Ocultar ejes
+        plt.show()
+
+    def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
+        if node is not None:
+            color = "red" if node.color == self.__tree.RED else "black"
+            ax.plot([x], [y], marker='o', markersize=40, color=color,
+                    zorder=2)  # Dibujar nodo con un tamaño mayor y detrás de las líneas
+            ax.text(x, y, str(node.value), fontsize=12, ha='center',
+                    va='center', color='white',
+                    zorder=3)  # Etiquetar nodo
+            if node.left:
+                self.__draw_node(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
+            if node.right:
+                self.__draw_node(ax, node.right, x + dx, y - dy, dx / 2, dy * 2)
+
+    def __draw_edges(self, ax, node, x=0, y=0, dx=1, dy=1):
+        if node is not None:
+            if node.left:
+                ax.plot([x, x - dx], [y, y - dy], color='black',
+                        zorder=1)  # Dibujar conexión izquierda en negro y detrás de los nodos
+                self.__draw_edges(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
+            if node.right:
+                ax.plot([x, x + dx], [y, y - dy], color='black',
+                        zorder=1)  # Dibujar conexión derecha en negro y detrás de los nodos
+                self.__draw_edges(ax, node.right, x + dx, y - dy, dx / 2,
+                                  dy * 2)
+
+
 class TreeSet:
     """Class that represents a set based on a tree. The elements are ordered
     using its natural ordering.
@@ -30,7 +154,7 @@ class TreeSet:
     __attributes = {
         "_TreeSet__root", "_TreeSet__size",
         "_TreeSet__class_type", "_TreeSet__attributes"
-                    }
+    }
 
     @staticmethod
     def __type_validation(function):
@@ -40,6 +164,7 @@ class TreeSet:
         :param function: function used of the TreeSet
         :return: function return statement
         """
+
         def wrapper(self, item):
             assert type(item) == self.__class_type, \
                 f"Value type must be '{self.__class_type}'"
@@ -53,8 +178,8 @@ class TreeSet:
         def wrapper(self, *args):
             value_type = type(args[0]) if not isinstance(args[0], type) else args[0]
             if value_type.__eq__ is object.__eq__ \
-                and value_type.__lt__ is object.__lt__ \
-                and value_type.__gt__ is object.__gt__:
+                    and value_type.__lt__ is object.__lt__ \
+                    and value_type.__gt__ is object.__gt__:
                 raise NonComparableObjectError(
                     f"class {type(args[0])} cannot be compared")
 
@@ -704,121 +829,7 @@ class TreeSet:
         super().__setattr__(key, value)
 
     def draw_tree(self):
-        root = tk.Tk()
-        root.title("Árbol Rojo-Negro")
-        root.geometry("230x350")
-        root.resizable(False, False)
-
-        value = tk.StringVar()
-        value.set("")
-
-        label = tk.Label(root, text="Nodo:")
-        label.grid(row=0, column=0)
-
-        entry = tk.Entry(root, textvariable=value)
-        entry.grid(row=1, column=0)
-
-        buttons = list()
-
-        insert = tk.Button(root, text="Insertar Valor",
-                           command=lambda: (
-                               self.add(int(value.get())), plt.close('all'),
-                               self.__draw()))
-        buttons.append(insert)
-        delete = tk.Button(root, text="Eliminar Valor",
-                           command=lambda: (
-                               self.remove(int(value.get())), plt.close('all'),
-                               self.__draw()))
-        buttons.append(delete)
-        clear = tk.Button(root, text="Borrar Árbol", command=lambda: (
-            self.clear(), plt.close('all'), self.__draw()))
-        buttons.append(clear)
-        lower = tk.Button(root, text="Lower",
-                          command=lambda: (print(self.lower(int(value.get())))))
-        buttons.append(lower)
-        higher = tk.Button(root, text="Higher", command=lambda: (
-            print(self.higher(int(value.get())))))
-        buttons.append(higher)
-        ceiling = tk.Button(root, text="Ceiling", command=lambda: (
-            print(self.ceiling(int(value.get())))))
-        buttons.append(ceiling)
-        floor = tk.Button(root, text="Floor",
-                          command=lambda: (print(self.floor(int(value.get())))))
-        buttons.append(floor)
-        first = tk.Button(root, text="First",
-                          command=lambda: (print(self.first())))
-        buttons.append(first)
-        last = tk.Button(root, text="Last",
-                         command=lambda: (print(self.last())))
-        buttons.append(last)
-        poll_first = tk.Button(root, text="Poll First",
-                               command=lambda: (
-                                   print(self.poll_first()), plt.close('all'),
-                                   self.__draw()))
-        buttons.append(poll_first)
-        poll_last = tk.Button(root, text="Poll Last",
-                              command=lambda: (
-                                  print(self.poll_last()), plt.close('all'),
-                                  self.__draw()))
-        buttons.append(poll_last)
-        size = tk.Button(root, text="Size", command=lambda: (print(len(self))))
-        buttons.append(size)
-        random = tk.Button(root, text="Random Tree",
-                            command=lambda: (plt.close('all'),
-                            self.__draw_random_tree(int(value.get())))
-                           )
-        buttons.append(random)
-
-        row = 0
-        for button in buttons:
-            button.grid(row=row, column=1)
-            row += 1
-
-        root.mainloop()
-
-    def __draw_random_tree(self, number):
-        """items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-        items = items[:int(number.get())]
-        self.clear()
-        #for item in [randint(1, 1000) for _ in range(int(number.get()))]:
-        for item in items:
-            self.add(item)
-        self.__draw()"""
-        self.__draw()
-
-    def __draw(self):
-        fig, ax = plt.subplots()
-        fig.subplots_adjust(left=0, bottom=0, right=1,
-                            top=1)  # Ajustar los márgenes del subplot
-        self.__draw_node(ax, self.__root)
-        self.__draw_edges(ax, self.__root)
-        ax.axis('off')  # Ocultar ejes
-        plt.show()
-
-    def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
-        if node is not None:
-            color = "red" if node.color == self.RED else "black"
-            ax.plot([x], [y], marker='o', markersize=40, color=color,
-                    zorder=2)  # Dibujar nodo con un tamaño mayor y detrás de las líneas
-            ax.text(x, y, str(node.value), fontsize=12, ha='center',
-                    va='center', color='white',
-                    zorder=3)  # Etiquetar nodo
-            if node.left:
-                self.__draw_node(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
-            if node.right:
-                self.__draw_node(ax, node.right, x + dx, y - dy, dx / 2, dy * 2)
-
-    def __draw_edges(self, ax, node, x=0, y=0, dx=1, dy=1):
-        if node is not None:
-            if node.left:
-                ax.plot([x, x - dx], [y, y - dy], color='black',
-                        zorder=1)  # Dibujar conexión izquierda en negro y detrás de los nodos
-                self.__draw_edges(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
-            if node.right:
-                ax.plot([x, x + dx], [y, y - dy], color='black',
-                        zorder=1)  # Dibujar conexión derecha en negro y detrás de los nodos
-                self.__draw_edges(ax, node.right, x + dx, y - dy, dx / 2,
-                                  dy * 2)
+        TreeSetDrawing(self)
 
 
 if __name__ == "__main__":
@@ -830,12 +841,14 @@ if __name__ == "__main__":
     t1 = t.clone()
     print(t)
     print(t1)
+    t.draw_tree()
+
+
     # t.pepe = None
     # t.draw_tree()
     # t = TreeSet(Test3)
     # t.add(Test3())
     # print(t)
-
 
     def loop_test():
         t = TreeSet(int)
