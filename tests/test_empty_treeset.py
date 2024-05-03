@@ -6,7 +6,7 @@ from treeset_exceptions import *
 class TestEmptyTreeSet(unittest.TestCase):
     def setUp(self) -> None:
         self.tree_type = int
-        self.tree =  TreeSet(self.tree_type)
+        self.tree = TreeSet(self.tree_type)
 
     def test_size(self):
         self.assertEqual(self.tree.size(), 0, "Size must be 0")
@@ -67,6 +67,9 @@ class TestEmptyTreeSet(unittest.TestCase):
         with self.assertRaises(AssertionError):
             self.tree.add_all([str(num) for num in range(10)])
 
+    def test3_add_all(self):
+        with self.assertRaises(TypeError):
+            TreeSet(int, [str(num) if num % 2 == 0 else num for num in range(10)])
 
 if __name__ == '__main__':
     unittest.main()

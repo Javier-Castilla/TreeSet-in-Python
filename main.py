@@ -36,7 +36,7 @@ def test_times():
 
 
 if __name__ == "__main__":
-    """runner = unittest.TextTestRunner()
-    runner.run(suite())"""
+    runner = unittest.TextTestRunner()
+    runner.run(suite())
 
-    test_times()
+    #test_times()
