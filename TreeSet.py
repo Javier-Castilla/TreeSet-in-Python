@@ -10,7 +10,6 @@ from data_utils import *
 from treeset_exceptions import *
 import matplotlib.pyplot as plt
 import tkinter as tk
-from test_classes import *
 
 E = TypeVar('E')
 
@@ -149,11 +148,12 @@ class TreeSet:
     TreeSet string representation will be provided inorder.
     """
 
-    RED = TreeNode.Color.RED
-    BLACK = TreeNode.Color.BLACK
+    __RED = TreeNode.Color.RED
+    __BLACK = TreeNode.Color.BLACK
     __attributes = {
         "_TreeSet__root", "_TreeSet__size",
-        "_TreeSet__class_type", "_TreeSet__attributes"
+        "_TreeSet__class_type", "_TreeSet__attributes",
+        '_TreeSet__is_comparable'
     }
 
     @staticmethod
@@ -166,8 +166,8 @@ class TreeSet:
         """
 
         def wrapper(self, item):
-            assert type(item) == self.__class_type, \
-                f"Value type must be '{self.__class_type}'"
+            if not isinstance(item, self.__class_type):
+                raise TypeError(f"Value type must be '{self.__class_type}: {type(item)}'")
 
             return function(self, item)
 
@@ -179,8 +179,8 @@ class TreeSet:
             item = args[0]
             value_type = type(item) if not isinstance(item, type) else item
             if value_type.__eq__ is object.__eq__ \
-                    and value_type.__lt__ is object.__lt__ \
-                    and value_type.__gt__ is object.__gt__:
+                    or (value_type.__lt__ is object.__lt__
+                    and value_type.__gt__ is object.__gt__):
                 raise NonComparableObjectError(
                     f"class {value_type} cannot be compared")
 
@@ -188,8 +188,30 @@ class TreeSet:
 
         return wrapper
 
+    def __complete_comparator(self, value_type: Type):
+        if value_type.__lt__ is object.__lt__ and value_type.__gt__ is not object.__gt__:
+            def __lt__(self, other):
+                if isinstance(other, type(self)):
+                    if self == other:
+                        return True
+                    return not self.__gt__(other)
+                return False
+
+            setattr(value_type, '__lt__', __lt__)
+        elif value_type.__gt__ is object.__gt__ and value_type.__lt__ is not object.__lt__:
+            def __gt__(self, other):
+                if isinstance(other, type(self)):
+                    if self == other:
+                        return True
+                    return not self.__lt__(other)
+                return False
+
+            setattr(value_type, '__gt__', __gt__)
+
+        return value_type
+
     @__check_comparable
-    def __init__(self, generic_type: type,
+    def __init__(self, generic_type: Type,
                  sequence: Collection[E] = None) -> None:
         """Initialize an empty TreeSet if type is given or constructs one with the
         elements contained into the given sequence.
@@ -202,7 +224,7 @@ class TreeSet:
         """
         self.__root = None
         self.__size = 0
-        self.__class_type = generic_type
+        self.__class_type = self.__complete_comparator(generic_type)
 
         if not sequence:
             return
@@ -222,7 +244,6 @@ class TreeSet:
         for item in sequence:
             self.add(item)
 
-    @__check_comparable
     @__type_validation
     def add(self, value: E) -> bool:
         """Inserts the given value into the TreeSet if value is not contained.
@@ -236,25 +257,24 @@ class TreeSet:
         """
         new_node = TreeNode(value)
 
-        if (parent := self.__contains(value)) != new_node:
-            if not parent:
-                self.__root = new_node
-            else:
-                if new_node < parent:
-                    parent.left = new_node
-                else:
-                    parent.right = new_node
-
-                new_node.parent = parent
-
-        else:
+        if (parent := self.__contains(value)) == new_node:
             return False
+
+        if not parent:
+            self.__root = new_node
+        else:
+            if new_node < parent:
+                parent.left = new_node
+            else:
+                parent.right = new_node
+
+            new_node.parent = parent
 
         self.__size += 1
         self.__fix_insertion(new_node)
         return True
 
-    def add_all(self, sequence: Sequence[E]) -> bool:
+    def add_all(self, sequence: Collection[E]) -> bool:
         """Inserts the given values into the TreeSet. If some value is
         already contained, it will not be inserted.
 
@@ -376,6 +396,7 @@ class TreeSet:
         """
         return len(self) == 0
 
+    @__type_validation
     def contains(self, value: E) -> bool:
         """Checks if a given value is contained into the current TreeSet
         instance.
@@ -397,7 +418,7 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        if self.is_empty() or self.last() < value:
+        if self.is_empty() or self.last() <= value:
             return None
 
         current = self.__root
@@ -422,7 +443,7 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-        if self.is_empty() or self.first() > value:
+        if self.is_empty() or self.first() >= value:
             return None
 
         current = self.__root
@@ -586,48 +607,48 @@ class TreeSet:
 
         :param node: to start the balancing from
         """
-        while node != self.__root and node.parent.color == TreeSet.RED:
+        def recolor(node: TreeNode):
+            node.parent.color = self.__BLACK
+            uncle.color = self.__BLACK
+            node.parent.parent.color = self.__RED
+            return node.parent.parent
+
+        while node != self.__root and node.parent.color != self.__BLACK:
             if node.parent == node.parent.parent.left:
                 uncle = node.parent.parent.right
 
-                if uncle and uncle.color == TreeSet.RED:
-                    node.parent.color = TreeSet.BLACK
-                    uncle.color = TreeSet.BLACK
-                    node.parent.parent.color = TreeSet.RED
-                    node = node.parent.parent
+                if uncle and uncle.color == self.__RED:
+                    node = recolor(node)
                 else:
                     if node == node.parent.right:
                         node = node.parent
                         self.__left_rotation(node)
 
-                    node.parent.color = TreeSet.BLACK
-                    node.parent.parent.color = TreeSet.RED
+                    node.parent.color = self.__BLACK
+                    node.parent.parent.color = self.__RED
                     self.__right_rotation(node.parent.parent)
             else:
                 uncle = node.parent.parent.left
 
-                if uncle and uncle.color == TreeSet.RED:
-                    node.parent.color = TreeSet.BLACK
-                    uncle.color = TreeSet.BLACK
-                    node.parent.parent.color = TreeSet.RED
-                    node = node.parent.parent
+                if uncle and uncle.color == self.__RED:
+                    node = recolor(node)
                 else:
                     if node == node.parent.left:
                         node = node.parent
                         self.__right_rotation(node)
 
-                    node.parent.color = TreeSet.BLACK
-                    node.parent.parent.color = TreeSet.RED
+                    node.parent.color = self.__BLACK
+                    node.parent.parent.color = self.__RED
                     self.__left_rotation(node.parent.parent)
 
-        self.__root.color = TreeSet.BLACK
+        self.__root.color = self.__BLACK
 
     def __fix_removal(self, node: TreeNode) -> None:
         """Balance the TreeSet if needed after a deletion.
 
         :param node: to start the balancing from
         """
-        while node != self.__root and (not node or node.color == TreeSet.BLACK):
+        while node != self.__root and (not node or node.color == self.__BLACK):
             if not node.parent:
                 break
 
@@ -636,9 +657,9 @@ class TreeSet:
                 if not sibling:
                     break
 
-                if sibling and sibling.color == TreeSet.RED:
-                    sibling.color = TreeSet.BLACK
-                    node.parent.color = TreeSet.RED
+                if sibling and sibling.color == self.__RED:
+                    sibling.color = self.__BLACK
+                    node.parent.color = self.__RED
                     self.__left_rotation(node.parent)
                     sibling = node.parent.right
 
@@ -646,22 +667,21 @@ class TreeSet:
                     break
 
                 if (
-                        (
-                                not sibling.right or sibling.right.color == TreeSet.BLACK)
-                        and (
-                        not sibling.left or sibling.left.color == TreeSet.BLACK)
+                    (not sibling.right or sibling.right.color == self.__BLACK)
+                    and (not sibling.left or sibling.left.color == self.__BLACK)
                 ):
-                    sibling.color = TreeSet.RED
+                    sibling.color = self.__RED
                     node = node.parent
                 else:
-                    if not sibling.right or sibling.right.color == TreeSet.BLACK:
-                        sibling.left.color = TreeSet.BLACK if sibling.left else None
-                        sibling.color = TreeSet.RED
+                    if not sibling.right or sibling.right.color == self.__BLACK:
+                        sibling.left.color = self.__BLACK if sibling.left else None
+                        sibling.color = self.__RED
                         self.__right_rotation(sibling)
                         sibling = node.parent.right
+
                     sibling.color = node.parent.color
-                    node.parent.color = TreeSet.BLACK
-                    sibling.right.color = TreeSet.BLACK if sibling.right else None
+                    node.parent.color = self.__BLACK
+                    sibling.right.color = self.__BLACK if sibling.right else None
                     self.__left_rotation(node.parent)
                     node = self.__root
             else:
@@ -669,36 +689,36 @@ class TreeSet:
                 if not sibling:
                     break
 
-                if sibling and sibling.color == TreeSet.RED:
-                    sibling.color = TreeSet.BLACK
-                    node.parent.color = TreeSet.RED
+                if sibling and sibling.color == self.__RED:
+                    sibling.color = self.__BLACK
+                    node.parent.color = self.__RED
                     self.__right_rotation(node.parent)
                     sibling = node.parent.left
 
                 if not sibling:
                     break
 
-                if ((not sibling.right or sibling.right.color == TreeSet.BLACK)
-                        and (
-                                not sibling.left
-                                or sibling.left.color == TreeSet.BLACK)
+                if (
+                    (not sibling.right or sibling.right.color == self.__BLACK)
+                    and (not sibling.left or sibling.left.color == self.__BLACK)
                 ):
-                    sibling.color = TreeSet.RED
+                    sibling.color = self.__RED
                     node = node.parent
                 else:
-                    if not sibling.left or sibling.left.color == TreeSet.BLACK:
-                        sibling.right.color = TreeSet.BLACK if sibling.right else None
-                        sibling.color = TreeSet.RED
+                    if not sibling.left or sibling.left.color == self.__BLACK:
+                        sibling.right.color = self.__BLACK if sibling.right else None
+                        sibling.color = self.__RED
                         self.__left_rotation(sibling)
                         sibling = node.parent.left
+
                     sibling.color = node.parent.color
-                    node.parent.color = TreeSet.BLACK
-                    sibling.left.color = TreeSet.BLACK if sibling.left else None
+                    node.parent.color = self.__BLACK
+                    sibling.left.color = self.__BLACK if sibling.left else None
                     self.__right_rotation(node.parent)
                     node = self.__root
 
         if node:
-            node.color = TreeSet.BLACK
+            node.color = self.__BLACK
 
     def __left_rotation(self, node: TreeNode) -> None:
         """Rotates the given TreeNode to the left.
@@ -818,7 +838,7 @@ class TreeSet:
             return False
 
     def __setattr__(self, key, value):
-        """Method called when trying to set a value to an attribute.
+        """Method called when trying to set a value to an attribute that does not exists.
         Once the class is created, new attributes cannot be added.
 
         :param key: name of the attribute
@@ -831,21 +851,29 @@ class TreeSet:
     def draw_tree(self):
         TreeSetDrawing(self)
 
+    def __get_color(self, value):
+        return node.color if (node := self.__contains(value)).value == value \
+            else None
+
+    def __array_color(self):
+        return [self.__get_color(value) for value in self]
+
 
 if __name__ == "__main__":
-    items = [randint(1, 1000) for _ in range(10)]
+    items = [randint(1, 1000000) for _ in range(1000000)]
     # items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
     # items = [Test1() for _ in range(10)]
     # items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
-    t = TreeSet(int, set([num for num in range(10)]))
-    t1 = t.clone()
-    print(t)
-    print(t1)
-    t.draw_tree()
+    #t = TreeSet(int, set([num for num in range(10)]))
+    #t1 = t.clone()
+    t = TreeSet(int)
+    #print(t)
+    #print(t1)
+    #t.draw_tree()
 
 
     # t.pepe = None
-    # t.draw_tree()
+    #t.draw_tree()
     # t = TreeSet(Test3)
     # t.add(Test3())
     # print(t)

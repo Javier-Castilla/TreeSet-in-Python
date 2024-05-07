@@ -49,7 +49,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         self.assertFalse(self.tree.is_empty(), "TreeSet must not be empty after adding 1 value")
 
     def test2_add(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(TypeError):
             self.tree.add("1")
 
     def test1_add_all(self):
@@ -64,7 +64,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         self.assertFalse(self.tree.is_empty(), "TreeSet must not be empty after adding 10 value")
 
     def test2_add_all(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(TypeError):
             self.tree.add_all([str(num) for num in range(10)])
 
     def test3_add_all(self):

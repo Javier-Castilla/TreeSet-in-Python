@@ -136,8 +136,22 @@ class Node:
     def __repr__(self) -> str:
         return f"Node({self.value})"
 
+    def __eq__(self, other: 'TreeNode') -> bool:
+        if isinstance(other, TreeNode):
+            return self.value == other.value
+        return False
 
-@total_ordering
+    def __lt__(self, other: 'TreeNode') -> bool:
+        if isinstance(other, TreeNode):
+            return self.value < other.value
+        return False
+
+    def __gt__(self, other: 'TreeNode') -> bool:
+        if isinstance(other, TreeNode):
+            return not self < other
+        return False
+
+
 class TreeNode(Node):
     class Color(Enum):
         RED = 1
@@ -177,18 +191,6 @@ class TreeNode(Node):
     @right.setter
     def right(self, node: 'TreeNode') -> None:
         self.__right = node
-
-    def __eq__(self, other: 'TreeNode') -> bool:
-        if isinstance(other, TreeNode):
-            return self.value == other.value
-        else:
-            return False
-
-    def __lt__(self, other: 'TreeNode') -> bool:
-        if isinstance(other, TreeNode):
-            return self.value < other.value
-        else:
-            return False
 
     def __str__(self) -> str:
         left = self.left if self.left is None else self.left.value
