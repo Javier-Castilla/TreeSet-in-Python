@@ -1,12 +1,14 @@
 import unittest
+
 from TreeSet import *
 from treeset_exceptions import *
 
 
 class TestEmptyTreeSet(unittest.TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.tree_type = int
         self.tree =  TreeSet(self.tree_type)
+        self.tree_set = TreeSet(int)
 
     def test_size(self):
         self.assertEqual(self.tree.size(), 0, "Size must be 0")

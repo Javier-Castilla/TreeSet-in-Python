@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from data_utils import *
+from Person import Person
 
 E = TypeVar('E')
 
@@ -69,6 +70,9 @@ class TreeSet:
         """
         assert type(value) == self.class_type, \
             f"Value type must be '{self.class_type}'"
+        #if type(value)!=int or type(value)!=str:
+        #    temp = value
+        #    value = inspect.getmembers(value)[0][1]
 
         if not self.__check_comparable(value):
             raise TypeError(f"class {type(value)} cannot be compared")
@@ -613,7 +617,16 @@ class TreeSet:
                 break
 
     def __str__(self) -> str:
-        return f"{[value for value in self]}"
+        if self.class_type==int or self.class_type==str:
+            return f"{[value for value in self]}"
+        else:
+            string = "{{"
+            for indice, value in enumerate(self):
+                if indice != len(self)-1:
+                    string += str(value) + "}\n{"
+                else: 
+                    string += str(value) + "}}"
+            return string
 
     def __contains__(self, value) -> bool:
         node = self.__contains(value)
@@ -629,61 +642,80 @@ class TreeSet:
         else:
             return False
     
-    def draw_buttons(self):
+    def draw_tree(self):
         root = tk.Tk()
         root.title("Árbol Rojo-Negro")
-        root.geometry("400x200")
+        root.geometry("450x200")
         root.resizable(False, False)
+        buttons = []
+        if self.class_type==int:
+            node = tk.IntVar()
+        elif self.class_type==str:
+            node = tk.StringVar()
+        else:
+            node =tk.Variable()
+            node2 =tk.Variable()
+            node3 =tk.Variable()
+            node4 =tk.Variable()
+            label1 = tk.Label(root, text="Nombre", width=12)
+            label2 = tk.Label(root, text="Apellido", width=12)
+            label3 = tk.Label(root, text="Edad", width=12)
+            label4 = tk.Label(root, text="DNI", width=12)
+            entry1 = tk.Entry(root, textvariable=node, width=15)
+            entry2 = tk.Entry(root, textvariable=node2, width=15)
+            entry3 = tk.Entry(root, textvariable=node3, width=15)
+            entry4 = tk.Entry(root, textvariable=node4, width=15)
+            entry1.grid(row=1,column=0)   
+            entry2.grid(row=1,column=1)   
+            entry3.grid(row=1,column=2)   
+            entry4.grid(row=1,column=3)
+            label1.grid(row=0,column=0)   
+            label2.grid(row=0,column=1)   
+            label3.grid(row=0,column=2)   
+            label4.grid(row=0,column=3)
+            buttons.append(tk.Button(root, text="Insertar Nodo", command=lambda: [self.add(Person(node.get(), node2.get(),node3.get(),node4.get())), plt.close('all'), self.__draw()], width=12, height=1))
+            buttons.append(tk.Button(root, text="Eliminar Nodo", command=lambda: [self.remove(Person(node.get(), node2.get(),node3.get(),node4.get())), plt.close('all'), self.__draw()], width=12, height=1))
+            buttons.append(tk.Button(root, text="Borrar Árbol", command=lambda: [self.clear(), plt.close('all'), self.__draw()], width=12, height=1))
+            buttons.append(tk.Button(root, text="Lower", command=lambda: [print(self.lower(Person(node.get(), node2.get(),node3.get(),node4.get())))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Higher", command=lambda: [print(self.higher(Person(node.get(), node2.get(),node3.get(),node4.get())))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Ceiling", command=lambda: [print(self.ceiling(Person(node.get(), node2.get(),node3.get(),node4.get())))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Floor", command=lambda: [print(self.floor(Person(node.get(), node2.get(),node3.get(),node4.get())))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Contains", command=lambda: [print(self.contains(Person(node.get(), node2.get(),node3.get(),node4.get())))], width=12, height=1))
 
-        node = tk.StringVar()
-        node.set("0")  # Valor inicial del número
+        if self.class_type==int or self.class_type==str:
+            entry = tk.Entry(root, textvariable=node)
+            entry.grid(row=1,column=0) 
+            label = tk.Label(root, text="Nodo a Tratar:")
+            label.grid(row=0,column=0)
+            buttons.append(tk.Button(root, text="Insertar Nodo", command=lambda: [self.add(node.get()), plt.close('all'), self.__draw(), print(node.get())], width=12, height=1))
+            buttons.append(tk.Button(root, text="Eliminar Nodo", command=lambda: [self.remove(node.get()), plt.close('all'), self.__draw()], width=12, height=1))
+            buttons.append(tk.Button(root, text="Borrar Árbol", command=lambda: [self.clear(), plt.close('all'), self.__draw()], width=12, height=1))
+            buttons.append(tk.Button(root, text="Lower", command=lambda: [print(self.lower(node.get()))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Higher", command=lambda: [print(self.higher(node.get()))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Ceiling", command=lambda: [print(self.ceiling(node.get()))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Floor", command=lambda: [print(self.floor(node.get()))], width=12, height=1))
+            buttons.append(tk.Button(root, text="Contains", command=lambda: [print(self.contains(node.get()))], width=12, height=1))
+        
+        buttons.append(tk.Button(root, text="First", command=lambda: [print(self.first())], width=12, height=1))
+        buttons.append(tk.Button(root, text="Last", command=lambda: [print(self.last())], width=12, height=1))
+        buttons.append(tk.Button(root, text="IsEmpty", command=lambda: [print(self.is_empty())], width=12, height=1))
+        buttons.append(tk.Button(root, text="Poll_first_button", command=lambda: [print(self.pollFirst()), plt.close('all'), self.__draw()], width=12, height=1))
+        buttons.append(tk.Button(root, text="Poll_last_button", command=lambda: [print(self.pollLast()), plt.close('all'), self.__draw()], width=12, height=1))
+        buttons.append(tk.Button(root, text="Size", command=lambda: [print(self.size())], width=12, height=1))
 
-        label = tk.Label(root, text="Nodo a Tratar:")
-
-
-        entry = tk.Entry(root, textvariable=node)
+        row =2
+        for i, button in enumerate(buttons):
+            if i % 4 != 0:
+                button.grid(row=row, column=i % 4, padx=5, pady=5)
+            else:
+                row+=1
+                button.grid(row=row, column=i % 4, padx=5, pady=5)
         
 
-        insert_button = tk.Button(root, text="Insertar Nodo", command=lambda: [self.add(int(node.get())), plt.close('all'), self.draw_tree()])
-        delete_button = tk.Button(root, text="Eliminar Nodo", command=lambda: [self.remove(int(node.get())), plt.close('all'), self.draw_tree()])
-        clear_button = tk.Button(root, text="Borrar Árbol", command=lambda: [self.clear(), plt.close('all'), self.draw_tree()])
-        lower_button = tk.Button(root, text="Lower", command=lambda: [print(self.lower(int(node.get())))])
-        higher_button = tk.Button(root, text="Higher", command=lambda: [print(self.higher(int(node.get())))])
-        ceiling_button = tk.Button(root, text="Ceiling", command=lambda: [print(self.ceiling(int(node.get())))])
-        floor_button = tk.Button(root, text="Floor", command=lambda: [print(self.floor(int(node.get())))])
-        contains_button = tk.Button(root, text="Contains", command=lambda: [print(self.contains(int(node.get())))])
-        first_button = tk.Button(root, text="First", command=lambda: [print(self.first())])
-        last_button = tk.Button(root, text="Last", command=lambda: [print(self.last())])
-        isEmpty_button = tk.Button(root, text="IsEmpty", command=lambda: [print(self.is_empty())])
-        Pollfirst_button = tk.Button(root, text="Poll_first_button", command=lambda: [print(self.pollFirst()), plt.close('all'), self.draw_tree()])
-        Polllast_button = tk.Button(root, text="Poll_last_button", command=lambda: [print(self.pollLast()), plt.close('all'), self.draw_tree()])
-        size_button = tk.Button(root, text="Size", command=lambda: [print(self.size())])
-        
-        label.grid(row=0,column=0)
-        entry.grid(row=0,column=1)   
-        
-        insert_button.grid(row=2,column=0)
-        delete_button.grid(row=2,column=1)  
-        clear_button.grid(row=2,column=2)    
-
-        lower_button.grid(row=3,column=0)
-        higher_button.grid(row=3,column=1)  
-        ceiling_button.grid(row=3,column=2) 
-        floor_button.grid(row=3,column=3)  
-
-        contains_button.grid(row=4,column=0)
-        first_button.grid(row=4,column=1)  
-        last_button.grid(row=4,column=2) 
-        isEmpty_button.grid(row=4,column=3)    
-
-        Pollfirst_button.grid(row=5,column=0)
-        Polllast_button.grid(row=5,column=1)  
-        size_button.grid(row=5,column=2) 
-
-        self.draw_tree()
+        self.__draw()
         root.mainloop()
 
-    def draw_tree(self):
+    def __draw(self):
         fig, ax = plt.subplots()
         fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
         self.__draw_node(ax, self.__root)
@@ -693,8 +725,12 @@ class TreeSet:
     def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
         if node is not None:
             color = "red" if node.color == self.RED else "black"
-            ax.plot([x], [y], marker='o', markersize=40, color=color, zorder=2)
-            ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center', color='white', zorder=3) 
+            if self.class_type==int or self.class_type==str:
+                ax.plot([x], [y], marker='o', markersize=40, color=color, zorder=2)
+                ax.text(x, y, str(node.value), fontsize=12, ha='center', va='center', color='white', zorder=3) 
+            else:
+                ax.plot([x], [y], marker='o', markersize=75, color=color, zorder=2)
+                ax.text(x, y, str(node.value), fontsize=11, ha='center', va='center', color='white', zorder=3) 
             if node.left:
                 self.__draw_node(ax, node.left, x-dx, y-dy, dx/2, dy*2)
             if node.right:
