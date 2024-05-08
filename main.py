@@ -31,26 +31,50 @@ def fill_list(list: list, size):
             auxiliar_items.add(size)
             list.append(num)
 
+def counting_sort(arr):
+    # Encuentra el máximo y mínimo en el array
+    max_val = max(arr)
+    min_val = min(arr)
+
+    # Calcula el rango de valores posibles
+    range_val = max_val - min_val + 1
+
+    # Inicializa un array de conteo con el rango
+    count = [0] * range_val
+
+    # Cuenta la frecuencia de cada elemento
+    for num in arr:
+        count[num - min_val] += 1
+
+    # Reconstruye el array ordenado
+    sorted_arr = []
+    for i in range(range_val):
+        sorted_arr.extend([i + min_val] * count[i])
+
+    return sorted_arr
 
 def test_times():
     with open("data/timesBST.csv", mode="w", encoding="utf-8") as fw1, open("data/timesIN.csv", mode="w", encoding="utf-8") as fw2:
         size = 1
         print("size;miliseconds;seconds")
 
-        while size < 16 * 10 ** 6:
+        while size < 17 * 10 ** 6:
             # Registro del tiempo de inicio
             fill_list(items := list(), size)
             start_time = time.perf_counter()
 
             tree = TreeSet(int, items)
+            for i in range(size):
+                tree.add(i)
+            #counting_sort([i for i in range(size)])
 
             # Registro del tiempo de finalización
             end_time = time.perf_counter()
             duration = (end_time - start_time) * 1000
             print(f"Tiempo de ejecución ({size}):", duration, "milisegundos")
-            print(
+            """print(
                 f"{size};{round(duration, 3)};{round(duration / 1000, 3)}".replace(
-                    ".", ","), file=fw1)
+                    ".", ","), file=fw1)"""
             """start_time = time.perf_counter()
 
             for i in items:

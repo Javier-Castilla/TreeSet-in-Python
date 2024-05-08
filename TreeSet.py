@@ -114,7 +114,7 @@ class TreeSetDrawing:
 
     def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
         if node is not None:
-            color = "red" if node.color == self.__tree.RED else "black"
+            color = "red" if node.color == self.__tree._TreeSet__RED else "black"
             ax.plot([x], [y], marker='o', markersize=40, color=color,
                     zorder=2)  # Dibujar nodo con un tamaño mayor y detrás de las líneas
             ax.text(x, y, str(node.value), fontsize=12, ha='center',
@@ -244,7 +244,7 @@ class TreeSet:
         for item in sequence:
             self.add(item)
 
-    @__type_validation
+    #@__type_validation
     def add(self, value: E) -> bool:
         """Inserts the given value into the TreeSet if value is not contained.
 
@@ -255,20 +255,22 @@ class TreeSet:
         :raises AssertionError: If the given value's type does not match generic
         type
         """
-        new_node = TreeNode(value)
+        """if type(value) != self.__class_type:
+            return False"""
 
-        if (parent := self.__contains(value)) == new_node:
+        if (parent := self.__contains(value)) and parent.value == value:
             return False
+
+        new_node = TreeNode(value)
 
         if not parent:
             self.__root = new_node
+        elif new_node < parent:
+            parent.left = new_node
         else:
-            if new_node < parent:
-                parent.left = new_node
-            else:
-                parent.right = new_node
+            parent.right = new_node
 
-            new_node.parent = parent
+        new_node.parent = parent
 
         self.__size += 1
         self.__fix_insertion(new_node)
@@ -591,14 +593,17 @@ class TreeSet:
             return self.__root
 
         parent = None
-        root = self.__root
+        current = self.__root
 
-        while root:
-            if root.value == value:
-                return root
+        while current:
+            if current.value == value:
+                return current
 
-            parent = root
-            root = root.left if value < root.value else root.right
+            parent = current
+            if value < current.value:
+                current = current.left
+            else:
+                current = current.right
 
         return parent
 
@@ -613,7 +618,7 @@ class TreeSet:
             node.parent.parent.color = self.__RED
             return node.parent.parent
 
-        while node != self.__root and node.parent.color != self.__BLACK:
+        while node and node != self.__root and node.parent.color != self.__BLACK:
             if node.parent == node.parent.parent.left:
                 uncle = node.parent.parent.right
 
@@ -860,20 +865,20 @@ class TreeSet:
 
 
 if __name__ == "__main__":
-    items = [randint(1, 1000000) for _ in range(1000000)]
+    items = [randint(1, 1000000) for _ in range(20)]
     # items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
     # items = [Test1() for _ in range(10)]
     # items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
     #t = TreeSet(int, set([num for num in range(10)]))
     #t1 = t.clone()
-    t = TreeSet(int)
+    t = TreeSet(int, items)
     #print(t)
     #print(t1)
     #t.draw_tree()
 
 
     # t.pepe = None
-    #t.draw_tree()
+    t.draw_tree()
     # t = TreeSet(Test3)
     # t.add(Test3())
     # print(t)
