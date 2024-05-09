@@ -13,6 +13,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from data_utils import *
 from Person import Person
+import treeset_exceptions
 
 E = TypeVar('E')
 
@@ -30,7 +31,20 @@ class TreeSet:
     RED = TreeNode.Color.RED
     BLACK = TreeNode.Color.BLACK
 
+    def __check_comparable(function):
+        def wrapper(self, *args):
+            item = args[0]
+            value_type = type(item) if not isinstance(item, type) else item
+            if value_type.__eq__ is object.__eq__ \
+                    or (value_type.__lt__ is object.__lt__
+                    and value_type.__gt__ is object.__gt__):
+                raise treeset_exceptions.NonComparableObjectError(
+                    f"class {value_type} cannot be compared")
 
+            return function(self, *args)
+
+        return wrapper
+    @__check_comparable
     def __init__(self, generic_type: Any, sequence: Collection[E] = None) -> None:
         """
         Initialize an empty TreeSet if type is given or constructs one with the
@@ -44,7 +58,7 @@ class TreeSet:
         """
         self.__root = self.__first = self.__last = None
         self.__size = 0
-        self.class_type = generic_type
+        self.class_type = self.__complete_comparator(generic_type)
 
         if sequence:
             if isinstance(sequence, Collection):
@@ -68,13 +82,7 @@ class TreeSet:
         :raises AssertionError: If the given value's type does not match generic
         type
         """
-        assert type(value) == self.class_type, \
-            f"Value type must be '{self.class_type}'"
-        #if type(value)!=int or type(value)!=str:
-        #    temp = value
-        #    value = inspect.getmembers(value)[0][1]
-
-        if not self.__check_comparable(value):
+        if not isinstance(value, self.class_type):
             raise TypeError(f"class {type(value)} cannot be compared")
 
         new_node = TreeNode(value, TreeSet.RED)
@@ -131,6 +139,8 @@ class TreeSet:
         :return: True if value could be deleted else False
         :rtype: bool
         """
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
         if self.is_empty() or (root := self.__contains(value)).value != value:
             return False
 
@@ -227,7 +237,8 @@ class TreeSet:
         :return: True if value is contained else False
         :rtype: bool
         """
-
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
         return value in self
 
     def ceiling(self, value: E) -> Union[E, None]:
@@ -240,6 +251,8 @@ class TreeSet:
         to the given element
         :rtype: TreeSet
         """
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
         if self.is_empty() or self.last() < value:
             return None
 
@@ -270,6 +283,8 @@ class TreeSet:
         equal to the given element
         :rtype: TreeSet
         """
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
 
         if self.is_empty() or self.first() > value:
             return None
@@ -363,7 +378,8 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
-
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
         if self.is_empty() or self.first() > value:
             return None
         node = self.__root
@@ -393,6 +409,8 @@ class TreeSet:
             possible, None will be returned.
         :rtype: Union[E, None]
         """
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
         if self.is_empty() or self.first() > value:
             return None
         node = self.__root
@@ -412,16 +430,33 @@ class TreeSet:
                         return None
                 node = node.right
 
-    def __check_comparable(self, value: E) -> bool:
-        try:
-            value == value
-            value < value
-            value > value
-            return True
-        except:
-            return False
+    
+
+    def __complete_comparator(self, value_type: Type):
+        if value_type.__lt__ is object.__lt__ and value_type.__gt__ is not object.__gt__:
+            def __lt__(self, other):
+                if isinstance(other, type(self)):
+                    if self == other:
+                        return True
+                    return not self.__gt__(other)
+                return False
+
+            setattr(value_type, '__lt__', __lt__)
+        elif value_type.__gt__ is object.__gt__ and value_type.__lt__ is not object.__lt__:
+            def __gt__(self, other):
+                if isinstance(other, type(self)):
+                    if self == other:
+                        return True
+                    return not self.__lt__(other)
+                return False
+
+            setattr(value_type, '__gt__', __gt__)
+
+        return value_type
 
     def __contains(self, value: E) -> TreeNode:
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
         if not len(self):
             return self.__root
 
@@ -629,6 +664,8 @@ class TreeSet:
             return string
 
     def __contains__(self, value) -> bool:
+        if not isinstance(value, self.class_type):
+            raise TypeError(f"class {type(value)} cannot be compared")
         node = self.__contains(value)
         return node is not None and node.value == value
 
@@ -751,6 +788,8 @@ class TreeSet:
         return self.__contains(value).color
     
     def __array_color(self):
+        if self.is_empty():
+            return None
         array = []
         for i in self:
             array.append(self.__get_color(i))
