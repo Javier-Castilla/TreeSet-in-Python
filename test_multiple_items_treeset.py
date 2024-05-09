@@ -283,5 +283,102 @@ class TestInt(unittest.TestCase):
             real_colors = [TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK]
             self.assertEqual(tree_colors, real_colors)
 
+        def test_case_4_1(self):
+            """Test Case 4: Uncle is red and the violator node is in external position."""
+
+            self.tree_set_int.add_all([10, 5, 15, 3, 7])
+            self.tree_set_int.add(2)
+            tree_colors = self.tree_set_int._TreeSet__array_color()
+            real_colors = [TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK,
+                        TreeNode.Color.BLACK, TreeNode.Color.BLACK]
+            self.assertEqual(tree_colors, real_colors)
+        def test_case_4_2(self):
+            """Test Case 4: Uncle is red and the violator node is in internal position."""
+
+            self.tree_set_int.add_all([10, 5, 15, 3, 7])
+            self.tree_set_int.add(4)
+            tree_colors = self.tree_set_int._TreeSet__array_color()
+            real_colors = [TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.RED, TreeNode.Color.BLACK,
+                        TreeNode.Color.BLACK, TreeNode.Color.BLACK]
+            self.assertEqual(tree_colors, real_colors)
+
+        def test_Case_5(self):
+            """Test Case 5: Uncle is black and the violator node is in external position."""
+            self.tree_set_int.add_all([10, 5, 15, 3])
+            self.tree_set_int.add(2)
+            tree_colors = self.tree_set_int._TreeSet__array_color()
+            real_colors = [TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED, TreeNode.Color.BLACK,
+                        TreeNode.Color.BLACK]
+            self.assertEqual(tree_colors, real_colors)
+
+        def test_case_6(self):
+            """Test Case 6: Uncle is black and the violator node is in internal position."""
+            self.tree_set_int.add_all([10, 5, 15, 6])
+            self.tree_set_int.add(7)
+            tree_colors = self.tree_set_int._TreeSet__array_color()
+            real_colors = [TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.RED,
+                        TreeNode.Color.BLACK, TreeNode.Color.BLACK]
+            self.assertEqual(tree_colors, real_colors)
+
+        
+        def test_case_1_b_remove(self):
+            "Test Case 1b: Node to be removed is the root and have a red son"
+            self.tree_set_int.add_all([10, 12])
+            self.tree_set_int.remove(10)
+            tree_colors = self.tree_set_int._TreeSet__array_color()
+            real_colors = [TreeNode.Color.BLACK]
+            self.assertEqual(tree_colors, real_colors)
+
+        def test_Case_2_b(self):
+            """Test Case 2: Node to be removed is red"""
+            self.tree_set_int.add_all([10, 5])
+            self.tree_set_int.remove(5)
+            tree_color = self.tree_set_int._TreeSet__array_color()
+            real_colors = [TreeNode.Color.BLACK]
+            self.assertEqual(tree_color, real_colors)
+
+        def test_case_5_remove(self):
+            """Test Case 5: The sibling is red, and both the parent and the sibling's children are black."""
+            self.tree_set_int.add_all([10, 3, 13, 16, 20, 12, 2, 5])
+            self.tree_set_int.remove(3)
+
+            tree_colors = self.tree_set_int._TreeSet__array_color()
+            real_colors = [TreeNode.Color.RED, TreeNode.Color.BLACK, TreeNode.Color.BLACK, TreeNode.Color.RED,
+                        TreeNode.Color.BLACK,TreeNode.Color.RED,TreeNode.Color.BLACK]
+
+            self.assertEqual(tree_colors, real_colors)
+
+        def test_case_6_remove(self):
+            """Test Case 6: The sibling is black, and both nephew are also black but the parent is red."""
+            self.tree_set_int.add_all([10, 5, 17, 3, 7, 15, 25])
+            self.tree_set_int._TreeSet__root.color=TreeNode.Color.RED
+            self.tree_set_int._TreeSet__root.left.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.right.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.right.right.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.right.left.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.left.left.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.left.right.color=TreeNode.Color.BLACK
+            self.tree_set_int.remove(5)
+            self.assertEqual(self.tree_set_int._TreeSet__root.color, TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set_int._TreeSet__root.right.color, TreeNode.Color.RED)
+
+        def test_case_7_remove(self):
+            """Test Case 7: The sibling is black, and furthest nephew is red."""
+            self.tree_set_int.add_all([10, 5, 19, 3, 7, 15, 25])
+            for node in self.tree_set_int:
+                self.tree_set_int._TreeSet__contains(node).color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.color=TreeNode.Color.RED
+            self.tree_set_int._TreeSet__root.left.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.right.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.right.right.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.right.right.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.right.right.color=TreeNode.Color.RED
+            self.tree_set_int._TreeSet__root.right.left.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.left.left.color=TreeNode.Color.BLACK
+            self.tree_set_int._TreeSet__root.left.right.color=TreeNode.Color.BLACK
+            self.tree_set_int.remove(5)
+            self.assertEqual(self.tree_set_int._TreeSet__root.color, TreeNode.Color.BLACK)
+            self.assertEqual(self.tree_set_int._TreeSet__root.right.color, TreeNode.Color.BLACK)
+
 if __name__ == '__main__':
     unittest.main()
