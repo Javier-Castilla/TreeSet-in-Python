@@ -11,6 +11,7 @@ This module provides four different minor data structures classes.
 from enum import Enum
 from functools import total_ordering
 from typing import *
+from treeset_exceptions import *
 
 
 class SimpleQueue:
@@ -199,6 +200,147 @@ class TreeNode(Node):
 
     def __repr__(self) -> str:
         return f"TreeNode({self.value}, {self.color})"
+
+
+E = TypeVar('E')
+
+class RedBlackTree:
+
+    @staticmethod
+    def __check_comparable(function):
+        def wrapper(self, *args):
+            item = args[0]
+            value_type = type(item) if not isinstance(item, type) else item
+            if value_type.__eq__ is object.__eq__ \
+                    or (value_type.__lt__ is object.__lt__
+                        and value_type.__gt__ is object.__gt__):
+                raise NonComparableObjectError(
+                    f"class {value_type} cannot be compared")
+
+            return function(self, *args)
+
+        return wrapper
+
+    def __complete_comparator(self, value_type: Type):
+        if value_type.__lt__ is object.__lt__ and value_type.__gt__ is not object.__gt__:
+            def __lt__(self, other):
+                if isinstance(other, type(self)):
+                    if self == other:
+                        return True
+                    return not self.__gt__(other)
+                return False
+
+            setattr(value_type, '__lt__', __lt__)
+        elif value_type.__gt__ is object.__gt__ and value_type.__lt__ is not object.__lt__:
+            def __gt__(self, other):
+                if isinstance(other, type(self)):
+                    if self == other:
+                        return True
+                    return not self.__lt__(other)
+                return False
+
+            setattr(value_type, '__gt__', __gt__)
+
+        return value_type
+
+    @staticmethod
+    def __type_validation(function):
+        """Decorator used to validate item type when adding or deleting it from a TreeSet.
+        This decorator should not be used with other object instance but a TreeSet.
+
+        :param function: function used of the TreeSet
+        :return: function return statement
+        """
+
+        def wrapper(self, item):
+            if not isinstance(item, self.__class_type):
+                raise TypeError(f"Value type must be '{self.__class_type}: {type(item)}'")
+
+            return function(self, item)
+
+        return wrapper
+
+    @__check_comparable
+    def __init__(self, tree_type: Type):
+        self.__tree_type = self.__complete_comparator(tree_type)
+        self.__root = None
+        self.__size = 0
+
+    @__type_validation
+    def add(self, value: E) -> bool:
+        """Inserts the given value into the TreeSet if value is not contained.
+
+        :param value: Value to insert into the TreeSet
+        :type value: E
+        :return: True if the value have been added to the TreeSet else False
+        :rtype: bool
+        :raises AssertionError: If the given value's type does not match generic
+        type
+        """
+        if (parent := self.__contains(value)) and parent.value == value:
+            return False
+
+        new_node = TreeNode(value)
+
+        if not parent:
+            self.__root = new_node
+        elif new_node < parent:
+            parent.left = new_node
+        else:
+            parent.right = new_node
+
+        new_node.parent = parent
+
+        self.__size += 1
+        self.__fix_insertion(new_node)
+        return True
+
+    def remove(self, value: E) -> bool:
+        if self.is_empty() or (current := self.__contains(value)).value != value:
+            return False
+
+        successor, position = self.__successor(current)
+        if successor and position == 1:
+            ...
+
+    @staticmethod
+    def __successor(node: TreeNode) -> Union[TreeNode, None]:
+        if not node:
+            return (None, None)
+        elif node.right:
+            current = node.right
+            while current.left:
+                current = current.left
+
+            return (current, 1)
+        else:
+            return (node.left, -1)
+
+    def __contains(self, value: E) -> TreeNode:
+        """Checks if the given value is contained into the current TreeSet and
+        returns the TreeNode where it is contained or a leaf.
+
+        :param value: value to check
+        :return: TreeNode having the searched value or a leaf
+        :rtype: TreeNode
+        """
+        if self.is_empty():
+            return self.__root
+
+        parent = None
+        current = self.__root
+
+        while current:
+            if current.value == value:
+                return current
+
+            parent = current
+            if value < current.value:
+                current = current.left
+            else:
+                current = current.right
+
+        return parent
 
 if __name__ == "__main__":
     stack = SimpleQueue()

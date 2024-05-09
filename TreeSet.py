@@ -234,17 +234,9 @@ class TreeSet:
                 f"Second argument must be a sequence but {type(sequence)} was given"
             )
 
-        if len(set(map(type, sequence))) != 1:
-            raise TypeError("Sequence elements type must be the same")
+        self.add_all(items)
 
-        if type(next(iter(sequence))) != self.__class_type:
-            raise TypeError(
-                f"Expected elements of type {self.__class_type} ")
-
-        for item in sequence:
-            self.add(item)
-
-    #@__type_validation
+    @__type_validation
     def add(self, value: E) -> bool:
         """Inserts the given value into the TreeSet if value is not contained.
 
@@ -255,9 +247,6 @@ class TreeSet:
         :raises AssertionError: If the given value's type does not match generic
         type
         """
-        """if type(value) != self.__class_type:
-            return False"""
-
         if (parent := self.__contains(value)) and parent.value == value:
             return False
 
@@ -287,7 +276,8 @@ class TreeSet:
         :raises AssertionError: If the given value's type does not match generic
         type
         """
-        old_size = len(self)
+        old_size = self.size()
+
         for item in sequence:
             self.add(item)
 
@@ -302,49 +292,32 @@ class TreeSet:
         :return: True if value could be deleted else False
         :rtype: bool
         """
-        if self.is_empty() or (root := self.__contains(value)).value != value:
+        if self.is_empty() or (parent := self.__contains(value)).value != value:
             return False
 
-        successor = None
-        if not root.left and not root.right:
-            if len(self) == 1:
-                self.__root = None
-            else:
-                if root < root.parent:
-                    root.parent.left = None
-                else:
-                    root.parent.right = None
+        successor = self.__successor(parent)
+
+        if successor == parent.left:
+            successor.
         else:
-            successor = None
-            current = root.right
-            while current:
-                successor = current
+            successor.parent = parent.parent
+            if parent:
+                if parent == parent.parent.left:
+                    parent.parent.left = successor
+                else:
+                    parent.parent.right = successor
+
+    def __successor(self, node: TreeNode) -> Union[TreeNode, None]:
+        if not node:
+            return None
+        elif node.right:
+            current = node.right
+            while current.left:
                 current = current.left
 
-            if successor:
-                root.value = successor.value
-                if successor.parent == root:
-                    root.right = successor.right
-                else:
-                    successor.parent.left = successor.right
-
-                if child := successor.right:
-                    child.parent = successor.parent
-            else:
-                successor = root.left
-                if root.parent:
-                    if root.parent.left == root:
-                        root.parent.left = successor
-                    else:
-                        root.parent.right = successor
-
-                    successor.parent = root.parent
-                else:
-                    self.__root = successor
-
-        self.__size -= 1
-        self.__fix_removal(successor if successor else root)
-        return True
+            return current
+        else:
+            return node.left
 
     def size(self) -> int:
         """Provides the size of the current TreeSet.
@@ -653,83 +626,66 @@ class TreeSet:
 
         :param node: to start the balancing from
         """
-        while node != self.__root and (not node or node.color == self.__BLACK):
-            if not node.parent:
-                break
-
+        while node != self.__root and node.color == self.__BLACK:
             if node == node.parent.left:
                 sibling = node.parent.right
-                if not sibling:
-                    break
 
-                if sibling and sibling.color == self.__RED:
+                if sibling.color == self.__RED:
                     sibling.color = self.__BLACK
                     node.parent.color = self.__RED
-                    self.__left_rotation(node.parent)
+                    self.__left_rotation(node)
                     sibling = node.parent.right
 
-                if not sibling:
-                    break
-
-                if (
-                    (not sibling.right or sibling.right.color == self.__BLACK)
-                    and (not sibling.left or sibling.left.color == self.__BLACK)
-                ):
+                if sibling.left.color == self.__BLACK and \
+                    sibling.right.color == self.__BLACK:
                     sibling.color = self.__RED
                     node = node.parent
                 else:
-                    if not sibling.right or sibling.right.color == self.__BLACK:
-                        sibling.left.color = self.__BLACK if sibling.left else None
+                    if sibling.right.color == self.__BLACK:
+                        sibling.left.color = self.__BLACK
                         sibling.color = self.__RED
                         self.__right_rotation(sibling)
                         sibling = node.parent.right
 
                     sibling.color = node.parent.color
                     node.parent.color = self.__BLACK
-                    sibling.right.color = self.__BLACK if sibling.right else None
+                    sibling.right.color = self.__BLACK
                     self.__left_rotation(node.parent)
                     node = self.__root
             else:
                 sibling = node.parent.left
-                if not sibling:
-                    break
 
-                if sibling and sibling.color == self.__RED:
+                if sibling.color == self.__RED:
                     sibling.color = self.__BLACK
                     node.parent.color = self.__RED
                     self.__right_rotation(node.parent)
                     sibling = node.parent.left
 
-                if not sibling:
-                    break
-
-                if (
-                    (not sibling.right or sibling.right.color == self.__BLACK)
-                    and (not sibling.left or sibling.left.color == self.__BLACK)
-                ):
-                    sibling.color = self.__RED
-                    node = node.parent
-                else:
-                    if not sibling.left or sibling.left.color == self.__BLACK:
-                        sibling.right.color = self.__BLACK if sibling.right else None
+                    if sibling.right.color == self.__BLACK and \
+                        sibling.left.color == self.__BLACK:
                         sibling.color = self.__RED
-                        self.__left_rotation(sibling)
-                        sibling = node.parent.left
+                        node = node.parent
+                    else:
+                        if sibling.left.color == self.__BLACK:
+                            sibling.right.color = self.__BLACK
+                            sibling.color = self.__RED
+                            self.__left_rotation(sibling)
+                            sibling = node.parent.left
 
-                    sibling.color = node.parent.color
-                    node.parent.color = self.__BLACK
-                    sibling.left.color = self.__BLACK if sibling.left else None
-                    self.__right_rotation(node.parent)
-                    node = self.__root
-
-        if node:
-            node.color = self.__BLACK
+                        sibling.color = node.parent.color
+                        node.parent.color = self.__BLACK
+                        sibling.left.color = self.__BLACK
+                        self.__right_rotation(node.parent)
+                        self.__right_rotation()
 
     def __left_rotation(self, node: TreeNode) -> None:
         """Rotates the given TreeNode to the left.
 
         :param node: TreeNode to rotate
         """
+        if not node:
+            return
+
         other = node.right
         node.right = other.left
 
@@ -752,6 +708,9 @@ class TreeSet:
 
         :param node: TreeNode to rotate
         """
+        if not node:
+            return
+
         other = node.left
         node.left = other.right
 
@@ -874,11 +833,11 @@ if __name__ == "__main__":
     t = TreeSet(int, items)
     #print(t)
     #print(t1)
-    #t.draw_tree()
+    t.draw_tree()
 
 
     # t.pepe = None
-    t.draw_tree()
+    # t.draw_tree()
     # t = TreeSet(Test3)
     # t.add(Test3())
     # print(t)
