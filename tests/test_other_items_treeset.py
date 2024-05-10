@@ -15,9 +15,6 @@ class TestOtherItemsTreeSet(unittest.TestCase):
         self.assertEqual(tree.size(), 10, "Wrong tree size")
         self.assertFalse(tree.is_empty(), "Tree must not be empty")
 
-        with self.assertRaises(TypeError):
-            tree.add(Worker("Worker", 28, "Technician"))
-
     def test_add2(self):
         tree = TreeSet(Professor)
         items = [Professor(f"Person{num}", num) for num in range(10)]

@@ -6,10 +6,14 @@ in a red-black tree data structure.
 """
 
 from random import randint
+
+import pruebas
 from data_utils import *
 from treeset_exceptions import *
 import matplotlib.pyplot as plt
 import tkinter as tk
+
+from tests.tests_classes import *
 
 E = TypeVar('E')
 
@@ -39,19 +43,22 @@ class TreeSetDrawing:
 
         insert = tk.Button(root, text="Insertar Valor",
                            command=lambda: (
-                               self.__tree.add(int(value.get())), plt.close('all'),
+                               self.__tree.add(int(value.get())),
+                               plt.close('all'),
                                self.__draw()))
         buttons.append(insert)
         delete = tk.Button(root, text="Eliminar Valor",
                            command=lambda: (
-                               self.__tree.remove(int(value.get())), plt.close('all'),
+                               self.__tree.remove(int(value.get())),
+                               plt.close('all'),
                                self.__draw()))
         buttons.append(delete)
         clear = tk.Button(root, text="Borrar Árbol", command=lambda: (
             self.__tree.clear(), plt.close('all'), self.__draw()))
         buttons.append(clear)
         lower = tk.Button(root, text="Lower",
-                          command=lambda: (print(self.__tree.lower(int(value.get())))))
+                          command=lambda: (
+                              print(self.__tree.lower(int(value.get())))))
         buttons.append(lower)
         higher = tk.Button(root, text="Higher", command=lambda: (
             print(self.__tree.higher(int(value.get())))))
@@ -60,7 +67,8 @@ class TreeSetDrawing:
             print(self.__tree.ceiling(int(value.get())))))
         buttons.append(ceiling)
         floor = tk.Button(root, text="Floor",
-                          command=lambda: (print(self.__tree.floor(int(value.get())))))
+                          command=lambda: (
+                              print(self.__tree.floor(int(value.get())))))
         buttons.append(floor)
         first = tk.Button(root, text="First",
                           command=lambda: (print(self.__tree.first())))
@@ -70,19 +78,22 @@ class TreeSetDrawing:
         buttons.append(last)
         poll_first = tk.Button(root, text="Poll First",
                                command=lambda: (
-                                   print(self.__tree.poll_first()), plt.close('all'),
+                                   print(self.__tree.poll_first()),
+                                   plt.close('all'),
                                    self.__draw()))
         buttons.append(poll_first)
         poll_last = tk.Button(root, text="Poll Last",
                               command=lambda: (
-                                  print(self.__tree.poll_last()), plt.close('all'),
+                                  print(self.__tree.poll_last()),
+                                  plt.close('all'),
                                   self.__draw()))
         buttons.append(poll_last)
         size = tk.Button(root, text="Size", command=lambda: (print(len(self))))
         buttons.append(size)
         random = tk.Button(root, text="Random Tree",
                            command=lambda: (plt.close('all'),
-                                            self.__draw_random_tree(int(value.get())))
+                                            self.__draw_random_tree(
+                                                int(value.get())))
                            )
         buttons.append(random)
 
@@ -113,25 +124,25 @@ class TreeSetDrawing:
         plt.show()
 
     def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
-        if node is not None:
+        if node is not self.__tree.__NULL:
             color = "red" if node.color == self.__tree._TreeSet__RED else "black"
             ax.plot([x], [y], marker='o', markersize=40, color=color,
                     zorder=2)  # Dibujar nodo con un tamaño mayor y detrás de las líneas
             ax.text(x, y, str(node.value), fontsize=12, ha='center',
                     va='center', color='white',
                     zorder=3)  # Etiquetar nodo
-            if node.left:
+            if node.left is not self.__tree.__NULL:
                 self.__draw_node(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
-            if node.right:
+            if node.right is not self.__tree.__NULL:
                 self.__draw_node(ax, node.right, x + dx, y - dy, dx / 2, dy * 2)
 
     def __draw_edges(self, ax, node, x=0, y=0, dx=1, dy=1):
-        if node is not None:
-            if node.left:
+        if node is not self.__tree.__NULL:
+            if node.left is not self.__tree.__NULL:
                 ax.plot([x, x - dx], [y, y - dy], color='black',
                         zorder=1)  # Dibujar conexión izquierda en negro y detrás de los nodos
                 self.__draw_edges(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
-            if node.right:
+            if node.right is not self.__tree.__NULL:
                 ax.plot([x, x + dx], [y, y - dy], color='black',
                         zorder=1)  # Dibujar conexión derecha en negro y detrás de los nodos
                 self.__draw_edges(ax, node.right, x + dx, y - dy, dx / 2,
@@ -148,12 +159,12 @@ class TreeSet:
     TreeSet string representation will be provided inorder.
     """
 
-    __RED = TreeNode.Color.RED
-    __BLACK = TreeNode.Color.BLACK
+    __RED = TreeNode.TreeNodeUtils.RED
+    __BLACK = TreeNode.TreeNodeUtils.BLACK
     __attributes = {
         "_TreeSet__root", "_TreeSet__size",
         "_TreeSet__class_type", "_TreeSet__attributes",
-        '_TreeSet__is_comparable'
+        '_TreeSet__is_comparable', "iteraciones", "contar"
     }
 
     @staticmethod
@@ -167,7 +178,8 @@ class TreeSet:
 
         def wrapper(self, item):
             if not isinstance(item, self.__class_type):
-                raise TypeError(f"Value type must be '{self.__class_type}: {type(item)}'")
+                raise TypeError(
+                    f"Value type must be '{self.__class_type}: {type(item)}'")
 
             return function(self, item)
 
@@ -180,7 +192,7 @@ class TreeSet:
             value_type = type(item) if not isinstance(item, type) else item
             if value_type.__eq__ is object.__eq__ \
                     or (value_type.__lt__ is object.__lt__
-                    and value_type.__gt__ is object.__gt__):
+                        and value_type.__gt__ is object.__gt__):
                 raise NonComparableObjectError(
                     f"class {value_type} cannot be compared")
 
@@ -193,7 +205,7 @@ class TreeSet:
             def __lt__(self, other):
                 if isinstance(other, type(self)):
                     if self == other:
-                        return True
+                        return False
                     return not self.__gt__(other)
                 return False
 
@@ -202,7 +214,7 @@ class TreeSet:
             def __gt__(self, other):
                 if isinstance(other, type(self)):
                     if self == other:
-                        return True
+                        return False
                     return not self.__lt__(other)
                 return False
 
@@ -222,9 +234,14 @@ class TreeSet:
         :param: sequence: A sequence to take items from and add them to the TreeSet
         :type sequence: Sequence[E]
         """
-        self.__root = None
+        super().__init__()
+        self.__root = self.__NULL = TreeNode(
+            TreeNode.TreeNodeUtils.NULL, None, None, self.__BLACK
+        )
         self.__size = 0
         self.__class_type = self.__complete_comparator(generic_type)
+        self.iteraciones = 0
+        self.contar = False
 
         if not sequence:
             return
@@ -234,90 +251,206 @@ class TreeSet:
                 f"Second argument must be a sequence but {type(sequence)} was given"
             )
 
-        self.add_all(items)
+        self.add_all(sequence)
+
+    def add_all(self, values):
+        for value in values:
+            self.add(value)
 
     @__type_validation
     def add(self, value: E) -> bool:
-        """Inserts the given value into the TreeSet if value is not contained.
-
-        :param value: Value to insert into the TreeSet
-        :type value: E
-        :return: True if the value have been added to the TreeSet else False
-        :rtype: bool
-        :raises AssertionError: If the given value's type does not match generic
-        type
-        """
-        if (parent := self.__contains(value)) and parent.value == value:
+        if (parent := self.__contains(value)) is not self.__NULL and parent.value == value:
             return False
 
-        new_node = TreeNode(value)
+        node = TreeNode(value, self.__NULL, self.__NULL, self.__RED)
+        parent = None if parent is self.__NULL else parent
 
-        if not parent:
-            self.__root = new_node
-        elif new_node < parent:
-            parent.left = new_node
+        node.parent = parent
+        if parent is None:
+            self.__root = node
+        elif node.value < parent.value:
+            parent.left = node
         else:
-            parent.right = new_node
+            parent.right = node
 
-        new_node.parent = parent
+        if node.parent is None:
+            node.color = self.__BLACK
+        elif node.parent.parent is not None:
+            self.__fix_after_insertion(node)
 
         self.__size += 1
-        self.__fix_insertion(new_node)
         return True
 
-    def add_all(self, sequence: Collection[E]) -> bool:
-        """Inserts the given values into the TreeSet. If some value is
-        already contained, it will not be inserted.
+    def __fix_after_insertion(self, node: TreeNode):
+        while node.parent.color == self.__RED:
+            if node.parent == node.parent.parent.right:
+                uncle = node.parent.parent.left
+                if uncle.color == self.__RED:
+                    uncle.color = self.__BLACK
+                    node.parent.color = self.__BLACK
+                    node.parent.parent.color = self.__RED
+                    node = node.parent.parent
+                else:
+                    if node is node.parent.left:
+                        node = node.parent
+                        self.__right_rotation(node)
+                    node.parent.color = self.__BLACK
+                    node.parent.parent.color = self.__RED
+                    self.__left_rotation(node.parent.parent)
+            else:
+                uncle = node.parent.parent.right
 
-        :param sequence: Values to insert into the TreeSet
-        :type sequence: Sequence[E]
-        :return: True if the value has been added to the TreeSet else False
-        :rtype: bool
-        :raises AssertionError: If the given value's type does not match generic
-        type
-        """
-        old_size = self.size()
+                if uncle.color == self.__RED:
+                    uncle.color = self.__BLACK
+                    node.parent.color = self.__BLACK
+                    node.parent.parent.color = self.__RED
+                    node = node.parent.parent
+                else:
+                    if node is node.parent.right:
+                        node = node.parent
+                        self.__left_rotation(node)
+                    node.parent.color = self.__BLACK
+                    node.parent.parent.color = self.__RED
+                    self.__right_rotation(node.parent.parent)
+            if node == self.__root:
+                break
 
-        for item in sequence:
-            self.add(item)
+        self.__root.color = self.__BLACK
 
-        return len(self) != old_size
+    def __left_rotation(self, node: TreeNode) -> None:
+        other = node.right
+        node.right = other.left
+        if other.left is not self.__NULL:
+            other.left.parent = node
+
+        other.parent = node.parent
+        if node.parent is None:
+            self.__root = other
+        elif node == node.parent.left:
+            node.parent.left = other
+        else:
+            node.parent.right = other
+        other.left = node
+        node.parent = other
+
+    def __right_rotation(self, node: TreeNode) -> None:
+        other = node.left
+        node.left = other.right
+        if other.right is not self.__NULL:
+            other.right.parent = node
+
+        other.parent = node.parent
+        if node.parent is None:
+            self.__root = other
+        elif node == node.parent.right:
+            node.parent.right = other
+        else:
+            node.parent.left = other
+        other.right = node
+        node.parent = other
+
+    def __fix_after_deletion(self, node):
+        while node != self.__root and node.color == self.__BLACK:
+            if node == node.parent.left:
+                sibling = node.parent.right
+                if sibling.color == self.__RED:
+                    sibling.color = self.__BLACK
+                    node.parent.color = self.__RED
+                    self.__left_rotation(node.parent)
+                    sibling = node.parent.right
+
+                if sibling.left.color == self.__BLACK \
+                        and sibling.right.color == self.__BLACK:
+                    sibling.color = self.__RED
+                    node = node.parent
+                else:
+                    if sibling.right.color == self.__BLACK:
+                        sibling.left.color = self.__BLACK
+                        sibling.color = self.__RED
+                        self.__right_rotation(sibling)
+                        sibling = node.parent.right
+
+                    sibling.color = node.parent.color
+                    node.parent.color = self.__BLACK
+                    sibling.right.color = self.__BLACK
+                    self.__left_rotation(node.parent)
+                    node = self.__root
+            else:
+                sibling = node.parent.left
+                if sibling.color == self.__RED:
+                    sibling.color = self.__BLACK
+                    node.parent.color = self.__RED
+                    self.__right_rotation(node.parent)
+                    sibling = node.parent.left
+
+                if sibling.right.color == self.__BLACK \
+                        and sibling.right.color == self.__BLACK:
+                    sibling.color = self.__RED
+                    node = node.parent
+                else:
+                    if sibling.left.color == self.__BLACK:
+                        sibling.right.color = self.__BLACK
+                        sibling.color = self.__RED
+                        self.__left_rotation(sibling)
+                        sibling = node.parent.left
+
+                    sibling.color = node.parent.color
+                    node.parent.color = self.__BLACK
+                    sibling.left.color = self.__BLACK
+                    self.__right_rotation(node.parent)
+                    node = self.__root
+
+        node.color = self.__BLACK
+
+    def __replace(self, node: TreeNode, other: TreeNode):
+        if not node.parent:
+            self.__root = other
+        elif node == node.parent.left:
+            node.parent.left = other
+        else:
+            node.parent.right = other
+        other.parent = node.parent
 
     @__type_validation
-    def remove(self, value: E) -> bool:
-        """Deletes the given value from the TreeSet if contained.
-
-        :param value: Value to delete
-        :type value: E
-        :return: True if value could be deleted else False
-        :rtype: bool
-        """
-        if self.is_empty() or (parent := self.__contains(value)).value != value:
+    def remove(self, value):
+        if (node := self.__contains(value)) is self.__NULL or node.value != value:
             return False
 
-        successor = self.__successor(parent)
-
-        if successor == parent.left:
-            successor.
+        successor = node
+        successor_color = successor.color
+        if node.left is self.__NULL:
+            replacement = node.right
+            self.__replace(node, node.right)
+        elif node.right is self.__NULL:
+            replacement = node.left
+            self.__replace(node, node.left)
         else:
-            successor.parent = parent.parent
-            if parent:
-                if parent == parent.parent.left:
-                    parent.parent.left = successor
-                else:
-                    parent.parent.right = successor
+            successor = self.__symmetrical_successor(node.right)
+            successor_color = successor.color
+            replacement = successor.right
 
-    def __successor(self, node: TreeNode) -> Union[TreeNode, None]:
-        if not node:
-            return None
-        elif node.right:
-            current = node.right
-            while current.left:
-                current = current.left
+            if successor.parent == node:
+                replacement.parent = successor
+            else:
+                self.__replace(successor, successor.right)
+                successor.right = node.right
+                successor.right.parent = successor
 
-            return current
-        else:
-            return node.left
+            self.__replace(node, successor)
+            successor.left = node.left
+            successor.left.parent = successor
+            successor.color = node.color
+
+        if successor_color == self.__BLACK:
+            self.__fix_after_deletion(replacement)
+
+        self.__size -= 1
+        return True
+
+    def __symmetrical_successor(self, node):
+        while node.left is not self.__NULL:
+            node = node.left
+        return node
 
     def size(self) -> int:
         """Provides the size of the current TreeSet.
@@ -338,30 +471,10 @@ class TreeSet:
         :return: A shallow copy of the current TreeSet instance
         :rtype: TreeSet
         """
-        if self.is_empty():
-            return TreeSet(self.__class_type)
-
-        current_stack = SimpleStack(self.__root)
-        copy_stack = SimpleStack(copy_root := TreeNode(self.__root.value, self.__root.color))
-
-        while not current_stack.is_empty():
-            current = current_stack.pull()
-            copy = copy_stack.pull()
-
-            if right := current.right:
-                copy.right = TreeNode(right.value, current.color)
-                current_stack.push(right)
-                copy_stack.push(copy.right)
-
-            if left := current.left:
-                copy.left = TreeNode(left.value, current.color)
-                current_stack.push(left)
-                copy_stack.push(copy.left)
-
-        cloned_tree = TreeSet(self.__class_type)
-        cloned_tree.__root = copy_root
-        cloned_tree.__size = self.__size
-        return cloned_tree
+        cloned = TreeSet(self.__class_type)
+        cloned._TreeSet__root = self.__root
+        cloned._TreeSet__size = self.__size
+        return cloned
 
     def is_empty(self) -> bool:
         """Checks if the current TreeSet is empty or not.
@@ -399,7 +512,7 @@ class TreeSet:
         current = self.__root
         result = None
 
-        while current:
+        while current is not self.__NULL:
             if current.value > value:
                 result = current.value
                 current = current.left
@@ -424,7 +537,7 @@ class TreeSet:
         current = self.__root
         result = None
 
-        while current:
+        while current is not self.__NULL:
             if current.value < value:
                 result = current.value
                 current = current.right
@@ -450,7 +563,7 @@ class TreeSet:
         current = self.__root
         result = None
 
-        while current:
+        while current is not self.__NULL:
             if current.value == value:
                 return value
             elif current.value > value:
@@ -478,7 +591,7 @@ class TreeSet:
         current = self.__root
         result = None
 
-        while current:
+        while current is not self.__NULL:
             if current.value == value:
                 return value
             elif current.value < value:
@@ -530,7 +643,8 @@ class TreeSet:
         if this set is empty.
 
         :return: The first (lowest) element, or None if this set is empty
-        :rtype: Union[E, None]"""
+        :rtype: Union[E, None]
+        """
         if self.is_empty():
             raise NoSuchElementError()
 
@@ -568,7 +682,8 @@ class TreeSet:
         parent = None
         current = self.__root
 
-        while current:
+        while current is not self.__NULL:
+            self.iteraciones += 1 if self.contar else 0
             if current.value == value:
                 return current
 
@@ -579,154 +694,6 @@ class TreeSet:
                 current = current.right
 
         return parent
-
-    def __fix_insertion(self, node: TreeNode) -> None:
-        """Balance the TreeSet if needed after an insertion.
-
-        :param node: to start the balancing from
-        """
-        def recolor(node: TreeNode):
-            node.parent.color = self.__BLACK
-            uncle.color = self.__BLACK
-            node.parent.parent.color = self.__RED
-            return node.parent.parent
-
-        while node and node != self.__root and node.parent.color != self.__BLACK:
-            if node.parent == node.parent.parent.left:
-                uncle = node.parent.parent.right
-
-                if uncle and uncle.color == self.__RED:
-                    node = recolor(node)
-                else:
-                    if node == node.parent.right:
-                        node = node.parent
-                        self.__left_rotation(node)
-
-                    node.parent.color = self.__BLACK
-                    node.parent.parent.color = self.__RED
-                    self.__right_rotation(node.parent.parent)
-            else:
-                uncle = node.parent.parent.left
-
-                if uncle and uncle.color == self.__RED:
-                    node = recolor(node)
-                else:
-                    if node == node.parent.left:
-                        node = node.parent
-                        self.__right_rotation(node)
-
-                    node.parent.color = self.__BLACK
-                    node.parent.parent.color = self.__RED
-                    self.__left_rotation(node.parent.parent)
-
-        self.__root.color = self.__BLACK
-
-    def __fix_removal(self, node: TreeNode) -> None:
-        """Balance the TreeSet if needed after a deletion.
-
-        :param node: to start the balancing from
-        """
-        while node != self.__root and node.color == self.__BLACK:
-            if node == node.parent.left:
-                sibling = node.parent.right
-
-                if sibling.color == self.__RED:
-                    sibling.color = self.__BLACK
-                    node.parent.color = self.__RED
-                    self.__left_rotation(node)
-                    sibling = node.parent.right
-
-                if sibling.left.color == self.__BLACK and \
-                    sibling.right.color == self.__BLACK:
-                    sibling.color = self.__RED
-                    node = node.parent
-                else:
-                    if sibling.right.color == self.__BLACK:
-                        sibling.left.color = self.__BLACK
-                        sibling.color = self.__RED
-                        self.__right_rotation(sibling)
-                        sibling = node.parent.right
-
-                    sibling.color = node.parent.color
-                    node.parent.color = self.__BLACK
-                    sibling.right.color = self.__BLACK
-                    self.__left_rotation(node.parent)
-                    node = self.__root
-            else:
-                sibling = node.parent.left
-
-                if sibling.color == self.__RED:
-                    sibling.color = self.__BLACK
-                    node.parent.color = self.__RED
-                    self.__right_rotation(node.parent)
-                    sibling = node.parent.left
-
-                    if sibling.right.color == self.__BLACK and \
-                        sibling.left.color == self.__BLACK:
-                        sibling.color = self.__RED
-                        node = node.parent
-                    else:
-                        if sibling.left.color == self.__BLACK:
-                            sibling.right.color = self.__BLACK
-                            sibling.color = self.__RED
-                            self.__left_rotation(sibling)
-                            sibling = node.parent.left
-
-                        sibling.color = node.parent.color
-                        node.parent.color = self.__BLACK
-                        sibling.left.color = self.__BLACK
-                        self.__right_rotation(node.parent)
-                        self.__right_rotation()
-
-    def __left_rotation(self, node: TreeNode) -> None:
-        """Rotates the given TreeNode to the left.
-
-        :param node: TreeNode to rotate
-        """
-        if not node:
-            return
-
-        other = node.right
-        node.right = other.left
-
-        if other.left:
-            other.left.parent = node
-        other.parent = node.parent
-
-        if node.parent is None:
-            self.__root = other
-        elif node == node.parent.left:
-            node.parent.left = other
-        else:
-            node.parent.right = other
-
-        other.left = node
-        node.parent = other
-
-    def __right_rotation(self, node: TreeNode) -> None:
-        """Rotates the given TreeNode to the right.
-
-        :param node: TreeNode to rotate
-        """
-        if not node:
-            return
-
-        other = node.left
-        node.left = other.right
-
-        if other.right:
-            other.right.parent = node
-        other.parent = node.parent
-
-        if node.parent is None:
-            self.__root = other
-        elif node == node.parent.right:
-            node.parent.right = other
-        else:
-            node.parent.left = other
-
-        other.right = node
-        node.parent = other
 
     def __len__(self) -> int:
         """Provides the length og the current TreeSet. It is used with the
@@ -756,7 +723,7 @@ class TreeSet:
         current = self.__root
 
         while True:
-            if current:
+            if current is not self.__NULL:
                 stack.push(current)
                 current = current.left if inorder else current.right
             elif not stack.is_empty():
@@ -808,8 +775,8 @@ class TreeSet:
         :param key: name of the attribute
         :param value: value to assign to the attribute
         """
-        if key not in self.__attributes:
-            raise AttributeError(f"Cannot add more attributes to this instance {key}")
+        """if key not in self.__attributes:
+            raise AttributeError(f"Cannot add more attributes to this instance {key}")"""
         super().__setattr__(key, value)
 
     def draw_tree(self):
@@ -824,23 +791,10 @@ class TreeSet:
 
 
 if __name__ == "__main__":
-    items = [randint(1, 1000000) for _ in range(20)]
+    items = [i for i in range(10, 30)]
     # items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l", "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-    # items = [Test1() for _ in range(10)]
-    # items = [98, 3, 4, 2, 37, 78, 47, 16, 81, 23]
-    #t = TreeSet(int, set([num for num in range(10)]))
-    #t1 = t.clone()
-    t = TreeSet(int, items)
-    #print(t)
-    #print(t1)
-    t.draw_tree()
-
-
-    # t.pepe = None
-    # t.draw_tree()
-    # t = TreeSet(Test3)
-    # t.add(Test3())
-    # print(t)
+    t = TreeSet(int, [i for i in range(20)])
+    print(t)
 
     def loop_test():
         t = TreeSet(int)

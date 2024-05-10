@@ -93,4 +93,8 @@ def test_times():
 if __name__ == "__main__":
     """runner = unittest.TextTestRunner()
     runner.run(suite())"""
-    test_times()
+    #test_times()
+    t = TreeSet(int, [i for i in range(100000)])
+    t.contar = True
+    t.add(100000000)
+    print(t.iteraciones)
