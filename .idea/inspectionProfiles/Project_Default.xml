@@ -7,6 +7,8 @@
           <option value="property.setter" />
           <option value="object.add" />
           <option value="object.remove" />
+          <option value="data_utils.RedBlackTree._RedBlackTree__root" />
+          <option value="TreeSet.TreeSet.*" />
         </list>
       </option>
     </inspection_tool>
