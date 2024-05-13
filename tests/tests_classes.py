@@ -20,7 +20,9 @@ class Person:
         self.__age = age
 
     def __eq__(self, other):
-        return self.__age == other.age
+        if isinstance(other, Person):
+            return self.__age == other.age
+        return False
 
     def __lt__(self, other):
         return self.__age < other.age
@@ -62,7 +64,9 @@ class Professor:
         self.__subject = subject
 
     def __eq__(self, other):
-        return self.__subject == other.subject
+        if isinstance(other, Professor):
+            return self.__subject == other.subject
+        return False
 
     def __gt__(self, other):
         if isinstance(other, Professor):
@@ -92,4 +96,6 @@ class Student:
         self.__id = id
 
     def __lt__(self, other):
-        return self.__id < other.id
+        if isinstance(other, Student):
+            return self.__id < other.id
+        return False

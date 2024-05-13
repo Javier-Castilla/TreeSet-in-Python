@@ -56,25 +56,25 @@ def counting_sort(arr):
 def test_times():
     with open("data/timesBST.csv", mode="w", encoding="utf-8") as fw1, open("data/timesIN.csv", mode="w", encoding="utf-8") as fw2:
         size = 1
-        print("size;miliseconds;seconds")
+        print("size;milliseconds;seconds;iterations", file=fw1)
 
         while size < 17 * 10 ** 6:
-            # Registro del tiempo de inicio
             fill_list(items := list(), size)
             start_time = time.perf_counter()
 
             tree = TreeSet(int, items)
             for i in range(size):
                 tree.add(i)
-            #counting_sort([i for i in range(size)])
 
-            # Registro del tiempo de finalización
+            tree.count = True
+            tree.add(size)
+
             end_time = time.perf_counter()
             duration = (end_time - start_time) * 1000
-            print(f"Tiempo de ejecución ({size}):", duration, "milisegundos")
-            """print(
-                f"{size};{round(duration, 3)};{round(duration / 1000, 3)}".replace(
-                    ".", ","), file=fw1)"""
+            print(f"Tiempo de ejecución ({size}):", duration, f"milisegundos ({tree.iterations})")
+            print(
+                f"{size};{round(duration, 3)};{round(duration / 1000, 3)};{tree.iterations}".replace(
+                    ".", ","), file=fw1)
             """start_time = time.perf_counter()
 
             for i in items:
@@ -93,6 +93,6 @@ def test_times():
 if __name__ == "__main__":
     """runner = unittest.TextTestRunner()
     runner.run(suite())"""
-    test_times()
-    """app = GUI(TreeSet(int))
-    app.mainloop()"""
+    #test_times()
+    app = GUI(TreeSet(int))
+    app.mainloop()
