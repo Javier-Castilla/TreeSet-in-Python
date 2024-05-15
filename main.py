@@ -1,8 +1,7 @@
+
 import random
 import unittest
 from TreeSet import *
-import time
-
 
 def suite():
     loader = unittest.TestLoader()
@@ -94,5 +93,5 @@ if __name__ == "__main__":
     """runner = unittest.TextTestRunner()
     runner.run(suite())"""
     #test_times()
-    app = GUI(TreeSet(int))
-    app.mainloop()
+    """app = GUI(TreeSet(int))
+    app.mainloop()"""

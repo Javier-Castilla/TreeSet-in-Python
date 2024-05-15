@@ -18,7 +18,7 @@ E = TypeVar('E')
 class GUI(tk.Tk):
     """
     GUI class used to show a Tkinter window in order to
-    visualize the TreeSet base RB Tree.
+    visualize the TreeSet base Red - Black Tree.
     """
 
     def __init__(self, tree):
@@ -39,12 +39,10 @@ class GUI(tk.Tk):
         self.test = False
         self.stop = True
 
-        # Etiqueta TREESET
         self.title_label = tk.Label(self, text="TREESET", bg="#303030",
                                     fg="white", font=('Arial', 16, 'bold'))
         self.title_label.pack(side="top", pady=10)
 
-        # Estilo para los botones
         style = ttk.Style()
         style.configure('TButton',
                         background='#f2f2f2',
@@ -107,7 +105,7 @@ class GUI(tk.Tk):
     def on_close(self):
         if messagebox.askokcancel("Exit", "Do you want to close the window?"):
             print("The window is closing... executing cleaning labours.")
-            self.test
+            self.test = False
             self.stop = True
             plt.close('all')
             self.destroy()
@@ -116,8 +114,8 @@ class GUI(tk.Tk):
         try:
             value = int(self.value_entry.get())
             return value
-        except:
-            print("Value must be int")
+        except ValueError:
+            self.__set_result("Value must be int!")
 
     def __test(self):
         self.__tree.add(randint(-100000, 100000))
@@ -437,7 +435,7 @@ class TreeSet(RedBlackTree):
         """
         Clones the current TreeSet and returns that clone.
 
-        :return: a shallow copy of the current TreeSet instance
+        :return: A shallow copy of the current TreeSet instance.
         :rtype: TreeSet
         """
         cloned = TreeSet(self.__class_type)
