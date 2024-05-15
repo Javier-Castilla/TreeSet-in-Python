@@ -10,7 +10,7 @@ from data_utils import *
 from treeset_exceptions import *
 import matplotlib.pyplot as plt
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 E = TypeVar('E')
 
@@ -22,12 +22,18 @@ class GUI(tk.Tk):
     """
 
     def __init__(self, tree):
-        """Class constructor"""
+        """
+        Class constructor
+
+        :param tree: The TreeSet object to be visualized.
+        :type tree: TreeSet
+        """
         super().__init__()
         self.title("TREESET")
         self.geometry("815x300")
         self.resizable(False, False)
         self.config(bg="#303030")
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
         self.__tree: TreeSet = tree
         self.fig, self.ax = plt.subplots()
         self.test = False
@@ -98,8 +104,20 @@ class GUI(tk.Tk):
                                 style='TButton')
             button.grid(row=(i + 1) // 9 + 1, column=i % 8, padx=5, pady=5)
 
+    def on_close(self):
+        if messagebox.askokcancel("Exit", "Do you want to close the window?"):
+            print("The window is closing... executing cleaning labours.")
+            self.test
+            self.stop = True
+            plt.close('all')
+            self.destroy()
+
     def __get_value(self):
-        return int(self.value_entry.get())
+        try:
+            value = int(self.value_entry.get())
+            return value
+        except:
+            print("Value must be int")
 
     def __test(self):
         self.__tree.add(randint(-100000, 100000))
@@ -118,19 +136,21 @@ class GUI(tk.Tk):
         self.__reset()
 
     def __execute_test(self):
-        try:
-            value = self.__get_value()
-            self.test = True
-            self.stop = False
-            while self.__tree.size() != value:
-                if self.stop:
-                    break
-                if self.test:
-                    self.__test()
-                else:
-                    break
-        except:
-            self.__set_result("Value must be int")
+        value = self.__get_value()
+        if self.stop:
+            self.__tree.clear()
+        self.test = True
+        self.stop = False
+        while self.__tree.size() != value:
+            if self.stop:
+                break
+            if self.test:
+                self.__test()
+            else:
+                break
+        if not self.stop and self.test:
+            self.test = False
+            self.stop = True
 
     def __reset(self):
         self.draw()
@@ -139,18 +159,12 @@ class GUI(tk.Tk):
         self.result.config(text=f"RESULT: {msg}")
 
     def add(self):
-        try:
-            self.__set_result(self.__tree.add(self.__get_value()))
-            self.__reset()
-        except:
-            self.__set_result("Value must be int")
+        self.__set_result(self.__tree.add(self.__get_value()))
+        self.__reset()
 
     def remove(self):
-        try:
-            self.__set_result(self.__tree.remove(self.__get_value()))
-            self.__reset()
-        except:
-            self.__set_result("Value must be int")
+        self.__set_result(self.__tree.remove(self.__get_value()))
+        self.__reset()
 
     def clear(self):
         self.__tree.clear()
@@ -158,63 +172,48 @@ class GUI(tk.Tk):
         self.__reset()
 
     def tree_lower(self):
-        try:
-            self.__set_result(self.__tree.lower(self.__get_value()))
-        except:
-            self.__set_result("Value must be int")
+        self.__set_result(self.__tree.lower(self.__get_value()))
 
     def higher(self):
-        try:
-            self.__set_result(self.__tree.higher(self.__get_value()))
-        except:
-            self.__set_result("Value must be int")
+        self.__set_result(self.__tree.higher(self.__get_value()))
 
     def ceiling(self):
-        try:
-            self.__set_result(self.__tree.ceiling(self.__get_value()))
-        except:
-            self.__set_result("Value must be int")
+        self.__set_result(self.__tree.ceiling(self.__get_value()))
 
     def floor(self):
-        try:
-            self.__set_result(self.__tree.floor(self.__get_value()))
-        except:
-            self.__set_result("Value must be int")
+        self.__set_result(self.__tree.floor(self.__get_value()))
 
     def first(self):
         try:
             self.__set_result(self.__tree.first())
         except NoSuchElementError as err:
-            self.__set_result(type(err))
+            self.__set_result("The tree is empty!")
 
     def last(self):
         try:
             self.__set_result(self.__tree.last())
         except NoSuchElementError as err:
-            self.__set_result(type(err))
+            self.__set_result("The tree is empty!")
 
     def poll_first(self):
         try:
             self.__set_result(self.__tree.poll_first())
             self.__reset()
         except NoSuchElementError as err:
-            self.__set_result(type(err))
+            self.__set_result("The tree is empty!")
 
     def poll_last(self):
         try:
             self.__set_result(self.__tree.poll_last())
             self.__reset()
         except NoSuchElementError as err:
-            self.__set_result(type(err))
+            self.__set_result("The tree is empty!")
 
     def size(self):
         self.__set_result(self.__tree.size())
 
     def contains(self):
-        try:
-            self.__set_result(self.__tree.contains(self.__get_value()))
-        except:
-            self.__set_result("Value must be int")
+        self.__set_result(self.__tree.contains(self.__get_value()))
 
     def draw(self):
         self.ax.clear()  # Clear the axis before drawing
