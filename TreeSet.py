@@ -11,9 +11,9 @@ from random import randint
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+import treeset_exceptions
 from data_utils import *
 from Person import Person
-import treeset_exceptions
 
 E = TypeVar('E')
 
