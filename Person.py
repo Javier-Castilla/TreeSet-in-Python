@@ -113,6 +113,16 @@ class Person_NoComparable:
     def DNI(self, DNI):
         self.__DNI = DNI
 
+    def __eq__(self, other):
+        if isinstance(other, Person_NoComparable):
+            return self.DNI == other.DNI
+        return NotImplemented
+    
+    def __lt__(self, other):
+        if isinstance(other, Person_NoComparable):
+            return self.DNI < other.DNI
+        return NotImplemented    
+
     def __hash__(self):
         return hash(self.DNI)
     
