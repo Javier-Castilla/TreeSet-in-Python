@@ -92,7 +92,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         self.tree.add_all([num for num in range(10)])
         self.assertEqual(self.tree.size(), 10, "Size must be 10 after adding 10 value")
-        self.assertEqual(self.tree.first(), 0, "First value must be 1")
+        self.assertEqual(self.tree.first(), 0, "First value must be 0")
         self.assertEqual(self.tree.last(), 9, "Last value must be 9")
 
         for num in range(10):
@@ -135,18 +135,57 @@ class TestEmptyTreeSet(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.tree.add_all(1)
 
-    def test_contains_not_added(self):
+    def test1_contains(self):
         """
         Tests the contains method on an empty TreeSet with a value that has not been added.
         """
         self.assertFalse(self.tree.contains(1), "TreeSet should not contain a value that has not been added")
 
-    def test_contains_none(self):
+    def test2_contains(self):
         """
         Tests the contains method on an empty TreeSet with a None value.
         """
         with self.assertRaises(TypeError):
             self.tree.contains(None)
+
+    def test_poll_first(self):
+        """
+        Tests the poll_first method on an empty TreeSet.
+        """
+        with self.assertRaises(NoSuchElementError):
+            self.tree.poll_first()
+
+    def test_poll_last(self):
+        """
+        Tests the poll_last method on an empty TreeSet.
+        """
+        with self.assertRaises(NoSuchElementError):
+            self.tree.poll_last()
+
+    def test_floor(self):
+        """
+        Tests the floor method on an empty TreeSet.
+        """
+        self.assertIsNone(self.tree.floor(1))
+
+    def test_ceiling(self):
+        """
+        Tests the ceiling method on an empty TreeSet.
+        """
+        self.assertIsNone(self.tree.ceiling(1))
+
+    def test_higher(self):
+        """
+        Tests the higher method on an empty TreeSet.
+        """
+        self.assertIsNone(self.tree.higher(1))
+
+    def test_lower(self):
+        """
+        Tests the lower method on an empty TreeSet.
+        """
+        self.assertIsNone(self.tree.lower(1))
+
 
 if __name__ == '__main__':
     unittest.main()

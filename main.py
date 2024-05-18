@@ -2,6 +2,52 @@
 import random
 import unittest
 from TreeSet import *
+import ast
+import inspect
+import sys
+
+def listar_modulos_importados(source_code):
+    tree = ast.parse(source_code)
+    modulos_importados = []
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                modulos_importados.append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            modulos_importados.append(node.module)
+
+    return modulos_importados
+
+def listar_clases_de_modulo(modulo):
+    clases = []
+    for nombre, objeto in inspect.getmembers(modulo):
+        if inspect.isclass(objeto):
+            clases.append(nombre)
+    return clases
+
+# Leer el código fuente del módulo actual (asumimos que este script está en el mismo archivo)
+with open(__file__, 'r') as f:
+    source_code = f.read()
+
+modulos_importados = listar_modulos_importados(source_code)
+
+print("Clases en cada módulo importado:")
+for nombre_modulo in modulos_importados:
+    try:
+        if nombre_modulo in sys.modules:
+            modulo = sys.modules[nombre_modulo]
+        else:
+            modulo = __import__(nombre_modulo)
+
+        clases = listar_clases_de_modulo(modulo)
+        if clases:
+            print(f"Módulo: {nombre_modulo}")
+            for clase in clases:
+                print(f" - {clase}")
+    except (AttributeError, ImportError):
+        # En caso de que el módulo no pueda ser cargado o inspeccionado
+        continue
 
 def suite():
     loader = unittest.TestLoader()
@@ -90,8 +136,8 @@ def test_times():
 
 
 if __name__ == "__main__":
-    """runner = unittest.TextTestRunner()
-    runner.run(suite())"""
+    runner = unittest.TextTestRunner()
+    runner.run(suite())
     #test_times()
-    """app = GUI(TreeSet(int))
+    """app = GUI()
     app.mainloop()"""

@@ -1,4 +1,8 @@
+# EQ LT
 class Person:
+    """
+    Class to represent a person. Implements eq and lt methods to compare objects.
+    """
     def __init__(self, name, age):
         self.__name = name
         self.__age = age
@@ -27,8 +31,18 @@ class Person:
     def __lt__(self, other):
         return self.__age < other.age
 
+    def __str__(self):
+        return f"{self.__name} ({self.__age})"
 
+    def __repr__(self):
+        return f"Person({self.__name}, {self.__age})"
+
+# (PERSON) EQ LT
 class Worker(Person):
+    """
+    Class to represent a worker. Inherits from Person and adds a job attribute.
+    Implements eq and lt methods to compare objects.
+    """
     def __init__(self, name, age, job):
         super().__init__(name, age)
         self.__job = job
@@ -41,8 +55,12 @@ class Worker(Person):
     def job(self, job):
         self.__job = job
 
-
+# EQ GT
 class Professor:
+    """
+    Class to represent a professor. Implements eq and gt methods to compare objects.
+    Implements eq and gt methods to compare objects.
+    """
     def __init__(self, name, subject):
         self.__name = name
         self.__subject = subject
@@ -73,8 +91,12 @@ class Professor:
             return self.name > other.name
         return False
 
-
+# LT
 class Student:
+    """
+    Class to represent a student. Implements lt method to compare objects.
+    Implements lt method to compare objects.
+    """
     def __init__(self, name, id):
         self.__name = name
         self.__id = id

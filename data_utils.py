@@ -382,17 +382,17 @@ class RedBlackTree:
     color of the node, either red or black.
     """
 
-    RED = TreeNode.TreeNodeUtils.RED
-    BLACK = TreeNode.TreeNodeUtils.BLACK
-    NULL = TreeNode(TreeNode.TreeNodeUtils.NULL, None, None,
-                    TreeNode.TreeNodeUtils.BLACK)
+    _RED = TreeNode.TreeNodeUtils.RED
+    _BLACK = TreeNode.TreeNodeUtils.BLACK
+    _NULL = TreeNode(TreeNode.TreeNodeUtils.NULL, None, None,
+                     TreeNode.TreeNodeUtils.BLACK)
 
     def __init__(self) -> None:
         """
         Constructor of the class.
         Initializes a new instance of RedBlackTree.
         """
-        self.__root = self.NULL
+        self.__root = self._NULL
         self.__size = 0
         self.iterations = 0
         self.count = False
@@ -404,18 +404,18 @@ class RedBlackTree:
         """
         return self.__size == 0
 
-    def insert(self, value: Any) -> bool:
+    def add(self, value: Any) -> bool:
         """
         Inserts a new value into the RedBlackTree.
         :param value: The value to insert.
         :return: False if the value already exists in the tree, True otherwise.
         """
         if (parent := self.__contains(
-                value)) is not self.NULL and parent.value == value:
+                value)) is not self._NULL and parent.value == value:
             return False
 
-        node = TreeNode(value, self.NULL, self.NULL, self.RED)
-        parent = None if parent is self.NULL else parent
+        node = TreeNode(value, self._NULL, self._NULL, self._RED)
+        parent = None if parent is self._NULL else parent
 
         node.parent = parent
         if parent is None:
@@ -426,29 +426,29 @@ class RedBlackTree:
             parent.right = node
 
         if node.parent is None:
-            node.color = self.BLACK
+            node.color = self._BLACK
         elif node.parent.parent is not None:
             self.__fix_after_insertion(node)
 
         self.__size += 1
         return True
 
-    def delete(self, value):
+    def remove(self, value):
         """
         Deletes a value from the RedBlackTree.
         :param value: The value to delete.
         :return: False if the value does not exist in the tree, True otherwise.
         """
         if (
-        node := self.__contains(value)) is self.NULL or node.value != value:
+        node := self.__contains(value)) is self._NULL or node.value != value:
             return False
 
         successor = node
         successor_color = successor.color
-        if node.left is self.NULL:
+        if node.left is self._NULL:
             replacement = node.right
             self.__replace(node, node.right)
-        elif node.right is self.NULL:
+        elif node.right is self._NULL:
             replacement = node.left
             self.__replace(node, node.left)
         else:
@@ -468,7 +468,7 @@ class RedBlackTree:
             successor.left.parent = successor
             successor.color = node.color
 
-        if successor_color == self.BLACK:
+        if successor_color == self._BLACK:
             self.__fix_after_deletion(replacement)
 
         self.__size -= 1
@@ -486,40 +486,40 @@ class RedBlackTree:
         Fixes the RedBlackTree after an insertion operation.
         :param node: The node that was inserted.
         """
-        while node.parent.color == self.RED:
+        while node.parent.color == self._RED:
             if node.parent == node.parent.parent.right:
                 uncle = node.parent.parent.left
-                if uncle.color == self.RED:
-                    uncle.color = self.BLACK
-                    node.parent.color = self.BLACK
-                    node.parent.parent.color = self.RED
+                if uncle.color == self._RED:
+                    uncle.color = self._BLACK
+                    node.parent.color = self._BLACK
+                    node.parent.parent.color = self._RED
                     node = node.parent.parent
                 else:
                     if node is node.parent.left:
                         node = node.parent
                         self.__right_rotation(node)
-                    node.parent.color = self.BLACK
-                    node.parent.parent.color = self.RED
+                    node.parent.color = self._BLACK
+                    node.parent.parent.color = self._RED
                     self.__left_rotation(node.parent.parent)
             else:
                 uncle = node.parent.parent.right
 
-                if uncle.color == self.RED:
-                    uncle.color = self.BLACK
-                    node.parent.color = self.BLACK
-                    node.parent.parent.color = self.RED
+                if uncle.color == self._RED:
+                    uncle.color = self._BLACK
+                    node.parent.color = self._BLACK
+                    node.parent.parent.color = self._RED
                     node = node.parent.parent
                 else:
                     if node is node.parent.right:
                         node = node.parent
                         self.__left_rotation(node)
-                    node.parent.color = self.BLACK
-                    node.parent.parent.color = self.RED
+                    node.parent.color = self._BLACK
+                    node.parent.parent.color = self._RED
                     self.__right_rotation(node.parent.parent)
             if node == self.__root:
                 break
 
-        self.__root.color = self.BLACK
+        self.__root.color = self._BLACK
 
     def __left_rotation(self, node: TreeNode) -> None:
         """
@@ -528,7 +528,7 @@ class RedBlackTree:
         """
         other = node.right
         node.right = other.left
-        if other.left is not self.NULL:
+        if other.left is not self._NULL:
             other.left.parent = node
 
         other.parent = node.parent
@@ -548,7 +548,7 @@ class RedBlackTree:
         """
         other = node.left
         node.left = other.right
-        if other.right is not self.NULL:
+        if other.right is not self._NULL:
             other.right.parent = node
 
         other.parent = node.parent
@@ -566,57 +566,57 @@ class RedBlackTree:
         Fixes the RedBlackTree after a deletion operation.
         :param node: The node that was deleted.
         """
-        while node is not self.__root and node.color == self.BLACK:
+        while node is not self.__root and node.color == self._BLACK:
             if node == node.parent.left:
                 sibling = node.parent.right
-                if sibling.color == self.RED:
-                    sibling.color = self.BLACK
-                    node.parent.color = self.RED
+                if sibling.color == self._RED:
+                    sibling.color = self._BLACK
+                    node.parent.color = self._RED
                     self.__left_rotation(node.parent)
                     sibling = node.parent.right
 
-                if sibling.left.color == self.BLACK \
-                        and sibling.right.color == self.BLACK:
-                    sibling.color = self.RED
+                if sibling.left.color == self._BLACK \
+                        and sibling.right.color == self._BLACK:
+                    sibling.color = self._RED
                     node = node.parent
                 else:
-                    if sibling.right.color == self.BLACK:
-                        sibling.left.color = self.BLACK
-                        sibling.color = self.RED
+                    if sibling.right.color == self._BLACK:
+                        sibling.left.color = self._BLACK
+                        sibling.color = self._RED
                         self.__right_rotation(sibling)
                         sibling = node.parent.right
 
                     sibling.color = node.parent.color
-                    node.parent.color = self.BLACK
-                    sibling.right.color = self.BLACK
+                    node.parent.color = self._BLACK
+                    sibling.right.color = self._BLACK
                     self.__left_rotation(node.parent)
                     node = self.__root
             else:
                 sibling = node.parent.left
-                if sibling.color == self.RED:
-                    sibling.color = self.BLACK
-                    node.parent.color = self.RED
+                if sibling.color == self._RED:
+                    sibling.color = self._BLACK
+                    node.parent.color = self._RED
                     self.__right_rotation(node.parent)
                     sibling = node.parent.left
 
-                if sibling.right.color == self.BLACK \
-                        and sibling.right.color == self.BLACK:
-                    sibling.color = self.RED
+                if sibling.right.color == self._BLACK \
+                        and sibling.right.color == self._BLACK:
+                    sibling.color = self._RED
                     node = node.parent
                 else:
-                    if sibling.left.color == self.BLACK:
-                        sibling.right.color = self.BLACK
-                        sibling.color = self.RED
+                    if sibling.left.color == self._BLACK:
+                        sibling.right.color = self._BLACK
+                        sibling.color = self._RED
                         self.__left_rotation(sibling)
                         sibling = node.parent.left
 
                     sibling.color = node.parent.color
-                    node.parent.color = self.BLACK
-                    sibling.left.color = self.BLACK
+                    node.parent.color = self._BLACK
+                    sibling.left.color = self._BLACK
                     self.__right_rotation(node.parent)
                     node = self.__root
 
-        node.color = self.BLACK
+        node.color = self._BLACK
 
     def __replace(self, node: TreeNode, other: TreeNode):
         """
@@ -638,7 +638,7 @@ class RedBlackTree:
         :param node: The node to find the symmetrical successor of.
         :return: The symmetrical successor of the node.
         """
-        while node.left is not self.NULL:
+        while node.left is not self._NULL:
             node = node.left
         return node
 
@@ -649,10 +649,10 @@ class RedBlackTree:
         :param value: The value to check.
         :return: TreeNode having the searched value or a leaf.
         """
-        parent = self.NULL
+        parent = self._NULL
         current = self.__root
 
-        while current is not self.NULL:
+        while current is not self._NULL:
             if self.count:
                 self.iterations += 1
             if current.value == value:
@@ -675,7 +675,7 @@ class RedBlackTree:
         current = self.__root
 
         while True:
-            if current is not self.NULL:
+            if current is not self._NULL:
                 stack.push(current)
                 current = current.left if inorder else current.right
             elif not stack.is_empty():
@@ -693,6 +693,9 @@ class RedBlackTree:
         :return: True if instances are equal else False.
         """
         if isinstance(other, RedBlackTree):
+            if self.size() != other.size():
+                return False
+
             for value in self:
                 if value not in other:
                     return False
@@ -748,7 +751,7 @@ class RedBlackTree:
         if node is None:
             node = self.__root
 
-        if node is self.NULL:
+        if node is self._NULL:
             return 0
 
         left_depth = self.depth(node.left)
@@ -761,6 +764,6 @@ if __name__ == "__main__":
     t = RedBlackTree()
 
     for i in range(10):
-        t.insert(i)
+        t.add(i)
 
     print(t)
