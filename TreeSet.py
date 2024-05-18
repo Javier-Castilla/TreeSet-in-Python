@@ -101,7 +101,7 @@ class GUI(tk.Tk):
 
         self.objects = {"int": int, "str": str, "float": float}
 
-        with open(__file__, 'r') as f:
+        """with open(__file__, 'r') as f:
             source_code = f.read()
 
         tree = ast.parse(source_code)
@@ -126,7 +126,7 @@ class GUI(tk.Tk):
             width=10, postcommand=self.__update_combo
         )
         self.classes_combo.grid(row=0, column=8, padx=10, pady=10)
-        self.classes_combo.bind("<<ComboboxSelected>>", self.__update_tree)
+        self.classes_combo.bind("<<ComboboxSelected>>", self.__update_tree)"""
 
         buttons = {"Add": self.add, "Remove": self.remove,
                    "Clear": self.clear, "Lower": self.tree_lower,
@@ -136,7 +136,8 @@ class GUI(tk.Tk):
                    "Poll First": self.poll_first,
                    "Poll Last": self.poll_last, "Size": self.size,
                    "Contains": self.contains, "Test": self.__execute_test,
-                   "Pause": self.pause_test, "Stop": self.stop_test}
+                   "Pause": self.pause_test, "Stop": self.stop_test,
+                   "Show": self.draw}
 
         for i, text in enumerate(buttons):
             button = ttk.Button(main_frame, text=text, width=10,
@@ -400,24 +401,29 @@ class TreeSet(RedBlackTree):
         :return: the given value type
         :rtype: type
         """
+        c_type = value_type.__base__ if value_type.__base__ is not object \
+            else value_type
+
         if value_type.__lt__ is object.__lt__ \
                 and value_type.__gt__ is not object.__gt__:
+            setattr(value_type, f"_{value_type}__comparator_class", c_type)
+
             def __lt__(self, other):
-                if isinstance(other, type(self)):
-                    if self == other:
-                        return False
+                if self == other:
+                    return False
+                else:
                     return not self.__gt__(other)
-                return False
 
             setattr(value_type, '__lt__', __lt__)
         elif value_type.__gt__ is object.__gt__ \
                 and value_type.__lt__ is not object.__lt__:
-            def __gt__(self, other):
-                if isinstance(other, type(self)):
-                    if self == other:
-                        return False
-                    return not self.__lt__(other)
-                return False
+            setattr(value_type, f"_{value_type}__comparator_class", c_type)
+
+            def __gt__(s, other):
+                if s == other:
+                    return False
+                else:
+                    return not s.__lt__(other)
 
             setattr(value_type, '__gt__', __gt__)
 
@@ -452,7 +458,7 @@ class TreeSet(RedBlackTree):
         """
         Inserts the given values into the current TreeSet. If the type of some
         value does not match the instance TreeSet type, an exception will
-        be thrown.
+        be thrown, and no element will be added.
 
         :param values: values to insert into the TreeSet.
         :type values: Collection[E]
@@ -467,9 +473,17 @@ class TreeSet(RedBlackTree):
             )
 
         old_size = self.size()
+        added_values = []
 
-        for value in values:
-            self.add(value)
+        try:
+            for value in values:
+                self.add(value)
+                added_values.append(value)
+        except TypeError as e:
+            for value in added_values:
+                self.remove(value)
+
+            raise e
 
         return old_size == self.size() - len(values)
 
@@ -773,20 +787,8 @@ if __name__ == "__main__":
     ids = sorted(list(ids))
     items = [Person(f"Person{identifier}", identifier) for identifier in ids]
 
-    tree.add_all(items)
-    c = tree.clone()
-
-    for _ in range(len(items)):
-        tree.poll_first()
-        print(tree)
-
-    print(c)
-
-    for _ in range(len(items)):
-        c.poll_last()
-
-    print(c)
-
+    tree = TreeSet(Person, items)
+    print(tree)
 
     def loop_test():
         t = TreeSet(int)

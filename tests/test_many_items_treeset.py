@@ -5,7 +5,7 @@ from TreeSet import *
 class TestManyItemsTreeSet(unittest.TestCase):
     def setUp(self) -> None:
         self.tree_type = int
-        self.items = set([randint(0, 100) for _ in range(10)])
+        self.items = set([random.randint(0, 100) for _ in range(10)])
         self.tree = TreeSet(self.tree_type, self.items)
         self.ordered_items = sorted(list(self.items))
 

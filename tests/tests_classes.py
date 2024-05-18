@@ -29,7 +29,9 @@ class Person:
         return False
 
     def __lt__(self, other):
-        return self.__age < other.age
+        if isinstance(other, Person):
+            return self.age < other.age
+        return False
 
     def __str__(self):
         return f"{self.__name} ({self.__age})"

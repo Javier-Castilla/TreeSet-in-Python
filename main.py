@@ -1,12 +1,13 @@
-
 import random
 import unittest
 from TreeSet import *
 import ast
 import inspect
 import sys
+from tests.tests_classes import *
 
-def listar_modulos_importados(source_code):
+
+"""def listar_modulos_importados(source_code):
     tree = ast.parse(source_code)
     modulos_importados = []
 
@@ -19,12 +20,14 @@ def listar_modulos_importados(source_code):
 
     return modulos_importados
 
+
 def listar_clases_de_modulo(modulo):
     clases = []
     for nombre, objeto in inspect.getmembers(modulo):
         if inspect.isclass(objeto):
             clases.append(nombre)
     return clases
+
 
 # Leer el código fuente del módulo actual (asumimos que este script está en el mismo archivo)
 with open(__file__, 'r') as f:
@@ -47,7 +50,8 @@ for nombre_modulo in modulos_importados:
                 print(f" - {clase}")
     except (AttributeError, ImportError):
         # En caso de que el módulo no pueda ser cargado o inspeccionado
-        continue
+        continue"""
+
 
 def suite():
     loader = unittest.TestLoader()
@@ -76,6 +80,7 @@ def fill_list(list: list, size):
             auxiliar_items.add(size)
             list.append(num)
 
+
 def counting_sort(arr):
     # Encuentra el máximo y mínimo en el array
     max_val = max(arr)
@@ -98,8 +103,10 @@ def counting_sort(arr):
 
     return sorted_arr
 
+
 def test_times():
-    with open("data/timesBST.csv", mode="w", encoding="utf-8") as fw1, open("data/timesIN.csv", mode="w", encoding="utf-8") as fw2:
+    with open("data/timesBST.csv", mode="w", encoding="utf-8") as fw1, open(
+            "data/timesIN.csv", mode="w", encoding="utf-8") as fw2:
         size = 1
         print("size;milliseconds;seconds;iterations", file=fw1)
 
@@ -116,7 +123,8 @@ def test_times():
 
             end_time = time.perf_counter()
             duration = (end_time - start_time) * 1000
-            print(f"Tiempo de ejecución ({size}):", duration, f"milisegundos ({tree.iterations})")
+            print(f"Tiempo de ejecución ({size}):", duration,
+                  f"milisegundos ({tree.iterations})")
             print(
                 f"{size};{round(duration, 3)};{round(duration / 1000, 3)};{tree.iterations}".replace(
                     ".", ","), file=fw1)
@@ -136,8 +144,9 @@ def test_times():
 
 
 if __name__ == "__main__":
-    runner = unittest.TextTestRunner()
-    runner.run(suite())
-    #test_times()
-    """app = GUI()
-    app.mainloop()"""
+    """runner = unittest.TextTestRunner()
+    runner.run(suite())"""
+    # test_times()
+    tree = TreeSet(int, [num for num in range(1, 41)])
+    app = GUI(tree)
+    app.mainloop()
