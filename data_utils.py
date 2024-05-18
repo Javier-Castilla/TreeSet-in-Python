@@ -1,4 +1,3 @@
-
 """
 data_utils module.
 
@@ -12,6 +11,7 @@ This module provides four different minor data structures classes.
 from enum import Enum
 from functools import total_ordering
 from typing import *
+
 from treeset_exceptions import *
 
 
@@ -282,14 +282,14 @@ class TreeNode(Node):
         Enum class that represents the possible colors of a TreeNode in a
         RedBlackTree.
         """
-        _RED = 1
-        _BLACK = 0
+        RED = 1
+        BLACK = 0
         NULL = -1
 
     def __init__(
             self, value: Any, left: Union['TreeNode', None],
             right: Union['TreeNode', None],
-            color: 'TreeNode.TreeNodeUtils' = TreeNodeUtils._RED
+            color: 'TreeNode.TreeNodeUtils' = TreeNodeUtils.RED
     ) -> None:
         """
         Constructor of the class.
@@ -297,7 +297,7 @@ class TreeNode(Node):
         :param value: The initial value of the node.
         :param left: The left child of the node. Default is None.
         :param right: The right child of the node. Default is None.
-        :param color: The color of the node. Default is _RED.
+        :param color: The color of the node. Default is RED.
         """
         super().__init__(value)
         self.parent = None
@@ -321,9 +321,9 @@ class TreeNode(Node):
         """
         assert isinstance(color,
                           TreeNode.TreeNodeUtils), "Value type should be Color"
-        assert color in {TreeNode.TreeNodeUtils._RED,
-                         TreeNode.TreeNodeUtils._BLACK}, \
-            "Value must be 0 ('_BLACK') or 1 ('_RED')"
+        assert color in {TreeNode.TreeNodeUtils.RED,
+                         TreeNode.TreeNodeUtils.BLACK}, \
+            "Value must be 0 ('BLACK') or 1 ('RED')"
 
         self.__color = color
 
@@ -383,17 +383,17 @@ class RedBlackTree:
     color of the node, either red or black.
     """
 
-    _RED = TreeNode.TreeNodeUtils._RED
-    _BLACK = TreeNode.TreeNodeUtils._BLACK
-    NULL = TreeNode(TreeNode.TreeNodeUtils.NULL, None, None,
-                    TreeNode.TreeNodeUtils._BLACK)
+    _RED = TreeNode.TreeNodeUtils.RED
+    _BLACK = TreeNode.TreeNodeUtils.BLACK
+    _NULL = TreeNode(TreeNode.TreeNodeUtils.NULL, None, None,
+                     TreeNode.TreeNodeUtils.BLACK)
 
     def __init__(self) -> None:
         """
         Constructor of the class.
         Initializes a new instance of RedBlackTree.
         """
-        self.__root = self.NULL
+        self.__root = self._NULL
         self.__size = 0
         self.iterations = 0
         self.count = False
@@ -405,18 +405,18 @@ class RedBlackTree:
         """
         return self.__size == 0
 
-    def insert(self, value: Any) -> bool:
+    def add(self, value: Any) -> bool:
         """
         Inserts a new value into the RedBlackTree.
         :param value: The value to insert.
         :return: False if the value already exists in the tree, True otherwise.
         """
         if (parent := self.__contains(
-                value)) is not self.NULL and parent.value == value:
+                value)) is not self._NULL and parent.value == value:
             return False
 
-        node = TreeNode(value, self.NULL, self.NULL, self._RED)
-        parent = None if parent is self.NULL else parent
+        node = TreeNode(value, self._NULL, self._NULL, self._RED)
+        parent = None if parent is self._NULL else parent
 
         node.parent = parent
         if parent is None:
@@ -434,22 +434,22 @@ class RedBlackTree:
         self.__size += 1
         return True
 
-    def delete(self, value):
+    def remove(self, value):
         """
         Deletes a value from the RedBlackTree.
         :param value: The value to delete.
         :return: False if the value does not exist in the tree, True otherwise.
         """
         if (
-        node := self.__contains(value)) is self.NULL or node.value != value:
+        node := self.__contains(value)) is self._NULL or node.value != value:
             return False
 
         successor = node
         successor_color = successor.color
-        if node.left is self.NULL:
+        if node.left is self._NULL:
             replacement = node.right
             self.__replace(node, node.right)
-        elif node.right is self.NULL:
+        elif node.right is self._NULL:
             replacement = node.left
             self.__replace(node, node.left)
         else:
@@ -529,7 +529,7 @@ class RedBlackTree:
         """
         other = node.right
         node.right = other.left
-        if other.left is not self.NULL:
+        if other.left is not self._NULL:
             other.left.parent = node
 
         other.parent = node.parent
@@ -549,7 +549,7 @@ class RedBlackTree:
         """
         other = node.left
         node.left = other.right
-        if other.right is not self.NULL:
+        if other.right is not self._NULL:
             other.right.parent = node
 
         other.parent = node.parent
@@ -639,7 +639,7 @@ class RedBlackTree:
         :param node: The node to find the symmetrical successor of.
         :return: The symmetrical successor of the node.
         """
-        while node.left is not self.NULL:
+        while node.left is not self._NULL:
             node = node.left
         return node
 
@@ -650,10 +650,10 @@ class RedBlackTree:
         :param value: The value to check.
         :return: TreeNode having the searched value or a leaf.
         """
-        parent = self.NULL
+        parent = self._NULL
         current = self.__root
 
-        while current is not self.NULL:
+        while current is not self._NULL:
             if self.count:
                 self.iterations += 1
             if current.value == value:
@@ -676,7 +676,7 @@ class RedBlackTree:
         current = self.__root
 
         while True:
-            if current is not self.NULL:
+            if current is not self._NULL:
                 stack.push(current)
                 current = current.left if inorder else current.right
             elif not stack.is_empty():
@@ -694,6 +694,9 @@ class RedBlackTree:
         :return: True if instances are equal else False.
         """
         if isinstance(other, RedBlackTree):
+            if self.size() != other.size():
+                return False
+
             for value in self:
                 if value not in other:
                     return False
@@ -749,7 +752,7 @@ class RedBlackTree:
         if node is None:
             node = self.__root
 
-        if node is self.NULL:
+        if node is self._NULL:
             return 0
 
         left_depth = self.depth(node.left)
@@ -762,6 +765,6 @@ if __name__ == "__main__":
     t = RedBlackTree()
 
     for i in range(10):
-        t.insert(i)
+        t.add(i)
 
     print(t)

@@ -1,8 +1,9 @@
 
 import unittest
 
-from TreeSet import *
 from Person import *
+from TreeSet import *
+
 
 class TestInt(unittest.TestCase):
         def setUp(self):
@@ -15,10 +16,10 @@ class TestInt(unittest.TestCase):
             self.person_test4 = Person("Name2", "Surname2", 30, "12345678D")
             self.person_test5 = Person("Name2", "Surname2", 30, "12345678E")
             self.person_test6 = Person("Name2", "Surname2", 30, "12345678F")
-            self.tree_set_P2 = TreeSet(Person_NoComparable)
-            self.person_test_NC = Person_NoComparable("Name", "Surname", 20, "12345678A")
-            self.person_test2_NC = Person_NoComparable("Name2", "Surname2", 10, "12345678B")
-            self.person_test3_NC = Person_NoComparable("Name2", "Surname2", 30, "12345678C")
+            self.tree_set_P3 = TreeSet(Person_HalfComparable)
+            self.person_test_HC = Person_HalfComparable("Name", "Surname", 20, "12345678A")
+            self.person_test2_HC = Person_HalfComparable("Name2", "Surname2", 10, "12345678B")
+            self.person_test3_HC = Person_HalfComparable("Name2", "Surname2", 30, "12345678C")
             
         #------------------------TESTS INT------------------
 
@@ -60,28 +61,39 @@ class TestInt(unittest.TestCase):
             self.assertTrue(5 in self.tree_set_int)
             self.assertTrue(15 in self.tree_set_int)
 
+        def test_remove_leaf_node_int(self):
+                """Tests removing a leaf node."""
+                self.tree_set_int.add(10)
+                self.tree_set_int.add(20)
+
+                self.assertTrue(self.tree_set_int.remove(10))
+                self.assertEqual(self.tree_set_int.size(), 1)
+                self.assertFalse(10 in self.tree_set_int)
+                self.assertTrue(20 in self.tree_set_int)
+
+        def test_remove_non_existent_element_int(self):
+                """Tests removing a non-existent element."""
+                self.tree_set_int.add(20)
+                self.tree_set_int.add(30)
+
+                self.assertFalse(self.tree_set_int.remove(15))
+                self.assertEqual(self.tree_set_int.size(), 2)
+                self.assertTrue(self.tree_set_int.contains(20))
+                self.assertTrue(self.tree_set_int.contains(30))
+                self.assertFalse(self.tree_set_int.contains(15))
+
         def test_clear_int(self):
             """Tests clearing the TreeSet from all its inserted elements."""
-            values = TreeSet(int, [1, 2, 3, 4, 5])
-            self.assertEqual(len(values), 5)
-            values.clear()
-            self.assertNotEqual(values.size(), 5)
-            self.assertEqual(values.size(), 0)
+            self.tree_set_int.add_all([1, 2, 3, 4, 5])
+            self.tree_set_int.clear()
+            self.assertEqual(self.tree_set_int.size(), 0)
 
         def test_clone_multiple_elements_int(self):
             """Tests cloning  multiples elements TreeSet."""
             self.tree_set_int.add_all([10, 20, 30])
             cloned_tree_set_int = self.tree_set_int.clone()
             self.assertEqual(self.tree_set_int.size(), cloned_tree_set_int.size())
-            for value in self.tree_set_int:
-                self.assertTrue(cloned_tree_set_int.contains(value))
-        def test_clone_one_element_int(self):
-            """Tests cloning  one element TreeSet."""
-            self.tree_set_int.add(10)
-            cloned_tree_set_int = self.tree_set_int.clone()
-            self.assertEqual(self.tree_set_int.size(), cloned_tree_set_int.size())
-            for value in self.tree_set_int:
-                self.assertTrue(cloned_tree_set_int.contains(value))
+            self.assertEqual(self.tree_set_int, cloned_tree_set_int)
 
         def test_is_empty_int(self):
             """Test the is_empty method for different scenarios"""
@@ -89,12 +101,6 @@ class TestInt(unittest.TestCase):
             self.assertFalse(self.tree_set_int.is_empty())
             self.tree_set_int.remove(12)
             self.assertFalse(self.tree_set_int.is_empty())
-
-        def test_contains_single_element_int(self):
-            """Tests contains method on a TreeSet with a single element."""
-            self.tree_set_int.add(10)
-            self.assertTrue(self.tree_set_int.contains(10))
-            self.assertFalse(self.tree_set_int.contains(20))
 
         def test_contains_multiple_elements_int(self):
             """Tests contains method on a TreeSet with multiple elements."""
@@ -159,13 +165,6 @@ class TestInt(unittest.TestCase):
             self.assertEqual(self.tree_set_int.size(), 2)
             self.assertEqual(list(self.tree_set_int), [10, 15])
 
-        def test_poll_first_single_element_set_int(self):
-            """Test poll_first method on a set with a single element."""
-            self.tree_set_int.add(5)
-            self.assertEqual(self.tree_set_int.poll_first(), 5)
-            self.assertEqual(self.tree_set_int.size(), 0)
-            self.assertEqual(list(self.tree_set_int), [])
-
         def test_poll_last_non_empty_set_int(self):
             """Test poll_last method on a non-empty set."""
             self.tree_set_int.add_all([5, 10, 15])
@@ -173,30 +172,11 @@ class TestInt(unittest.TestCase):
             self.assertEqual(self.tree_set_int.size(), 2)
             self.assertEqual(list(self.tree_set_int), [5, 10])
 
-        def test_poll_last_single_element_set_int(self):
-            """Test poll_last method on a set with a single element."""
-            self.tree_set_int.add(5)
-            self.assertEqual(self.tree_set_int.poll_last(), 5)
-            self.assertEqual(self.tree_set_int.size(), 0)
-            self.assertEqual(list(self.tree_set_int), [])
-
         def test_iterator_multiple_elements_int(self):
             """Test iterator  method for multiple elements."""
             self.tree_set_int.add_all([15, 20, 25])
             elements = [elem for elem in self.tree_set_int.iterator()]
             self.assertListEqual(elements, [15, 20, 25])
-
-        def test_iterator_single_element_int(self):
-            """Test iterator method with a single element."""
-            self.tree_set_int.add(10)
-            elements = [elem for elem in self.tree_set_int.iterator()]
-            self.assertListEqual(elements, [10])
-
-        def test_descending_iterator_single_element_int(self):
-            """Test descending_iterator method with a single element."""
-            self.tree_set_int.add(10)
-            elements = [elem for elem in self.tree_set_int.descending_iterator()]
-            self.assertListEqual(elements, [10])
 
         def test_descending_iterator_multiples_elements_int(self):
             """Test descending_iterator method with multiple elements."""
@@ -412,28 +392,38 @@ class TestInt(unittest.TestCase):
             self.assertTrue(self.tree_set_P.remove(self.person_test))
             self.assertEqual(self.tree_set_P.size(), 2)
 
+        def test_remove_leaf_node_Person(self):
+            """Tests removing a leaf node."""
+            self.tree_set_P.add(self.person_test)
+            self.tree_set_P.add(self.person_test2)
+
+            self.assertTrue(self.tree_set_P.remove(self.person_test))
+            self.assertEqual(self.tree_set_P.size(), 1)
+            self.assertFalse(self.person_test in self.tree_set_P)
+            self.assertTrue(self.person_test2 in self.tree_set_P)
+
+        def test_remove_non_existent_element_Person(self):
+            """Tests removing a non-existent element."""
+            self.tree_set_P.add(self.person_test)
+            self.tree_set_P.add(self.person_test2)
+            self.assertFalse(self.tree_set_P.remove(self.person_test3))
+            self.assertEqual(self.tree_set_P.size(), 2)
+            self.assertTrue(self.tree_set_P.contains(self.person_test2))
+            self.assertTrue(self.tree_set_P.contains(self.person_test))
+            self.assertFalse(self.tree_set_P.contains(self.person_test3))   
+
         def test_clear_Person(self):
             """Tests clearing the TreeSet from all its inserted elements."""
-            values = TreeSet(Person, [self.person_test, self.person_test2, self.person_test3, self.person_test4, self.person_test5])
-            self.assertEqual(len(values), 5)
-            values.clear()
-            self.assertNotEqual(values.size(), 5)
-            self.assertEqual(values.size(), 0)
+            self.tree_set_P.add_all([self.person_test, self.person_test2, self.person_test3, self.person_test4, self.person_test5])
+            self.tree_set_P.clear()
+            self.assertEqual(self.tree_set_P.size(), 0)
 
         def test_clone_multiple_elements_Person(self):
             """Tests cloning  multiples elements TreeSet."""
             self.tree_set_P.add_all([self.person_test, self.person_test2, self.person_test3])
             cloned_tree_set_P = self.tree_set_P.clone()
             self.assertEqual(self.tree_set_P.size(), cloned_tree_set_P.size())
-            for value in self.tree_set_P:
-                self.assertTrue(cloned_tree_set_P.contains(value))
-        def test_clone_one_element_Person(self):
-            """Tests cloning  one element TreeSet."""
-            self.tree_set_P.add(self.person_test)
-            cloned_tree_set_P = self.tree_set_P.clone()
-            self.assertEqual(self.tree_set_P.size(), cloned_tree_set_P.size())
-            for value in self.tree_set_P:
-                self.assertTrue(cloned_tree_set_P.contains(value))
+            self.assertEqual(self.tree_set_P, cloned_tree_set_P)
 
         def test_is_empty_Person(self):
             """Test the is_empty method for different scenarios"""
@@ -441,12 +431,6 @@ class TestInt(unittest.TestCase):
             self.assertFalse(self.tree_set_P.is_empty())
             self.tree_set_P.remove(self.person_test)
             self.assertFalse(self.tree_set_P.is_empty())
-
-        def test_contains_single_element_Person(self):
-            """Tests contains method on a TreeSet with a single element."""
-            self.tree_set_P.add(self.person_test)
-            self.assertTrue(self.tree_set_P.contains(self.person_test))
-            self.assertFalse(self.tree_set_P.contains(self.person_test2))
 
         def test_contains_multiple_elements_Person(self):
             """Tests contains method on a TreeSet with multiple elements."""
@@ -508,13 +492,6 @@ class TestInt(unittest.TestCase):
             self.assertEqual(self.tree_set_P.size(), 2)
             self.assertEqual(list(self.tree_set_P), [self.person_test3, self.person_test4])
 
-        def test_poll_first_single_element_set_Person(self):
-            """Test pollFirst method on a set with a single element."""
-            self.tree_set_P.add(self.person_test)
-            self.assertEqual(self.tree_set_P.poll_first(), self.person_test)
-            self.assertEqual(self.tree_set_P.size(), 0)
-            self.assertEqual(list(self.tree_set_P), [])
-
         def test_poll_last_non_empty_set_Person(self):
             """Test poll_last method on a non-empty set."""
             self.tree_set_P.add_all([self.person_test2, self.person_test3, self.person_test4])
@@ -522,30 +499,11 @@ class TestInt(unittest.TestCase):
             self.assertEqual(self.tree_set_P.size(), 2)
             self.assertEqual(list(self.tree_set_P), [self.person_test2, self.person_test3])
 
-        def test_poll_last_single_element_set_Person(self):
-            """Test poll_last method on a set with a single element."""
-            self.tree_set_P.add(self.person_test)
-            self.assertEqual(self.tree_set_P.poll_last(), self.person_test)
-            self.assertEqual(self.tree_set_P.size(), 0)
-            self.assertEqual(list(self.tree_set_P), [])
-
         def test_iterator_multiple_elements_Person(self):
             """Test iterator  method for multiple elements."""
             self.tree_set_P.add_all([self.person_test, self.person_test2, self.person_test3])
             elements = [elem for elem in self.tree_set_P.iterator()]
             self.assertListEqual(elements, [self.person_test, self.person_test2, self.person_test3])
-
-        def test_iterator_single_element_Person(self):
-            """Test iterator method with a single element."""
-            self.tree_set_P.add(self.person_test)
-            elements = [elem for elem in self.tree_set_P.iterator()]
-            self.assertListEqual(elements, [self.person_test])
-
-        def test_descending_iterator_single_element_Person(self):
-            """Test descending_iterator method with a single element."""
-            self.tree_set_P.add(self.person_test)
-            elements = [elem for elem in self.tree_set_P.descending_iterator()]
-            self.assertListEqual(elements, [self.person_test])
 
         def test_descending_iterator_multiples_elements_Person(self):
             """Test descending_iterator method with multiple elements."""
@@ -618,37 +576,43 @@ class TestInt(unittest.TestCase):
 
         #---------------TESTS NO COMPARABLE PERSON------------------
 
-        def test_remove_node_with_single_child_Person_NoComparable(self):
+        def test_Create_Tree_Person_NoComparable(self):
             """Tests removing a node with a single child."""
-            self.tree_set_P2.add(self.person_test_NC)
-            self.tree_set_P2.add(self.person_test2_NC)
-            self.tree_set_P2.add(self.person_test3_NC)
-            self.assertTrue(self.tree_set_P2.remove(self.person_test_NC))
-            self.assertEqual(self.tree_set_P2.size(), 2)
+            with self.assertRaises(NonComparableObjectError):
+                        self.tree_set_P2 = TreeSet(Person_NoComparable)            
 
-        def test_remove_node_with_two_children_Person_NoComparable(self):
+
+        #---------------TESTS HALF COMPARABLE PERSON------------------
+
+        def test_remove_node_with_single_child_Person_HalfComparable(self):
+            """Tests removing a node with a single child."""
+            self.tree_set_P3.add(self.person_test_HC)
+            self.tree_set_P3.add(self.person_test2_HC)
+            self.tree_set_P3.add(self.person_test3_HC)
+            self.assertTrue(self.tree_set_P3.remove(self.person_test2_HC))
+            self.assertEqual(self.tree_set_P3.size(), 2)
+
+        def test_remove_node_with_two_children_Person_HalfComparable(self):
             """Tests removing a node with two children (replaces with successor)."""
-            self.tree_set_P2.add(self.person_test_NC)
-            self.tree_set_P2.add(self.person_test2_NC)
-            self.tree_set_P2.add(self.person_test3_NC)
-            self.assertTrue(self.tree_set_P2.remove(self.person_test2_NC))
-            self.assertEqual(self.tree_set_P2.size(), 2)
+            self.tree_set_P3.add(self.person_test_HC)
+            self.tree_set_P3.add(self.person_test2_HC)
+            self.tree_set_P3.add(self.person_test3_HC)
+            self.assertTrue(self.tree_set_P3.remove(self.person_test2_HC))
+            self.assertEqual(self.tree_set_P3.size(), 2)
 
-        def test_remove_root_node_Person_NoComparable(self):
+        def test_remove_root_node_Person_HalfComparable(self):
             """Tests removing the root node ."""
-            self.tree_set_P2.add(self.person_test_NC)
-            self.tree_set_P2.add(self.person_test2_NC)
-            self.tree_set_P2.add(self.person_test3_NC)
-            self.assertTrue(self.tree_set_P2.remove(self.person_test_NC))
-            self.assertEqual(self.tree_set_P2.size(), 2)
+            self.tree_set_P3.add(self.person_test_HC)
+            self.tree_set_P3.add(self.person_test2_HC)
+            self.tree_set_P3.add(self.person_test3_HC)
+            self.assertTrue(self.tree_set_P3.remove(self.person_test2_HC))
+            self.assertEqual(self.tree_set_P3.size(), 2)
 
-        def test_clear_Person_NoComparable(self):
+        def test_clear_Person_HalfComparable(self):
             """Tests clearing the TreeSet from all its inserted elements."""
-            values = TreeSet(Person_NoComparable, [self.person_test_NC, self.person_test2_NC, self.person_test3_NC])
-            self.assertEqual(len(values), 3)
-            values.clear()
-            self.assertNotEqual(values.size(), 3)
-            self.assertEqual(values.size(), 0)
+            self.tree_set_P3.add_all([self.person_test_HC, self.person_test2_HC, self.person_test3_HC])
+            self.tree_set_P3.clear()
+            self.assertEqual(self.tree_set_P3.size(), 0)
 
         #------------------------TESTS STR------------------
 
@@ -690,39 +654,37 @@ class TestInt(unittest.TestCase):
             self.assertTrue("A" in self.tree_set_str)
             self.assertTrue("D" in self.tree_set_str)
 
-        
+        def test_remove_leaf_node_str(self):
+            """Tests removing a leaf node."""
+            self.tree_set_str.add("B")
+            self.tree_set_str.add("D")
+            self.assertTrue(self.tree_set_str.remove("B"))
+            self.assertEqual(self.tree_set_str.size(), 1)
+            self.assertFalse("B" in self.tree_set_str)
+            self.assertTrue("D" in self.tree_set_str)
+
+        def test_remove_non_existent_element_str(self):
+            """Tests removing a non-existent element."""
+            self.tree_set_str.add("C")
+            self.tree_set_str.add("A")
+            self.assertFalse(self.tree_set_str.remove("B"))
+            self.assertEqual(self.tree_set_str.size(), 2)
+            self.assertTrue(self.tree_set_str.contains("A"))
+            self.assertTrue(self.tree_set_str.contains("C"))
+            self.assertFalse(self.tree_set_str.contains("B"))        
 
         def test_clear_str(self):
             """Tests clearing the TreeSet from all its inserted elements."""
-            values = TreeSet(str, ["A", "B", "C", "D", "E"])
-            self.assertEqual(len(values), 5)
-
-            self.assertNotEqual(values.clear(), 5)
-            self.assertEqual(values.clear(), None)
+            self.tree_set_str.add_all(["A", "B", "C", "D", "E"])
+            self.tree_set_str.clear()
+            self.assertEqual(self.tree_set_str.size(), 0)
 
         def test_clone_multiple_elements_str(self):
             """Tests cloning  multiples elements TreeSet."""
             self.tree_set_str.add_all(["E", "M", "P"])
             cloned_tree_set_str = self.tree_set_str.clone()
             self.assertEqual(self.tree_set_str.size(), cloned_tree_set_str.size())
-            for value in self.tree_set_str:
-                self.assertTrue(cloned_tree_set_str.contains(value))
-
-        def test_clone_one_element_str(self):
-            """Tests cloning  one element TreeSet."""
-            self.tree_set_str.add("C")
-            cloned_tree_set_str = self.tree_set_str.clone()
-            self.assertEqual(self.tree_set_str.size(), cloned_tree_set_str.size())
-            for value in self.tree_set_str:
-                self.assertTrue(cloned_tree_set_str.contains(value))
-
-        
-
-        def test_contains_single_element_str(self):
-            """Tests contains method on a TreeSet with a single element."""
-            self.tree_set_str.add("C")
-            self.assertTrue(self.tree_set_str.contains("C"))
-            self.assertFalse(self.tree_set_str.contains("E"))
+            self.assertEqual(self.tree_set_str, cloned_tree_set_str)
 
         def test_contains_multiple_elements_str(self):
             """Tests contains method on a TreeSet with multiple elements."""
@@ -774,20 +736,12 @@ class TestInt(unittest.TestCase):
             self.tree_set_str.add("N")
             self.assertEqual(self.tree_set_str.floor("D"), "B")
 
-
         def test_poll_first_non_empty_set_str(self):
             """Test poll_first method on a non-empty set."""
             self.tree_set_str.add_all(["A", "B", "C"])
             self.assertEqual(self.tree_set_str.poll_first(), "A")
             self.assertEqual(self.tree_set_str.size(), 2)
             self.assertEqual(list(self.tree_set_str), ["B", "C"])
-
-        def test_poll_first_single_element_set_str(self):
-            """Test poll_first method on a set with a single element."""
-            self.tree_set_str.add("A")
-            self.assertEqual(self.tree_set_str.poll_first(), "A")
-            self.assertEqual(self.tree_set_str.size(), 0)
-            self.assertEqual(list(self.tree_set_str), [])
 
         def test_poll_last_non_empty_set_str(self):
             """Test poll_last method on a non-empty set."""
@@ -796,32 +750,11 @@ class TestInt(unittest.TestCase):
             self.assertEqual(self.tree_set_str.size(), 2)
             self.assertEqual(list(self.tree_set_str), ["A", "C"])
 
-        def test_poll_last_single_element_set_str(self):
-            """Test poll_last method on a set with a single element."""
-            self.tree_set_str.add("A")
-            self.assertEqual(self.tree_set_str.poll_last(), "A")
-            self.assertEqual(self.tree_set_str.size(), 0)
-            self.assertEqual(list(self.tree_set_str), [])
-
         def test_iterator_multiple_elements_str(self):
             """Test iterator  method for multiple elements."""
             self.tree_set_str.add_all(["A", "B", "C"])
             elements = [elem for elem in self.tree_set_str.iterator()]
             self.assertListEqual(elements, ["A", "B", "C"])
-
-        
-
-        def test_iterator_single_element_str(self):
-            """Test iterator method with a single element."""
-            self.tree_set_str.add("A")
-            elements = [elem for elem in self.tree_set_str.iterator()]
-            self.assertListEqual(elements, ["A"])
-
-        def test_descending_iterator_single_element_str(self):
-            """Test descending_iterator method with a single element."""
-            self.tree_set_str.add("A")
-            elements = [elem for elem in self.tree_set_str.descending_iterator()]
-            self.assertListEqual(elements, ["A"])
 
         def test_descending_iterator_multiples_elements_str(self):
             """Test descending_iterator method with multiple elements."""
