@@ -1,6 +1,6 @@
 import unittest
-from TreeSet import *
-from treeset_exceptions import *
+from tree_set import *
+from tree_set_exceptions import *
 
 
 class TestEmptyTreeSet(unittest.TestCase):
@@ -41,14 +41,14 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the first method on an empty TreeSet.
         """
-        with self.assertRaises(NoSuchElementError):
+        with self.assertRaises(NoSuchElementException):
             self.tree_int.first()
 
     def test_last_int(self):
         """
         Tests the last method on an empty TreeSet.
         """
-        with self.assertRaises(NoSuchElementError):
+        with self.assertRaises(NoSuchElementException):
             self.tree_int.last()
 
     def test_iterator_int(self):
@@ -119,14 +119,14 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the add method on an empty TreeSet with a None value.
         """
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NullPointerException):
             self.tree_int.add(None)
 
     def test_add_all_none_int(self):
         """
         Tests the add_all method on an empty TreeSet with a list containing None.
         """
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NullPointerException):
             self.tree_int.add_all([1, None, 2])
 
     def test_add_all_not_list_int(self):
@@ -146,7 +146,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the contains method on an empty TreeSet with a None value.
         """
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NullPointerException):
             self.tree_int.contains(None)
 
     def test_poll_first_int(self):
@@ -210,14 +210,14 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the first method on an empty TreeSet.
         """
-        with self.assertRaises(NoSuchElementError):
+        with self.assertRaises(NoSuchElementException):
             self.tree_str.first()
 
     def test_last_str(self):
         """
         Tests the last method on an empty TreeSet.
         """
-        with self.assertRaises(NoSuchElementError):
+        with self.assertRaises(NoSuchElementException):
             self.tree_str.last()
 
     def test_iterator_str(self):
@@ -288,7 +288,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the add method on an empty TreeSet with a None value.
         """
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NullPointerException):
             self.tree_str.add(None)
 
     def test_add_all_none_str(self):
@@ -318,7 +318,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the contains method on an empty TreeSet with a None value.
         """
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NullPointerException):
             self.tree_str.contains(None)
 
     def test_poll_first_str(self):
@@ -396,7 +396,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the add method on an empty TreeSet with a None value.
         """
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NullPointerException):
             self.tree_float.add(None)
 
     def test_add_all_none_float(self):
@@ -426,7 +426,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the contains method on an empty TreeSet with a None value.
         """
-        with self.assertRaises(TypeError):
+        with self.assertRaises(NullPointerException):
             self.tree_float.contains(None)
 
     def test_poll_first_float(self):

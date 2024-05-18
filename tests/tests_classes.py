@@ -123,3 +123,9 @@ class Student:
         if isinstance(other, Student):
             return self.__id < other.id
         return False
+
+
+if __name__ == "__main__":
+    s1 = Student("John", 1)
+    s2 = Student("Mary", 2)
+    print(id(Student.__eq__), id(object.__eq__))

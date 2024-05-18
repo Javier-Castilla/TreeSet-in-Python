@@ -4,14 +4,11 @@ TreeSet module.
 This module provides a TreeSet class for storing and managing a set of elements
 in a red-black tree data structure.
 """
-import ast
-import copy
 import inspect
-import time
 import random
 from data_utils import *
-from tests.tests_classes import Person
-from treeset_exceptions import *
+from tests.tests_classes import Person, Student
+from tree_set_exceptions import *
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -251,14 +248,14 @@ class GUI(tk.Tk):
     def first(self):
         try:
             self.__set_result(self.__tree.first())
-        except NoSuchElementError as err:
+        except NoSuchElementException as err:
             self.__set_result("The tree is empty!")
 
     @__tree_exists
     def last(self):
         try:
             self.__set_result(self.__tree.last())
-        except NoSuchElementError as err:
+        except NoSuchElementException as err:
             self.__set_result("The tree is empty!")
 
     @__tree_exists
@@ -266,7 +263,7 @@ class GUI(tk.Tk):
         try:
             self.__set_result(self.__tree.poll_first())
             self.__reset()
-        except NoSuchElementError as err:
+        except NoSuchElementException as err:
             self.__set_result("The tree is empty!")
 
     @__tree_exists
@@ -274,7 +271,7 @@ class GUI(tk.Tk):
         try:
             self.__set_result(self.__tree.poll_last())
             self.__reset()
-        except NoSuchElementError as err:
+        except NoSuchElementException as err:
             self.__set_result("The tree is empty!")
 
     @__tree_exists
@@ -358,6 +355,14 @@ class TreeSet(RedBlackTree):
 
         return wrapper
 
+    def __null_validation(function):
+        def wrapper(self, value):
+            if value is None:
+                raise NullPointerException("Value cannot be None")
+            return function(self, value)
+
+        return wrapper
+
     def __check_comparable(function):
         """
         Private decorator used to check comparability of the type specified when
@@ -382,8 +387,15 @@ class TreeSet(RedBlackTree):
             if value_type.__eq__ is object.__eq__ \
                     or (value_type.__lt__ is object.__lt__
                         and value_type.__gt__ is object.__gt__):
-                raise NonComparableObjectError(
+                raise ClassCastException(
                     f"class {value_type} cannot be compared")
+            elif not isinstance(item, type):
+                try:
+                    item < item
+                    item > item
+                except TypeError:
+                    raise ClassCastException(
+                        f"class {value_type} cannot be compared")
 
             return function(self, *args)
 
@@ -408,11 +420,11 @@ class TreeSet(RedBlackTree):
                 and value_type.__gt__ is not object.__gt__:
             setattr(value_type, f"_{value_type}__comparator_class", c_type)
 
-            def __lt__(self, other):
-                if self == other:
+            def __lt__(s, other):
+                if s == other:
                     return False
                 else:
-                    return not self.__gt__(other)
+                    return not s.__gt__(other)
 
             setattr(value_type, '__lt__', __lt__)
         elif value_type.__gt__ is object.__gt__ \
@@ -429,7 +441,6 @@ class TreeSet(RedBlackTree):
 
         return value_type
 
-    @__check_comparable
     def __init__(self, generic_type: Type,
                  sequence: Collection[E] = None) -> None:
         """
@@ -487,7 +498,9 @@ class TreeSet(RedBlackTree):
 
         return old_size == self.size() - len(values)
 
+    @__null_validation
     @__type_validation
+    @__check_comparable
     def add(self, value: E) -> bool:
         """
         Inserts the given value into the current TreeSet. If the type of
@@ -503,7 +516,9 @@ class TreeSet(RedBlackTree):
         """
         return super().add(value)
 
+    @__null_validation
     @__type_validation
+    @__check_comparable
     def remove(self, value: E) -> bool:
         """
         Removes the given value from the current TreeSet. If the type of
@@ -532,8 +547,7 @@ class TreeSet(RedBlackTree):
         """
         Clears the TreeSet from all its inserted elements.
         """
-        self._RedBlackTree__root = RedBlackTree._NULL
-        self._RedBlackTree__size = 0
+        super().clear()
 
     def clone(self) -> 'TreeSet':
         """
@@ -554,7 +568,9 @@ class TreeSet(RedBlackTree):
         """
         return self.size() == 0
 
+    @__null_validation
     @__type_validation
+    @__check_comparable
     def contains(self, value: E) -> bool:
         """
         Checks if a given value is contained into the current TreeSet
@@ -570,7 +586,9 @@ class TreeSet(RedBlackTree):
         """
         return value in self
 
+    @__null_validation
     @__type_validation
+    @__check_comparable
     def higher(self, value: E) -> Union[E, None]:
         """
         Returns the next higher value in the tree compared to the given
@@ -594,7 +612,9 @@ class TreeSet(RedBlackTree):
 
         return result
 
+    @__null_validation
     @__type_validation
+    @__check_comparable
     def lower(self, value: E) -> Union[E, None]:
         """
         Returns the contiguous lower element of the given value from the
@@ -620,7 +640,9 @@ class TreeSet(RedBlackTree):
 
         return result
 
+    @__null_validation
     @__type_validation
+    @__check_comparable
     def ceiling(self, value: E) -> Union[E, None]:
         """
         Returns the least element in this set greater than
@@ -649,7 +671,9 @@ class TreeSet(RedBlackTree):
 
         return result
 
+    @__null_validation
     @__type_validation
+    @__check_comparable
     def floor(self, value: E) -> Union[E, None]:
         """
         Returns the greatest element in this set less than or
@@ -687,7 +711,7 @@ class TreeSet(RedBlackTree):
         :raises NoSuchElementError: if there is no such element
         """
         if self.is_empty():
-            raise NoSuchElementError()
+            raise NoSuchElementException()
 
         return next(self.iterator())
 
@@ -701,7 +725,7 @@ class TreeSet(RedBlackTree):
         :raises NoSuchElementError: if there is no such element
         """
         if self.is_empty():
-            raise NoSuchElementError()
+            raise NoSuchElementException()
 
         return next(self.descending_iterator())
 
@@ -717,7 +741,7 @@ class TreeSet(RedBlackTree):
         try:
             self.remove(item := self.first())
             return item
-        except NoSuchElementError:
+        except NoSuchElementException:
             return None
 
     def poll_last(self) -> E:
@@ -732,7 +756,7 @@ class TreeSet(RedBlackTree):
         try:
             self.remove(item := self.last())
             return item
-        except NoSuchElementError:
+        except NoSuchElementException:
             return None
 
     def iterator(self) -> Iterator[E]:
@@ -787,8 +811,9 @@ if __name__ == "__main__":
     ids = sorted(list(ids))
     items = [Person(f"Person{identifier}", identifier) for identifier in ids]
 
-    tree = TreeSet(Person, items)
-    print(tree)
+    tree = TreeSet(dict)
+    tree.add({"name": "John", "age": 20})
+    tree.add({"name": "Jane", "age": 25})
 
     def loop_test():
         t = TreeSet(int)

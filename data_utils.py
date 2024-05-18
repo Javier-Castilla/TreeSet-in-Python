@@ -9,9 +9,7 @@ This module provides four different minor data structures classes.
 """
 
 from enum import Enum
-from functools import total_ordering
 from typing import *
-from treeset_exceptions import *
 
 
 class SimpleQueue:
@@ -26,9 +24,14 @@ class SimpleQueue:
         self.__first = None
         self.__last = None
         self.__current = None
+        self.__size = 0
 
         if value:
-            self.enqueue(value)
+            if isinstance(value, Collection):
+                for item in value:
+                    self.enqueue(item)
+            else:
+                self.enqueue(value)
 
     def enqueue(self, value: Any) -> None:
         """
@@ -42,6 +45,8 @@ class SimpleQueue:
         else:
             self.__last.next_node = new_node
             self.__last = new_node
+
+        self.__size += 1
 
     def dequeue(self) -> Any:
         """
@@ -59,14 +64,33 @@ class SimpleQueue:
         else:
             self.__first = self.__current = self.__first.next_node
 
+        self.__size -= 1
         return value
+
+    def peek(self) -> Any:
+        """
+        Returns the value at the top of the queue without removing it.
+        :return: The value at the top of the queue.
+        :raises IndexError: If the queue is empty.
+        """
+        if self.is_empty():
+            raise IndexError("Queue is empty")
+
+        return self.__first.value
 
     def is_empty(self) -> bool:
         """
         Checks if the queue is empty.
         :return: True if the queue is empty, False otherwise.
         """
-        return self.__last is None
+        return len(self) == 0
+
+    def __len__(self):
+        """
+        Returns the length of the queue.
+        :return: The length of the queue.
+        """
+        return sum(1 for _ in self)
 
     def __iter__(self):
         """
@@ -94,7 +118,7 @@ class SimpleQueue:
         Returns a string representation of the queue.
         :return: A string representation of the queue.
         """
-        return f"{[node for node in self]}"
+        return f"SimpleQueue({[node for node in self]})"
 
 
 class SimpleStack:
@@ -108,9 +132,14 @@ class SimpleStack:
         """
         self.__items = list()
         self.__index = -1
+        self.__next_index = -1
 
         if value:
-            self.push(value)
+            if isinstance(value, Collection):
+                for item in value:
+                    self.push(item)
+            else:
+                self.push(value)
 
     def push(self, value: Any) -> None:
         """
@@ -119,6 +148,7 @@ class SimpleStack:
         """
         self.__items.append(value)
         self.__index += 1
+        self.__next_index = self.__index
 
     def pull(self) -> Any:
         """
@@ -130,7 +160,19 @@ class SimpleStack:
             raise IndexError("Stack is already empty")
 
         self.__index -= 1
+        self.__next_index = self.__index
         return self.__items.pop()
+
+    def peek(self):
+        """
+        Returns the value at the top of the stack without removing it.
+        :return: The value at the top of the stack.
+        :raises IndexError: If the stack is empty.
+        """
+        if self.is_empty():
+            raise IndexError("Stack is empty")
+
+        return self.__items[self.__index]
 
     def is_empty(self) -> bool:
         """
@@ -138,6 +180,9 @@ class SimpleStack:
         :return: True if the stack is empty, False otherwise.
         """
         return len(self.__items) == 0
+
+    def __len__(self):
+        return len(self.__items)
 
     def __iter__(self):
         """
@@ -152,11 +197,11 @@ class SimpleStack:
         :return: The next value from the stack iterator.
         :raises StopIteration: If there are no more items to return.
         """
-        if self.__index < 0:
-            self.__index = len(self.__items) - 1
+        if self.__next_index < 0:
+            self.__next_index = len(self.__items) - 1
             raise StopIteration
-        item = self.__items[self.__index]
-        self.__index -= 1
+        item = self.__items[self.__next_index]
+        self.__next_index -= 1
         return item
 
     def __str__(self):
@@ -164,7 +209,7 @@ class SimpleStack:
         Returns a string representation of the stack.
         :return: A string representation of the stack.
         """
-        return f"{[node for node in self]}"
+        return f"SimpleStack({[item for item in self]})"
 
 
 class Node:
@@ -473,6 +518,13 @@ class RedBlackTree:
 
         self.__size -= 1
         return True
+
+    def clear(self):
+        """
+        Clears the RedBlackTree.
+        """
+        self.__root = self._NULL
+        self.__size = 0
 
     def size(self) -> int:
         """

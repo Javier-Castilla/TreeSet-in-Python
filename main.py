@@ -1,6 +1,6 @@
 import random
 import unittest
-from TreeSet import *
+from tree_set import *
 import ast
 import inspect
 import sys
@@ -56,9 +56,12 @@ for nombre_modulo in modulos_importados:
 def suite():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    suite.addTest(loader.loadTestsFromName("tests.test_empty_treeset"))
-    suite.addTest(loader.loadTestsFromName("tests.test_many_items_treeset"))
-    suite.addTest(loader.loadTestsFromName("tests.test_other_items_treeset"))
+    suite.addTest(loader.loadTestsFromName("tests.test_empty_tree_set"))
+    suite.addTest(loader.loadTestsFromName("tests.test_many_items_tree_set"))
+    suite.addTest(loader.loadTestsFromName("tests.test_other_items_tree_set"))
+    suite.addTest(loader.loadTestsFromName("tests.test_simple_queue"))
+    suite.addTest(loader.loadTestsFromName("tests.test_simple_stack"))
+    suite.addTest(loader.loadTestsFromName("tests.test_rb_tree"))
     return suite
 
 
@@ -144,9 +147,9 @@ def test_times():
 
 
 if __name__ == "__main__":
-    """runner = unittest.TextTestRunner()
-    runner.run(suite())"""
+    runner = unittest.TextTestRunner()
+    runner.run(suite())
     # test_times()
-    tree = TreeSet(int, [num for num in range(1, 41)])
+    """tree = TreeSet(int, [num for num in range(1, 41)])
     app = GUI(tree)
-    app.mainloop()
+    app.mainloop()"""
