@@ -104,28 +104,34 @@ class TestInt(unittest.TestCase):
 
         def test_contains_multiple_elements_int(self):
             """Tests contains method on a TreeSet with multiple elements."""
-            self.tree_set_int.add_all([10, 20, 30, 40, 50])
-            self.assertTrue(self.tree_set_int.contains(10))
-            self.assertTrue(self.tree_set_int.contains(30))
-            self.assertFalse(self.tree_set_int.contains(15))
-
-        
-
+            tree_list = [10, 20, 30, 40, 50]
+            self.tree_set_int.add_all(tree_list)
+            for element in tree_list:
+                self.assertTrue(self.tree_set_int.contains(element))
+       
         def test_ceiling_elements_greater_equal_int(self):
             """Test ceiling method when set contains elements greater than or equal to the given value."""
-            self.tree_set_int.add_all([2, 5, 10, 15])
-            self.assertEqual(self.tree_set_int.ceiling(10), 10)
+            tree_list = [2, 5, 10, 15]
+            self.tree_set_int.add_all(tree_list)
+            for element in tree_list:
+                self.assertEqual(self.tree_set_int.ceiling(element), element)
+            self.assertEqual(self.tree_set_int.ceiling(3), 5)
+            self.assertEqual(self.tree_set_int.ceiling(8), 10)
             self.assertEqual(self.tree_set_int.ceiling(12), 15)
 
         def test_ceiling_elements_only_greater_int(self):
             """Test ceiling method when set contains only elements greater than the given value."""
             self.tree_set_int.add_all([15, 20, 25])
-            self.assertEqual(self.tree_set_int.ceiling(10), 15)
+            tree_list = [10, 0, -1, -200]
+            for element in tree_list:
+                self.assertEqual(self.tree_set_int.ceiling(element), 15)
 
         def test_ceiling_elements_only_smaller_int(self):
             """Test ceiling method when set contains only elements smaller than the given value."""
             self.tree_set_int.add_all([2, 5, 7])
-            self.assertEqual(self.tree_set_int.ceiling(10), None)
+            tree_list = [8, 20, 500, 1000]
+            for element in tree_list:
+                self.assertEqual(self.tree_set_int.ceiling(element), None)
 
         def test_ceiling_between_values_int(self):
             """Test ceiling method when the value is between two values in the set."""
@@ -133,6 +139,7 @@ class TestInt(unittest.TestCase):
             self.tree_set_int.add(10)
             self.tree_set_int.add(15)
             self.assertEqual(self.tree_set_int.ceiling(8), 10)
+            self.assertEqual(self.tree_set_int.ceiling(12), 15)
 
         def test_floor_smaller_than_min_int(self):
             """Test floor method when the value is smaller than the minimum value in the set."""
@@ -141,9 +148,10 @@ class TestInt(unittest.TestCase):
 
         def test_floor_equal_to_value_in_set_int(self):
             """Test floor method when the value is equal to a value in the set."""
-            self.tree_set_int.add(5)
-            self.tree_set_int.add(10)
-            self.assertEqual(self.tree_set_int.floor(5), 5)
+            tree_list = [10, 20, 30, 40, 50]
+            self.tree_set_int.add_all(tree_list)
+            for element in tree_list:
+                self.assertTrue(self.tree_set_int.floor(element))
 
         def test_floor_greater_than_max_int(self):
             """Test floor method when the value is greater than the maximum value in the set."""
@@ -156,21 +164,30 @@ class TestInt(unittest.TestCase):
             self.tree_set_int.add(5)
             self.tree_set_int.add(10)
             self.tree_set_int.add(15)
+            self.assertEqual(self.tree_set_int.floor(8), 5)
             self.assertEqual(self.tree_set_int.floor(12), 10)
         
         def test_poll_first_non_empty_set_int(self):
             """Test poll_first method on a non-empty set."""
-            self.tree_set_int.add_all([5, 10, 15])
-            self.assertEqual(self.tree_set_int.poll_first(), 5)
-            self.assertEqual(self.tree_set_int.size(), 2)
-            self.assertEqual(list(self.tree_set_int), [10, 15])
+            tree_list = [5, 10, 15, 20]
+            self.tree_set_int.add_all(tree_list)
+            cont=1
+            for element in tree_list:
+                self.assertEqual(self.tree_set_int.poll_first(), element)
+                self.assertEqual(self.tree_set_int.size(), len(tree_list)-cont)
+                cont+=1
+            self.assertEqual(self.tree_set_int.poll_first(), None)
 
         def test_poll_last_non_empty_set_int(self):
             """Test poll_last method on a non-empty set."""
-            self.tree_set_int.add_all([5, 10, 15])
-            self.assertEqual(self.tree_set_int.poll_last(), 15)
-            self.assertEqual(self.tree_set_int.size(), 2)
-            self.assertEqual(list(self.tree_set_int), [5, 10])
+            tree_list = [5, 10, 15, 20]
+            self.tree_set_int.add_all(tree_list)
+            cont=1
+            for element in reversed(tree_list):
+                self.assertEqual(self.tree_set_int.poll_last(), element)
+                self.assertEqual(self.tree_set_int.size(), len(tree_list)-cont)
+                cont+=1
+            self.assertEqual(self.tree_set_int.poll_last(), None)
 
         def test_iterator_multiple_elements_int(self):
             """Test iterator  method for multiple elements."""
@@ -434,32 +451,41 @@ class TestInt(unittest.TestCase):
 
         def test_contains_multiple_elements_Person(self):
             """Tests contains method on a TreeSet with multiple elements."""
-            self.tree_set_P.add_all([self.person_test, self.person_test2, self.person_test3, self.person_test4, self.person_test5])
-            self.assertTrue(self.tree_set_P.contains(self.person_test))
-            self.assertTrue(self.tree_set_P.contains(self.person_test2))
-            self.assertFalse(self.tree_set_P.contains(self.person_test6))
+            tree_list = [self.person_test, self.person_test2, self.person_test3, self.person_test4, self.person_test5]
+            self.tree_set_P.add_all(tree_list)
+            for element in tree_list:
+                self.assertTrue(self.tree_set_P.contains(element))
         
         def test_ceiling_elements_greater_equal_Person(self):
             """Test ceiling method when set contains elements greater than or equal to the given value."""
-            self.tree_set_P.add_all([self.person_test, self.person_test2, self.person_test3, self.person_test4])
-            self.assertEqual(self.tree_set_P.ceiling(self.person_test), self.person_test)
+            tree_list = [self.person_test, self.person_test3, self.person_test5]
+            self.tree_set_P.add_all(tree_list)
+            for element in tree_list:
+                self.assertEqual(self.tree_set_P.ceiling(element), element)
+            self.assertEqual(self.tree_set_P.ceiling(self.person_test2), self.person_test3)
+            self.assertEqual(self.tree_set_P.ceiling(self.person_test4), self.person_test5)
 
         def test_ceiling_elements_only_greater_Person(self):
             """Test ceiling method when set contains only elements greater than the given value."""
-            self.tree_set_P.add_all([self.person_test2, self.person_test3, self.person_test4])
-            self.assertEqual(self.tree_set_P.ceiling(self.person_test), self.person_test2)
+            self.tree_set_P.add_all([self.person_test4, self.person_test5, self.person_test6])
+            tree_list = [self.person_test, self.person_test2, self.person_test3]
+            for element in tree_list:
+                self.assertEqual(self.tree_set_P.ceiling(element), self.person_test4)
 
         def test_ceiling_elements_only_smaller_Person(self):
             """Test ceiling method when set contains only elements smaller than the given value."""
             self.tree_set_P.add_all([self.person_test, self.person_test2, self.person_test3])
-            self.assertEqual(self.tree_set_P.ceiling(self.person_test4), None)
+            tree_list = [self.person_test4, self.person_test5, self.person_test6]
+            for element in tree_list:
+                self.assertEqual(self.tree_set_P.ceiling(element), None)
 
         def test_ceiling_between_values_Person(self):
             """Test ceiling method when the value is between two values in the set."""
             self.tree_set_P.add(self.person_test)
             self.tree_set_P.add(self.person_test3)
-            self.tree_set_P.add(self.person_test4)
+            self.tree_set_P.add(self.person_test6)
             self.assertEqual(self.tree_set_P.ceiling(self.person_test2), self.person_test3)
+            self.assertEqual(self.tree_set_P.ceiling(self.person_test4), self.person_test6)
 
         def test_floor_smaller_than_min_Person(self):
             """Test floor method when the value is smaller than the minimum value in the set."""
@@ -468,9 +494,10 @@ class TestInt(unittest.TestCase):
 
         def test_floor_equal_to_value_in_set_Person(self):
             """Test floor method when the value is equal to a value in the set."""
-            self.tree_set_P.add(self.person_test)
-            self.tree_set_P.add(self.person_test2)
-            self.assertEqual(self.tree_set_P.floor(self.person_test), self.person_test)
+            tree_list = [self.person_test, self.person_test2, self.person_test3, self.person_test4, self.person_test5]
+            self.tree_set_P.add_all(tree_list)
+            for element in tree_list:
+                self.assertTrue(self.tree_set_P.floor(element))
 
         def test_floor_greater_than_max_Person(self):
             """Test floor method when the value is greater than the maximum value in the set."""
@@ -482,22 +509,31 @@ class TestInt(unittest.TestCase):
             """Test floor method when the value is between two values in the set."""
             self.tree_set_P.add(self.person_test)
             self.tree_set_P.add(self.person_test3)
-            self.tree_set_P.add(self.person_test4)
-            self.assertEqual(self.tree_set_P.floor(self.person_test2), self.person_test)        
+            self.tree_set_P.add(self.person_test6)
+            self.assertEqual(self.tree_set_P.floor(self.person_test2), self.person_test)
+            self.assertEqual(self.tree_set_P.floor(self.person_test4), self.person_test3)    
 
         def test_poll_first_non_empty_set_Person(self):
             """Test pollFirst method on a non-empty set."""
-            self.tree_set_P.add_all([self.person_test, self.person_test3, self.person_test4])
-            self.assertEqual(self.tree_set_P.poll_first(), self.person_test)
-            self.assertEqual(self.tree_set_P.size(), 2)
-            self.assertEqual(list(self.tree_set_P), [self.person_test3, self.person_test4])
+            tree_list = [self.person_test, self.person_test3, self.person_test4]
+            self.tree_set_P.add_all(tree_list)
+            cont=1
+            for element in tree_list:
+                self.assertEqual(self.tree_set_P.poll_first(), element)
+                self.assertEqual(self.tree_set_P.size(), len(tree_list)-cont)
+                cont+=1
+            self.assertEqual(self.tree_set_P.poll_first(), None)
 
         def test_poll_last_non_empty_set_Person(self):
             """Test poll_last method on a non-empty set."""
-            self.tree_set_P.add_all([self.person_test2, self.person_test3, self.person_test4])
-            self.assertEqual(self.tree_set_P.poll_last(), self.person_test4)
-            self.assertEqual(self.tree_set_P.size(), 2)
-            self.assertEqual(list(self.tree_set_P), [self.person_test2, self.person_test3])
+            tree_list = [self.person_test, self.person_test3, self.person_test4]
+            self.tree_set_P.add_all(tree_list)
+            cont=1
+            for element in reversed(tree_list):
+                self.assertEqual(self.tree_set_P.poll_last(), element)
+                self.assertEqual(self.tree_set_P.size(), len(tree_list)-cont)
+                cont+=1
+            self.assertEqual(self.tree_set_P.poll_last(), None)
 
         def test_iterator_multiple_elements_Person(self):
             """Test iterator  method for multiple elements."""
@@ -688,28 +724,42 @@ class TestInt(unittest.TestCase):
 
         def test_contains_multiple_elements_str(self):
             """Tests contains method on a TreeSet with multiple elements."""
-            self.tree_set_str.add_all(["A", "B", "C", "D", "E"])
-            self.assertTrue(self.tree_set_str.contains("A"))
-            self.assertTrue(self.tree_set_str.contains("C"))
-            self.assertFalse(self.tree_set_str.contains("G"))
-
-        
+            tree_list = ["A", "B", "C", "D", "E"]
+            self.tree_set_str.add_all(tree_list)
+            for element in tree_list:
+                self.assertTrue(self.tree_set_str.contains(element))  
 
         def test_ceiling_elements_greater_equal_str(self):
             """Test ceiling method when set contains elements greater than or equal to the given value."""
-            self.tree_set_str.add_all(["A", "B", "G", "O"])
-            self.assertEqual(self.tree_set_str.ceiling("A"), "A")
-            self.assertEqual(self.tree_set_str.ceiling("C"), "G")
+            tree_list = ["A", "E", "K", "R"]
+            self.tree_set_str.add_all(tree_list)
+            for element in tree_list:
+                self.assertEqual(self.tree_set_str.ceiling(element), element)
+            self.assertEqual(self.tree_set_str.ceiling("B"), "E")
+            self.assertEqual(self.tree_set_str.ceiling("G"), "K")
+            self.assertEqual(self.tree_set_str.ceiling("M"), "R")
 
         def test_ceiling_elements_only_greater_str(self):
             """Test ceiling method when set contains only elements greater than the given value."""
-            self.tree_set_str.add_all(["C", "D", "Z"])
-            self.assertEqual(self.tree_set_str.ceiling("A"), "C")
+            self.tree_set_str.add_all(["a", "b", "c"])
+            tree_list = ["A", "B", "-1", "Z"]
+            for element in tree_list:
+                self.assertEqual(self.tree_set_str.ceiling(element), "a")
 
         def test_ceiling_elements_only_smaller_str(self):
             """Test ceiling method when set contains only elements smaller than the given value."""
             self.tree_set_str.add_all(["A", "B", "C"])
-            self.assertEqual(self.tree_set_str.ceiling("X"), None)
+            tree_list = ["G", "H", "L", "Z"]
+            for element in tree_list:
+                self.assertEqual(self.tree_set_str.ceiling(element), None)
+
+        def test_ceiling_between_values_str(self):
+            """Test ceiling method when the value is between two values in the set."""
+            self.tree_set_str.add("A")
+            self.tree_set_str.add("M")
+            self.tree_set_str.add("P")
+            self.assertEqual(self.tree_set_str.ceiling("B"), "M")
+            self.assertEqual(self.tree_set_str.ceiling("O"), "P")
 
 
         def test_floor_smaller_than_min_str(self):
@@ -719,9 +769,10 @@ class TestInt(unittest.TestCase):
 
         def test_floor_equal_to_value_in_set_str(self):
             """Test floor method when the value is equal to a value in the set."""
-            self.tree_set_str.add("A")
-            self.tree_set_str.add("D")
-            self.assertEqual(self.tree_set_str.floor("A"), "A")
+            tree_list = ["A", "B", "C", "D", "E"]
+            self.tree_set_str.add_all(tree_list)
+            for element in tree_list:
+                self.assertTrue(self.tree_set_str.floor(element))  
 
         def test_floor_greater_than_max_str(self):
             """Test floor method when the value is greater than the maximum value in the set."""
@@ -732,23 +783,32 @@ class TestInt(unittest.TestCase):
         def test_floor_between_values_str(self):
             """Test floor method when the value is between two values in the set."""
             self.tree_set_str.add("A")
-            self.tree_set_str.add("B")
-            self.tree_set_str.add("N")
-            self.assertEqual(self.tree_set_str.floor("D"), "B")
+            self.tree_set_str.add("M")
+            self.tree_set_str.add("P")
+            self.assertEqual(self.tree_set_str.floor("B"), "A")
+            self.assertEqual(self.tree_set_str.floor("O"), "M")
 
         def test_poll_first_non_empty_set_str(self):
             """Test poll_first method on a non-empty set."""
-            self.tree_set_str.add_all(["A", "B", "C"])
-            self.assertEqual(self.tree_set_str.poll_first(), "A")
-            self.assertEqual(self.tree_set_str.size(), 2)
-            self.assertEqual(list(self.tree_set_str), ["B", "C"])
+            tree_list = ["A", "B", "C"]
+            self.tree_set_str.add_all(tree_list)
+            cont=1
+            for element in tree_list:
+                self.assertEqual(self.tree_set_str.poll_first(), element)
+                self.assertEqual(self.tree_set_str.size(), len(tree_list)-cont)
+                cont+=1
+            self.assertEqual(self.tree_set_str.poll_first(), None)
 
         def test_poll_last_non_empty_set_str(self):
             """Test poll_last method on a non-empty set."""
-            self.tree_set_str.add_all(["A", "C", "D"])
-            self.assertEqual(self.tree_set_str.poll_last(), "D")
-            self.assertEqual(self.tree_set_str.size(), 2)
-            self.assertEqual(list(self.tree_set_str), ["A", "C"])
+            tree_list = ["A", "B", "C"]
+            self.tree_set_str.add_all(tree_list)
+            cont=1
+            for element in reversed(tree_list):
+                self.assertEqual(self.tree_set_str.poll_last(), element)
+                self.assertEqual(self.tree_set_str.size(), len(tree_list)-cont)
+                cont+=1
+            self.assertEqual(self.tree_set_str.poll_last(), None)
 
         def test_iterator_multiple_elements_str(self):
             """Test iterator  method for multiple elements."""
