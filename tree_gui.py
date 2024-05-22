@@ -300,7 +300,7 @@ class GUI(tk.Tk):
             self.__set_result("The value could not be initialized!")
 
     def __draw(self):
-        self.ax.__clear()  # Clear the axis before drawing
+        self.ax.clear()  # Clear the axis before drawing
         self.fig.subplots_adjust(left=0, bottom=0, right=1,
                                  top=1)  # Adjust the margins of the subplot
         self.__draw_node(self.ax, self.__tree._RedBlackTree__root)

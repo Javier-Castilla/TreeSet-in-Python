@@ -1,6 +1,7 @@
 import random
 import unittest
 from tree_set import *
+from tree_gui import GUI
 import ast
 import inspect
 import sys

@@ -94,6 +94,9 @@ presented in this project. They can also be used independently.
 
 ## tree_gui module
 
+![GUI](images/gui.JPG)
+![Tree](images/tree.JPG)
+
 This module contains a GUI application that allows you to interact with the TreeSet class. The GUI application allows you to
 add, remove and search for elements in the TreeSet. It also allows you to clear the TreeSet and to get the first and last
 elements in the TreeSet in a graphical way.
