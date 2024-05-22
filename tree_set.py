@@ -4,320 +4,12 @@ TreeSet module.
 This module provides a TreeSet class for storing and managing a set of elements
 in a red-black tree data structure.
 """
-import inspect
 import random
 from data_utils import *
-from tests.tests_classes import Person, Student
+from tests.tests_classes import *
 from tree_set_exceptions import *
-import matplotlib.pyplot as plt
-import tkinter as tk
-from tkinter import ttk, messagebox
 
 E = TypeVar('E')
-
-
-class GUI(tk.Tk):
-    """
-    GUI class used to show a Tkinter window in order to
-    visualize the TreeSet base Red - Black Tree.
-    """
-
-    def __tree_exists(function):
-        def wrapper(self, *args, **kwargs):
-            if self.__tree is None:
-                self.__set_result("Tree not initialized!")
-            else:
-                return function(self, *args, **kwargs)
-
-        return wrapper
-
-    def __init__(self, tree=None):
-        """
-        Class constructor
-
-        :param tree: The TreeSet object to be visualized.
-        :type tree: TreeSet
-        """
-        super().__init__()
-        self.title("TREESET")
-        self.geometry("815x300")
-        self.resizable(False, False)
-        self.config(bg="#303030")
-        self.protocol("WM_DELETE_WINDOW", self.__on_close)
-        self.__tree: TreeSet = tree
-        self.fig, self.ax = plt.subplots()
-        self.test = False
-        self.stop = True
-
-        self.title_label = tk.Label(self, text="TREESET", bg="#303030",
-                                    fg="white", font=('Arial', 16, 'bold'))
-        self.title_label.pack(side="top", pady=10)
-
-        style = ttk.Style()
-        style.configure('TButton',
-                        background='#f2f2f2',
-                        foreground='#333',
-                        font=('Arial', 10, 'bold'),
-                        bordercolor="#333",
-                        relief="solid",
-                        borderwidth=1)
-
-        style.map('TButton',
-                  background=[('active', '#f2f2f2')],
-                  foreground=[('active', '#333')],
-                  relief=[('active', 'groove')],
-                  bordercolor=[('active', '#333')],
-                  borderwidth=[('active', 1)])
-
-        main_frame = tk.Frame(self, bg="#303030")
-        main_frame.pack(expand=True, fill="both")
-
-        self.wait_time_slider = tk.Scale(self, from_=0.01, to=1,
-                                         resolution=0.01, orient="horizontal",
-                                         length=self.winfo_screenwidth(),
-                                         label="Wait Time (s)", bd=0)
-        self.wait_time_slider.set(0.01)
-        self.wait_time_slider.pack(side="top", fill="x")
-
-        self.wait_time_slider.config(bg="#303030", fg="white",
-                                     troughcolor="white", sliderlength=20,
-                                     width=20, highlightbackground="#303030")
-
-        self.value_label = tk.Label(main_frame, text="VALUE:", bg="#303030",
-                                    fg="white", font=('Arial', 10, 'bold'))
-        self.value_label.grid(row=0, column=0, padx=10, pady=10)
-
-        self.result = tk.Label(main_frame, text="RESULT: ", bg="#303030",
-                               fg="white", font=('Arial', 10, 'bold'))
-        self.result.grid(row=3, column=0, padx=10, pady=10, columnspan=7,
-                         sticky="ew")
-
-        self.value_entry = tk.Entry(main_frame, width=15, font=('Arial', 10))
-        self.value_entry.grid(row=0, column=1, padx=10, pady=10, columnspan=6,
-                              sticky="ew")
-
-        self.objects = {"int": int, "str": str, "float": float}
-
-        """with open(__file__, 'r') as f:
-            source_code = f.read()
-
-        tree = ast.parse(source_code)
-        self.imported_modules = []
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    self.imported_modules.append(alias.name)
-            elif isinstance(node, ast.ImportFrom):
-                self.imported_modules.append(node.module)
-
-        self.modules_combo = ttk.Combobox(
-            main_frame, values=self.imported_modules, state="readonly",
-            width=10, postcommand=self.__update_combo
-        )
-        self.modules_combo.grid(row=0, column=7, padx=10, pady=10)
-        self.modules_combo.bind("<<ComboboxSelected>>", self.__update_combo)
-
-        self.classes_combo = ttk.Combobox(
-            main_frame, values=list(self.objects.keys()), state="readonly",
-            width=10, postcommand=self.__update_combo
-        )
-        self.classes_combo.grid(row=0, column=8, padx=10, pady=10)
-        self.classes_combo.bind("<<ComboboxSelected>>", self.__update_tree)"""
-
-        buttons = {"Add": self.add, "Remove": self.remove,
-                   "Clear": self.clear, "Lower": self.tree_lower,
-                   "Higher": self.higher, "Ceiling": self.ceiling,
-                   "Floor": self.floor,
-                   "First": self.first, "Last": self.last,
-                   "Poll First": self.poll_first,
-                   "Poll Last": self.poll_last, "Size": self.size,
-                   "Contains": self.contains, "Test": self.__execute_test,
-                   "Pause": self.pause_test, "Stop": self.stop_test,
-                   "Show": self.draw}
-
-        for i, text in enumerate(buttons):
-            button = ttk.Button(main_frame, text=text, width=10,
-                                command=lambda t=buttons[text]: t(),
-                                style='TButton')
-            button.grid(row=(i + 1) // 9 + 1, column=i % 8, padx=5, pady=5)
-
-    def __update_tree(self):
-        self.__tree = self.objects[self.classes_combo.get()](
-            self.objects[self.modules_combo.get()]
-        )
-
-    def __update_combo(self, event):
-        for module in self.imported_modules:
-            for name, module_object in inspect.getmembers(module):
-                if inspect.isclass(module_object):
-                    self.objects[name] = module_object
-
-        self.classes_combo["values"] = list(self.objects.keys())
-
-    def __on_close(self):
-        if messagebox.askokcancel("Exit", "Do you want to close the window?"):
-            print("The window is closing... executing cleaning labours.")
-            self.test = False
-            self.stop = True
-            plt.close('all')
-            self.destroy()
-
-    def __get_value(self):
-        try:
-            value = self.__tree._TreeSet__class_type(self.value_entry.get())
-            return value
-        except ValueError:
-            self.__set_result(
-                "Value must be {self.__tree_TreeSet__class_type}!")
-
-    def __test(self):
-        self.__tree.add(random.randint(-100000, 100000))
-        self.__reset()
-        self.size()
-        plt.pause(self.wait_time_slider.get())
-
-    def pause_test(self):
-        self.test = not self.test
-        if self.test and self.__tree:
-            self.__execute_test()
-
-    @__tree_exists
-    def stop_test(self):
-        self.stop = True
-        self.__tree.clear()
-        self.__reset()
-
-    @__tree_exists
-    def __execute_test(self):
-        value = self.__get_value()
-        if self.stop:
-            self.__tree.clear()
-        self.test = True
-        self.stop = False
-        while self.__tree.size() != value:
-            if self.stop:
-                break
-            if self.test:
-                self.__test()
-            else:
-                break
-        if not self.stop and self.test:
-            self.test = False
-            self.stop = True
-
-    def __reset(self):
-        self.draw()
-
-    def __set_result(self, msg) -> None:
-        self.result.config(text=f"RESULT: {msg}")
-
-    @__tree_exists
-    def add(self):
-        self.__set_result(self.__tree.add(self.__get_value()))
-        self.__reset()
-
-    @__tree_exists
-    def remove(self):
-        self.__set_result(self.__tree.remove(self.__get_value()))
-        self.__reset()
-
-    @__tree_exists
-    def clear(self):
-        self.__tree.clear()
-        self.__set_result("Tree correctly cleared!")
-        self.__reset()
-
-    @__tree_exists
-    def tree_lower(self):
-        self.__set_result(self.__tree.lower(self.__get_value()))
-
-    @__tree_exists
-    def higher(self):
-        self.__set_result(self.__tree.higher(self.__get_value()))
-
-    @__tree_exists
-    def ceiling(self):
-        self.__set_result(self.__tree.ceiling(self.__get_value()))
-
-    @__tree_exists
-    def floor(self):
-        self.__set_result(self.__tree.floor(self.__get_value()))
-
-    @__tree_exists
-    def first(self):
-        try:
-            self.__set_result(self.__tree.first())
-        except NoSuchElementException as err:
-            self.__set_result("The tree is empty!")
-
-    @__tree_exists
-    def last(self):
-        try:
-            self.__set_result(self.__tree.last())
-        except NoSuchElementException as err:
-            self.__set_result("The tree is empty!")
-
-    @__tree_exists
-    def poll_first(self):
-        try:
-            self.__set_result(self.__tree.poll_first())
-            self.__reset()
-        except NoSuchElementException as err:
-            self.__set_result("The tree is empty!")
-
-    @__tree_exists
-    def poll_last(self):
-        try:
-            self.__set_result(self.__tree.poll_last())
-            self.__reset()
-        except NoSuchElementException as err:
-            self.__set_result("The tree is empty!")
-
-    @__tree_exists
-    def size(self):
-        self.__set_result(self.__tree.size())
-
-    @__tree_exists
-    def contains(self):
-        self.__set_result(self.__tree.contains(self.__get_value()))
-
-    @__tree_exists
-    def draw(self):
-        self.ax.clear()  # Clear the axis before drawing
-        self.fig.subplots_adjust(left=0, bottom=0, right=1,
-                                 top=1)  # Adjust the margins of the subplot
-        self.__draw_node(self.ax, self.__tree._RedBlackTree__root)
-        self.__draw_edges(self.ax, self.__tree._RedBlackTree__root)
-        self.ax.axis('off')  # Hide axes
-        plt.show(block=False)  # Non-blocking show
-
-    @__tree_exists
-    def __draw_node(self, ax, node, x=0, y=0, dx=1, dy=1):
-        if node is not RedBlackTree._NULL:
-            color = "red" if node.color == RedBlackTree._RED else "black"
-            ax.plot([x], [y], marker='o', markersize=40, color=color,
-                    zorder=2)  # Dibujar nodo con un tamaño mayor y detrás de las líneas
-            ax.text(x, y, str(node.value), fontsize=12, ha='center',
-                    va='center', color='white',
-                    zorder=3)  # Etiquetar nodo
-            if node.left is not RedBlackTree._NULL:
-                self.__draw_node(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
-            if node.right is not RedBlackTree._NULL:
-                self.__draw_node(ax, node.right, x + dx, y - dy, dx / 2, dy * 2)
-
-    @__tree_exists
-    def __draw_edges(self, ax, node, x=0, y=0, dx=1, dy=1):
-        if node is not RedBlackTree._NULL:
-            if node.left is not RedBlackTree._NULL:
-                ax.plot([x, x - dx], [y, y - dy], color='black',
-                        zorder=1)  # Dibujar conexión izquierda en negro y detrás de los nodos
-                self.__draw_edges(ax, node.left, x - dx, y - dy, dx / 2, dy * 2)
-            if node.right is not RedBlackTree._NULL:
-                ax.plot([x, x + dx], [y, y - dy], color='black',
-                        zorder=1)  # Dibujar conexión derecha en negro y detrás de los nodos
-                self.__draw_edges(ax, node.right, x + dx, y - dy, dx / 2,
-                                  dy * 2)
 
 
 class TreeSet(RedBlackTree):
@@ -356,6 +48,13 @@ class TreeSet(RedBlackTree):
         return wrapper
 
     def __null_validation(function):
+        """
+        Decorator used to validate if the given value is None or not.
+
+        :param function: used function of the TreeSet
+        :return: given function return statement
+        :raises NullPointerException: if the item is None
+        """
         def wrapper(self, value):
             if value is None:
                 raise NullPointerException("Value cannot be None")
@@ -370,6 +69,7 @@ class TreeSet(RedBlackTree):
 
         :param function: used functions of the TreeSet
         :return: given function return statement
+        :raise ClassCastException: if the given value is not comparable
         """
 
         def wrapper(self, *args):
@@ -380,28 +80,37 @@ class TreeSet(RedBlackTree):
             :param args: arguments given dynamically
             :return: the given function return statement
             :rtype: Any
-            :raise NonComparableObjectError: if the given value is not comparable
+            :raise ClassCastException: if the given value is not comparable
             """
+
+            def throw_exception():
+                """
+                Private method used to throw a ClassCastException exception.
+
+                :raises ClassCastException: always
+                """
+                raise ClassCastException(
+                    f"class {value_type} cannot be compared")
+
             item = args[0]
-            value_type = type(item) if not isinstance(item, type) else item
+            value_type = type(item)
             if value_type.__eq__ is object.__eq__ \
                     or (value_type.__lt__ is object.__lt__
                         and value_type.__gt__ is object.__gt__):
-                raise ClassCastException(
-                    f"class {value_type} cannot be compared")
+                throw_exception()
             elif not isinstance(item, type):
                 try:
-                    item < item
-                    item > item
+                    if (item < item) is None or (item > item) is None:
+                        throw_exception()
                 except TypeError:
-                    raise ClassCastException(
-                        f"class {value_type} cannot be compared")
+                    throw_exception()
 
             return function(self, *args)
 
         return wrapper
 
-    def __complete_comparator(self, value_type: Type):
+    @classmethod
+    def __complete_comparator(cls, value_type: Type):
         """
         Private method used to complete specified type comparator.
         If the given class has only one of the two lateral
@@ -411,7 +120,7 @@ class TreeSet(RedBlackTree):
         :param value_type: the type to complete its comparator
         :type value_type: type
         :return: the given value type
-        :rtype: type
+        :rtype: Type
         """
         c_type = value_type.__base__ if value_type.__base__ is not object \
             else value_type
@@ -451,6 +160,9 @@ class TreeSet(RedBlackTree):
         :type generic_type: type
         :param: sequence: a collection to take items from and add them to the TreeSet
         :type sequence: Collection[E]
+        :raises TypeError: if the given values does not match the instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         super().__init__()
         self.__class_type = self.__complete_comparator(generic_type)
@@ -473,28 +185,26 @@ class TreeSet(RedBlackTree):
 
         :param values: values to insert into the TreeSet.
         :type values: Collection[E]
-        :return: True if all values could be inserted else False.
+        :return: True if all values could be inserted else False
         :rtype: bool
         :raises TypeError: if the given values does not match the
-            instance type.
+            instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         if not isinstance(values, Collection):
             raise TypeError(
                 f"Second argument must be a sequence but {type(values)} was given"
             )
 
+        if len(set(map(type, values))) > 1:
+            raise TypeError(
+                f"All values must be of the same type: {self.__class_type}"
+            )
+
         old_size = self.size()
-        added_values = []
-
-        try:
-            for value in values:
-                self.add(value)
-                added_values.append(value)
-        except TypeError as e:
-            for value in added_values:
-                self.remove(value)
-
-            raise e
+        for value in values:
+            self.add(value)
 
         return old_size == self.size() - len(values)
 
@@ -513,6 +223,8 @@ class TreeSet(RedBlackTree):
         :rtype: bool
         :raises TypeError: if the given value does not match the
             instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         return super().add(value)
 
@@ -531,6 +243,8 @@ class TreeSet(RedBlackTree):
         :rtype: bool
         :raises TypeError: if the given values does not match the
             instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         return super().remove(value)
 
@@ -551,7 +265,6 @@ class TreeSet(RedBlackTree):
 
     def clone(self) -> 'TreeSet':
         """
-
         Clones the current TreeSet and returns that clone.
 
         :return: a shallow copy of the current TreeSet instance.
@@ -583,6 +296,8 @@ class TreeSet(RedBlackTree):
         :rtype: bool
         :raises TypeError: if the given values does not match the
             instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         return value in self
 
@@ -599,6 +314,8 @@ class TreeSet(RedBlackTree):
         :rtype: Union[E, None]
         :raises TypeError: if the given values does not match the
             instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         current = self._RedBlackTree__root
         result = None
@@ -627,6 +344,8 @@ class TreeSet(RedBlackTree):
         :rtype: Union[E, None]
         :raises TypeError: if the given values does not match the
             instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         current = self._RedBlackTree__root
         result = None
@@ -655,7 +374,9 @@ class TreeSet(RedBlackTree):
             to the given element. If it was not found, None will be returned
         :rtype: TreeSet
         :raises TypeError: if the given values does not match the
-            instance type.
+            instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         current = self._RedBlackTree__root
         result = None
@@ -687,6 +408,8 @@ class TreeSet(RedBlackTree):
         :rtype: TreeSet
         :raises TypeError: if the given values does not match the
             instance type
+        :raises NullPointerException: if the given value is None
+        :raises ClassCastException: if the given value is not comparable
         """
         current = self._RedBlackTree__root
         result = None
@@ -806,14 +529,11 @@ if __name__ == "__main__":
     items = [i for i in range(10, 30)]
     # items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l",
     # "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-    tree = TreeSet(Person)
-    ids = {random.randint(10, 40) for _ in range(10)}
-    ids = sorted(list(ids))
-    items = [Person(f"Person{identifier}", identifier) for identifier in ids]
+    tree = TreeSet(Worker)
+    print(tree.add(Worker("Juan", 20, "job1")))
+    print(tree)
+    tree.add(worker := LazyWorker("Juan", 20, "job1", 1000))
 
-    tree = TreeSet(dict)
-    tree.add({"name": "John", "age": 20})
-    tree.add({"name": "Jane", "age": 25})
 
     def loop_test():
         t = TreeSet(int)

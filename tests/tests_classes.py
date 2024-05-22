@@ -1,8 +1,12 @@
+from abc import ABC, abstractmethod
+
+
 # EQ LT
 class Person:
     """
     Class to represent a person. Implements eq and lt methods to compare objects.
     """
+
     def __init__(self, name, age):
         self.__name = name
         self.__age = age
@@ -39,12 +43,14 @@ class Person:
     def __repr__(self):
         return f"Person({self.__name}, {self.__age})"
 
+
 # (PERSON) EQ LT
 class Worker(Person):
     """
     Class to represent a worker. Inherits from Person and adds a job attribute.
     Implements eq and lt methods to compare objects.
     """
+
     def __init__(self, name, age, job):
         super().__init__(name, age)
         self.__job = job
@@ -57,12 +63,38 @@ class Worker(Person):
     def job(self, job):
         self.__job = job
 
+
+class LazyWorker(Worker):
+    """
+    Class to represent a lazy worker. Inherits from Worker and adds a laziness attribute.
+    Implements eq and lt methods to compare objects.
+    """
+
+    def __init__(self, name, age, job, laziness):
+        super().__init__(name, age, job)
+        self.__laziness = laziness
+
+    @property
+    def laziness(self):
+        return self.__laziness
+
+    @laziness.setter
+    def laziness(self, laziness):
+        self.__laziness = laziness
+
+    def __eq__(self, other):
+        pass
+
+    def __lt__(self, other):
+        pass
+
 # EQ GT
 class Professor:
     """
     Class to represent a professor. Implements eq and gt methods to compare objects.
     Implements eq and gt methods to compare objects.
     """
+
     def __init__(self, name, subject):
         self.__name = name
         self.__subject = subject
@@ -93,12 +125,14 @@ class Professor:
             return self.name > other.name
         return False
 
+
 # LT
 class Student:
     """
     Class to represent a student. Implements lt method to compare objects.
     Implements lt method to compare objects.
     """
+
     def __init__(self, name, id):
         self.__name = name
         self.__id = id
@@ -122,6 +156,69 @@ class Student:
     def __lt__(self, other):
         if isinstance(other, Student):
             return self.__id < other.id
+        return False
+
+
+class Alien(ABC):
+    """
+    Abstract class to represent an alien. Implements eq method to compare objects.
+    """
+
+    def __init__(self, name, planet):
+        self.__name = name
+        self.__planet = planet
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        self.__name = name
+
+    @property
+    def planet(self):
+        return self.__planet
+
+    @planet.setter
+    def planet(self, planet):
+        self.__planet = planet
+
+    @abstractmethod
+    def __eq__(self, other):
+        pass
+
+    @abstractmethod
+    def __lt__(self, other):
+        pass
+
+
+class Martian(Alien):
+    """
+    Class to represent a Martian. Inherits from Alien and adds a color attribute.
+    Implements eq and lt methods to compare objects.
+    """
+
+    def __init__(self, name, planet, color):
+        super().__init__(name, planet)
+        self.__color = color
+
+    @property
+    def color(self):
+        return self.__color
+
+    @color.setter
+    def color(self, color):
+        self.__color = color
+
+    def __eq__(self, other):
+        if isinstance(other, Martian):
+            return self.__color == other.color
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, Martian):
+            return self.color < other.color
         return False
 
 

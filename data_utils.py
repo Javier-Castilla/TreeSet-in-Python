@@ -13,13 +13,16 @@ from typing import *
 
 
 class SimpleQueue:
-    """Class that represents a queue."""
+    """
+    Class that represents a queue.
+    """
 
     def __init__(self, value: Any = None) -> None:
         """
-        Constructor of the class.
-        Initializes a new instance of SimpleQueue.
-        :param value: The initial value to enqueue. Default is None.
+        Constructor of the class. Initializes a new instance of SimpleQueue.
+
+        :param value: the initial value to enqueue, default is None
+        :type value: Any
         """
         self.__first = None
         self.__last = None
@@ -36,7 +39,9 @@ class SimpleQueue:
     def enqueue(self, value: Any) -> None:
         """
         Enqueues a new value to the queue.
-        :param value: The value to enqueue.
+
+        :param value: the value to enqueue
+        :type value: Any
         """
         new_node = Node(value)
 
@@ -51,8 +56,10 @@ class SimpleQueue:
     def dequeue(self) -> Any:
         """
         Dequeues a value from the queue.
-        :return: The dequeued value.
-        :raises IndexError: If the queue is empty.
+
+        :return: the dequeued value
+        :rtype: Any
+        :raises IndexError: if the queue is empty
         """
         if self.is_empty():
             raise IndexError("Queue is already empty")
@@ -70,8 +77,10 @@ class SimpleQueue:
     def peek(self) -> Any:
         """
         Returns the value at the top of the queue without removing it.
-        :return: The value at the top of the queue.
-        :raises IndexError: If the queue is empty.
+
+        :return: the value at the top of the queue
+        :rtype: Any
+        :raises IndexError: if the queue is empty
         """
         if self.is_empty():
             raise IndexError("Queue is empty")
@@ -81,30 +90,38 @@ class SimpleQueue:
     def is_empty(self) -> bool:
         """
         Checks if the queue is empty.
-        :return: True if the queue is empty, False otherwise.
+
+        :return: True if the queue is empty, False otherwise
+        :rtype: bool
         """
         return len(self) == 0
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Returns the length of the queue.
-        :return: The length of the queue.
+
+        :return: the length of the queue
+        :rtype: int
         """
         return sum(1 for _ in self)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         """
         Returns an iterator for the queue.
-        :return: An iterator for the queue.
+
+        :return: an iterator for the queue
+        :rtype: Iterator[Any]
         """
         self.__current = self.__first
         return self
 
-    def __next__(self):
+    def __next__(self) -> Any:
         """
         Returns the next value from the queue iterator.
-        :return: The next value from the queue iterator.
-        :raises StopIteration: If there are no more items to return.
+
+        :return: the next value from the queue iterator
+        :rtype: Any
+        :raises StopIteration: if there are no more items to return
         """
         if not self.__current:
             self.__current = self.__first
@@ -113,22 +130,28 @@ class SimpleQueue:
         self.__current = self.__current.next_node
         return item
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns a string representation of the queue.
-        :return: A string representation of the queue.
+
+        :return: a string representation of the queue
+        :rtype: str
         """
         return f"SimpleQueue({[node for node in self]})"
 
 
 class SimpleStack:
-    """Class that represents a stack."""
+    """
+    Class that represents a stack.
+    """
 
     def __init__(self, value: Any = None) -> None:
         """
         Constructor of the class.
         Initializes a new instance of SimpleStack.
-        :param value: The initial value to push onto the stack. Default is None.
+
+        :param value: the initial value to push onto the stack, default is None
+        :type value: Any
         """
         self.__items = list()
         self.__index = -1
@@ -144,7 +167,9 @@ class SimpleStack:
     def push(self, value: Any) -> None:
         """
         Pushes a new value onto the stack.
-        :param value: The value to push.
+
+        :param value: the value to push
+        :type value: Any
         """
         self.__items.append(value)
         self.__index += 1
@@ -153,8 +178,10 @@ class SimpleStack:
     def pull(self) -> Any:
         """
         Pulls a value from the stack.
-        :return: The pulled value.
-        :raises IndexError: If the stack is empty.
+
+        :return: the pulled value.
+        :rtype: Any
+        :raises IndexError: if the stack is empty
         """
         if self.is_empty():
             raise IndexError("Stack is already empty")
@@ -163,11 +190,13 @@ class SimpleStack:
         self.__next_index = self.__index
         return self.__items.pop()
 
-    def peek(self):
+    def peek(self) -> Any:
         """
         Returns the value at the top of the stack without removing it.
-        :return: The value at the top of the stack.
-        :raises IndexError: If the stack is empty.
+
+        :return: the value at the top of the stack
+        :rtype: Any
+        :raises IndexError: if the stack is empty
         """
         if self.is_empty():
             raise IndexError("Stack is empty")
@@ -177,25 +206,37 @@ class SimpleStack:
     def is_empty(self) -> bool:
         """
         Checks if the stack is empty.
-        :return: True if the stack is empty, False otherwise.
+
+        :return: True if the stack is empty, False otherwise
+        :rtype: bool
         """
         return len(self.__items) == 0
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """
+        Returns the length of the stack.
+
+        :return: the length of the stack
+        :rtype: int
+        """
         return len(self.__items)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         """
         Returns an iterator for the stack.
-        :return: An iterator for the stack.
+
+        :return: an iterator for the stack
+        :rtype: Iterator[Any]
         """
         return self
 
-    def __next__(self):
+    def __next__(self) -> Any:
         """
         Returns the next value from the stack iterator.
-        :return: The next value from the stack iterator.
-        :raises StopIteration: If there are no more items to return.
+
+        :return: the next value from the stack iterator
+        :rtype: Any
+        :raises StopIteration: if there are no more items to return
         """
         if self.__next_index < 0:
             self.__next_index = len(self.__items) - 1
@@ -204,10 +245,12 @@ class SimpleStack:
         self.__next_index -= 1
         return item
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns a string representation of the stack.
-        :return: A string representation of the stack.
+
+        :return: a string representation of the stack
+        :rtype: str
         """
         return f"SimpleStack({[item for item in self]})"
 
@@ -218,11 +261,13 @@ class Node:
     Each node has a value and pointers to the next and previous nodes.
     """
 
-    def __init__(self, value: Any):
+    def __init__(self, value: Any) -> None:
         """
         Constructor of the class.
         Initializes a new instance of Node.
-        :param value: The initial value of the node.
+
+        :param value: the initial value of the node
+        :type value: Any
         """
         self.value = value
         self.next_node = None
@@ -232,7 +277,9 @@ class Node:
     def value(self) -> Any:
         """
         Getter for the value of the node.
-        :return: The value of the node.
+
+        :return: the value of the node
+        :rtype: Any
         """
         return self.__value
 
@@ -240,7 +287,8 @@ class Node:
     def value(self, value: Any) -> None:
         """
         Setter for the value of the node.
-        :param value: The new value for the node.
+        :param value: the new value for the node
+        :type value: Any
         """
         self.__value = value
 
@@ -248,7 +296,9 @@ class Node:
     def next_node(self) -> Any:
         """
         Getter for the next node.
-        :return: The next node.
+
+        :return: the next node
+        :rtype: Any
         """
         return self.__next_node
 
@@ -256,7 +306,9 @@ class Node:
     def next_node(self, next_node: Any) -> None:
         """
         Setter for the next node.
-        :param next_node: The new next node.
+
+        :param next_node: the new next node
+        :type next_node: Any
         """
         self.__next_node = next_node
 
@@ -264,7 +316,9 @@ class Node:
     def previous_node(self) -> Any:
         """
         Getter for the previous node.
-        :return: The previous node.
+
+        :return: the previous node
+        :rtype: Any
         """
         return self.__previous_node
 
@@ -272,22 +326,29 @@ class Node:
     def previous_node(self, previous_node: Any) -> None:
         """
         Setter for the previous node.
-        :param previous_node: The new previous node.
+
+        :param previous_node: the new previous node
+        :type previous_node: Any
         """
         self.__previous_node = previous_node
 
     def __repr__(self) -> str:
         """
         Returns a string representation of the node.
-        :return: A string representation of the node.
+
+        :return: a string representation of the node
+        :rtype: str
         """
         return f"Node({self.value})"
 
     def __eq__(self, other: 'TreeNode') -> bool:
         """
         Checks if the current node is equal to the other node.
-        :param other: The other node to compare with.
-        :return: True if the nodes are equal, False otherwise.
+
+        :param other: the other node to compare with
+        :type other: TreeNode
+        :return: True if the nodes are equal, False otherwise
+        :rtype: bool
         """
         if isinstance(other, TreeNode):
             return self.value == other.value
@@ -296,8 +357,11 @@ class Node:
     def __lt__(self, other: 'TreeNode') -> bool:
         """
         Checks if the current node is less than the other node.
-        :param other: The other node to compare with.
-        :return: True if the current node is less than the other node, False otherwise.
+
+        :param other: the other node to compare with
+        :type other: TreeNode
+        :return: True if the current node is less than the other node, False otherwise
+        :rtype: bool
         """
         if isinstance(other, TreeNode):
             return self.value < other.value
@@ -306,8 +370,11 @@ class Node:
     def __gt__(self, other: 'TreeNode') -> bool:
         """
         Checks if the current node is greater than the other node.
-        :param other: The other node to compare with.
-        :return: True if the current node is greater than the other node, False otherwise.
+
+        :param other: the other node to compare with
+        :type other: TreeNode
+        :return: True if the current node is greater than the other node, False otherwise
+        :rtype: bool
         """
         if isinstance(other, TreeNode):
             return not self < other
@@ -338,10 +405,15 @@ class TreeNode(Node):
         """
         Constructor of the class.
         Initializes a new instance of TreeNode.
-        :param value: The initial value of the node.
-        :param left: The left child of the node. Default is None.
-        :param right: The right child of the node. Default is None.
-        :param color: The color of the node. Default is RED.
+
+        :param value: the initial value of the node
+        :type value: Any
+        :param left: the left child of the node, default is None
+        :type left: Union['TreeNode', None]
+        :param right: the right child of the node, default is None
+        :type right: Union['TreeNode', None]
+        :param color: the color of the node, default is RED
+        :type color: 'TreeNode.TreeNodeUtils'
         """
         super().__init__(value)
         self.parent = None
@@ -353,7 +425,9 @@ class TreeNode(Node):
     def color(self) -> TreeNodeUtils:
         """
         Getter for the color of the node.
-        :return: The color of the node.
+
+        :return: the color of the node
+        :rtype: TreeNode.TreeNodeUtils
         """
         return self.__color
 
@@ -361,7 +435,9 @@ class TreeNode(Node):
     def color(self, color: TreeNodeUtils) -> None:
         """
         Setter for the color of the node.
-        :param color: The new color for the node.
+
+        :param color: the new color for the node
+        :type color: TreeNode.TreeNodeUtils
         """
         assert isinstance(color,
                           TreeNode.TreeNodeUtils), "Value type should be Color"
@@ -375,7 +451,9 @@ class TreeNode(Node):
     def left(self) -> Any:
         """
         Getter for the left child of the node.
-        :return: The left child of the node.
+
+        :return: the left child of the node
+        :rtype: Any
         """
         return self.__left
 
@@ -383,7 +461,9 @@ class TreeNode(Node):
     def left(self, node: 'TreeNode') -> None:
         """
         Setter for the left child of the node.
-        :param node: The new left child for the node.
+
+        :param node: the new left child for the node
+        :type node: 'TreeNode'
         """
         self.__left = node
 
@@ -391,7 +471,9 @@ class TreeNode(Node):
     def right(self) -> Any:
         """
         Getter for the right child of the node.
-        :return: The right child of the node.
+
+        :return: the right child of the node
+        :rtype: Any
         """
         return self.__right
 
@@ -399,14 +481,18 @@ class TreeNode(Node):
     def right(self, node: 'TreeNode') -> None:
         """
         Setter for the right child of the node.
-        :param node: The new right child for the node.
+
+        :param node: the new right child for the node
+        :type node: 'TreeNode'
         """
         self.__right = node
 
     def __str__(self) -> str:
         """
         Returns a string representation of the node.
-        :return: A string representation of the node.
+
+        :return: a string representation of the node
+        :rtype: str
         """
         left = self.left if self.left is None else self.left.value
         right = self.right if self.right is None else self.right.value
@@ -415,7 +501,9 @@ class TreeNode(Node):
     def __repr__(self) -> str:
         """
         Returns a string representation of the node for debugging.
-        :return: A string representation of the node.
+
+        :return: a string representation of the node
+        :rtype: str
         """
         return f"TreeNode({self.value}, {self.color})"
 
@@ -445,15 +533,20 @@ class RedBlackTree:
     def is_empty(self) -> bool:
         """
         Checks if the current RedBlackTree is empty or not.
+
         :return: True if RedBlackTree is empty else False
+        :rtype: bool
         """
         return self.__size == 0
 
     def add(self, value: Any) -> bool:
         """
         Inserts a new value into the RedBlackTree.
-        :param value: The value to insert.
-        :return: False if the value already exists in the tree, True otherwise.
+
+        :param value: the value to insert
+        :type value: Any
+        :return: False if the value already exists in the tree, True otherwise
+        :rtype: bool
         """
         if (parent := self.__contains(
                 value)) is not self._NULL and parent.value == value:
@@ -478,11 +571,14 @@ class RedBlackTree:
         self.__size += 1
         return True
 
-    def remove(self, value):
+    def remove(self, value) -> bool:
         """
         Deletes a value from the RedBlackTree.
-        :param value: The value to delete.
-        :return: False if the value does not exist in the tree, True otherwise.
+
+        :param value: the value to delete
+        :type value: Any
+        :return: False if the value does not exist in the tree, True otherwise
+        :rtype: bool
         """
         if (
         node := self.__contains(value)) is self._NULL or node.value != value:
@@ -519,7 +615,7 @@ class RedBlackTree:
         self.__size -= 1
         return True
 
-    def clear(self):
+    def clear(self) -> None:
         """
         Clears the RedBlackTree.
         """
@@ -529,14 +625,17 @@ class RedBlackTree:
     def size(self) -> int:
         """
         Returns the size of the RedBlackTree.
-        :return: The size of the RedBlackTree.
+
+        :return: the size of the RedBlackTree
+        :rtype: int
         """
         return self.__size
 
-    def __fix_after_insertion(self, node: TreeNode):
+    def __fix_after_insertion(self, node: TreeNode) -> None:
         """
         Fixes the RedBlackTree after an insertion operation.
-        :param node: The node that was inserted.
+
+        :param node: the node that was inserted
         """
         while node.parent.color == self._RED:
             if node.parent == node.parent.parent.right:
@@ -576,7 +675,9 @@ class RedBlackTree:
     def __left_rotation(self, node: TreeNode) -> None:
         """
         Performs a left rotation on a node.
-        :param node: The node to perform the rotation on.
+
+        :param node: the node to perform the rotation on
+        :type node: TreeNode
         """
         other = node.right
         node.right = other.left
@@ -596,7 +697,9 @@ class RedBlackTree:
     def __right_rotation(self, node: TreeNode) -> None:
         """
         Performs a right rotation on a node.
-        :param node: The node to perform the rotation on.
+
+        :param node: The node to perform the rotation on
+        :type node: TreeNode
         """
         other = node.left
         node.left = other.right
@@ -613,10 +716,12 @@ class RedBlackTree:
         other.right = node
         node.parent = other
 
-    def __fix_after_deletion(self, node):
+    def __fix_after_deletion(self, node) -> None:
         """
         Fixes the RedBlackTree after a deletion operation.
-        :param node: The node that was deleted.
+
+        :param node: the node that was deleted
+        :type node: TreeNode
         """
         while node is not self.__root and node.color == self._BLACK:
             if node == node.parent.left:
@@ -670,11 +775,14 @@ class RedBlackTree:
 
         node.color = self._BLACK
 
-    def __replace(self, node: TreeNode, other: TreeNode):
+    def __replace(self, node: TreeNode, other: TreeNode) -> None:
         """
         Replaces a node with another node.
-        :param node: The node to be replaced.
-        :param other: The node to replace with.
+
+        :param node: the node to be replaced
+        :type node: TreeNode
+        :param other: the node to replace with
+        :type other: TreeNode
         """
         if not node.parent:
             self.__root = other
@@ -684,11 +792,14 @@ class RedBlackTree:
             node.parent.right = other
         other.parent = node.parent
 
-    def __symmetrical_successor(self, node):
+    def __symmetrical_successor(self, node) -> TreeNode:
         """
         Finds the symmetrical successor of a node.
-        :param node: The node to find the symmetrical successor of.
-        :return: The symmetrical successor of the node.
+
+        :param node: the node to find the symmetrical successor of
+        :type node: TreeNode
+        :return: the symmetrical successor of the node
+        :rtype: TreeNode
         """
         while node.left is not self._NULL:
             node = node.left
@@ -698,8 +809,11 @@ class RedBlackTree:
         """
         Checks if the given value is contained in the current RedBlackTree and
         returns the TreeNode where it is contained or a leaf.
-        :param value: The value to check.
-        :return: TreeNode having the searched value or a leaf.
+
+        :param value: the value to check
+        :type value: Any
+        :return: TreeNode having the searched value or a leaf
+        :rtype: TreeNode
         """
         parent = self._NULL
         current = self.__root
@@ -721,7 +835,9 @@ class RedBlackTree:
     def __inorder(self, inorder: bool) -> Any:
         """
         Generator that traverses the RedBlackTree in-order or reversed.
-        :param inorder: if True the route will be in-order else reversed.
+
+        :param inorder: if True the route will be in-order else reversed
+        :type inorder: bool
         """
         stack = SimpleStack()
         current = self.__root
@@ -741,8 +857,11 @@ class RedBlackTree:
         """
         Check equality between the current instance and a given object.
         This method is called when using built-in operator '=='.
-        :param other: other instance to compare with.
-        :return: True if instances are equal else False.
+
+        :param other: other instance to compare with
+        :type other: Any
+        :return: True if instances are equal else False
+        :rtype: bool
         """
         if isinstance(other, RedBlackTree):
             if self.size() != other.size():
@@ -759,6 +878,8 @@ class RedBlackTree:
     def __iter__(self) -> Any:
         """
         Method to iterate over the RedBlackTree instance.
+        :return: an iterator over the RedBlackTree instance
+        :return: Any
         """
         for node in self.__inorder(True):
             yield node.value
@@ -766,6 +887,9 @@ class RedBlackTree:
     def __reversed__(self) -> Any:
         """
         Method to iterate reversely over the RedBlackTree instance.
+
+        :return: an iterator over the RedBlackTree instance
+        :rtype: Any
         """
         for node in self.__inorder(False):
             yield node.value
@@ -773,7 +897,9 @@ class RedBlackTree:
     def __str__(self) -> str:
         """
         Returns a string representation of the current RedBlackTree.
-        :return: RedBlackTree string representation.
+
+        :return: RedBlackTree string representation
+        :rtype: str
         """
         return f"{[value for value in self]}"
 
@@ -781,8 +907,11 @@ class RedBlackTree:
         """
         Check if the given value is contained in the RedBlackTree or not.
         This method is called when using built-in operator 'in'.
-        :param value: The value to check.
-        :return: True if it is contained else False.
+
+        :param value: the value to check
+        :type value: Any
+        :return: True if it is contained else False
+        :rtype: bool
         """
         return self.__contains(value).value == value
 
@@ -790,26 +919,11 @@ class RedBlackTree:
         """
         Provides the length of the current RedBlackTree. It is used with the
         built-in method len().
-        :return: The length of the RedBlackTree.
+
+        :return: the length of the RedBlackTree
+        :rtype: int
         """
         return self.__size
-
-    def depth(self, node=None):
-        """
-        Calculate the maximum depth of the tree.
-        :param node: The node to start the depth calculation from. Defaults to the root of the tree.
-        :return: The maximum depth of the tree.
-        """
-        if node is None:
-            node = self.__root
-
-        if node is self._NULL:
-            return 0
-
-        left_depth = self.depth(node.left)
-        right_depth = self.depth(node.right)
-
-        return max(left_depth, right_depth) + 1
 
 
 if __name__ == "__main__":

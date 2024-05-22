@@ -5,6 +5,8 @@ import ast
 import inspect
 import sys
 from tests.tests_classes import *
+import time
+import data_utils
 
 
 """def listar_modulos_importados(source_code):
@@ -15,7 +17,7 @@ from tests.tests_classes import *
         if isinstance(node, ast.Import):
             for alias in node.names:
                 modulos_importados.append(alias.name)
-        elif isinstance(node, ast.ImportFrom):
+        if isinstance(node, ast.ImportFrom):
             modulos_importados.append(node.module)
 
     return modulos_importados
@@ -147,9 +149,9 @@ def test_times():
 
 
 if __name__ == "__main__":
-    runner = unittest.TextTestRunner()
-    runner.run(suite())
+    """runner = unittest.TextTestRunner()
+    runner.run(suite())"""
     # test_times()
-    """tree = TreeSet(int, [num for num in range(1, 41)])
+    tree = TreeSet(int)
     app = GUI(tree)
-    app.mainloop()"""
+    app.mainloop()

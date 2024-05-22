@@ -56,7 +56,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         Tests the iterator method on an empty TreeSet.
         """
         self.assertEqual(
-            [], [value for value in self.tree_int.iterator()],
+            [], list(self.tree_int.iterator()),
             "Wrong values given by TreeSet iterator"
         )
 
@@ -65,7 +65,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         Tests the descending_iterator method on an empty TreeSet.
         """
         self.assertEqual(
-            [], [value for value in self.tree_int.descending_iterator()],
+            [], list(self.tree_int.descending_iterator()),
             "Wrong values given by TreeSet descending iterator"
         )
 
@@ -79,6 +79,8 @@ class TestEmptyTreeSet(unittest.TestCase):
         self.assertEqual(self.tree_int.last(), 1, "Last value must be 1")
         self.assertTrue(self.tree_int.contains(1), "Wrong value for TreeSet contains")
         self.assertFalse(self.tree_int.is_empty(), "TreeSet must not be empty after adding 1 value")
+        self.assertFalse(self.tree_int.add(1), "add must return False if the value is already in the TreeSet")
+        self.assertEqual(self.tree_int.size(), 1, "Size must be 1 after adding 1 value twice")
 
     def test2_add_int(self):
         """
@@ -91,7 +93,7 @@ class TestEmptyTreeSet(unittest.TestCase):
         """
         Tests the add_all method on an empty TreeSet with a valid list of values.
         """
-        self.tree_int.add_all([num for num in range(10)])
+        self.assertTrue(self.tree_int.add_all([num for num in range(10)]), "add_all must return True if all values have been added")
         self.assertEqual(self.tree_int.size(), 10, "Size must be 10 after adding 10 value")
         self.assertEqual(self.tree_int.first(), 0, "First value must be 0")
         self.assertEqual(self.tree_int.last(), 9, "Last value must be 9")
@@ -100,6 +102,8 @@ class TestEmptyTreeSet(unittest.TestCase):
             self.assertTrue(self.tree_int.contains(num), "Wrong value for TreeSet contains")
 
         self.assertFalse(self.tree_int.is_empty(), "TreeSet must not be empty after adding 10 value")
+        self.assertFalse(self.tree_int.add_all([num for num in range(5)] + [num for num in range(10, 15)]), "add_all must return False if all values have been added")
+        self.assertEqual(self.tree_int.size(), 15, "Size must be 15 after adding 5 new values")
 
     def test2_add_all_int(self):
         """
