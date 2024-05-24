@@ -281,6 +281,11 @@ class TestOtherItemsTreeSet(unittest.TestCase):
                          "Tree and clone must be equal")
 
         for index in range(len(sorted_items)):
+            (changed_item := sorted_items[index]).pop()
+            self.assertEqual(item := tree.floor(changed_item), changed_item, "Wrong floor value")
+            self.assertEqual(item, tree_clone.floor(changed_item), "Wrong floor value")
+
+        for index in range(len(sorted_items)):
             self.assertEqual(
                 tree.poll_first(), sorted_items[index],
                 "Wrong poll first value"

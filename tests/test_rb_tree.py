@@ -1,6 +1,6 @@
 """Test Red-Black Tree implementation module"""
 import unittest
-from data_utils import RedBlackTree as RBTree
+from tree_set import RedBlackTree as RBTree
 
 
 class TestRBTree(unittest.TestCase):
@@ -8,12 +8,12 @@ class TestRBTree(unittest.TestCase):
 
     def setUp(self):
         """Set up empty, one item and many items trees"""
-        self.empty_tree = RBTree()
+        self.empty_tree = RBTree(int)
 
-        self.one_item_tree = RBTree()
+        self.one_item_tree = RBTree(int)
         self.one_item_tree.add(1)
 
-        self.many_items_tree = RBTree()
+        self.many_items_tree = RBTree(int)
 
         for num in range(10):
             self.many_items_tree.add(num)
@@ -64,7 +64,7 @@ class TestRBTree(unittest.TestCase):
 
     def test_empty_equal(self):
         """Test equality of empty trees"""
-        other = RBTree()
+        other = RBTree(int)
         self.assertEqual(self.empty_tree, other, "Empty trees must be equal")
 
     def test_one_item_size(self):
@@ -117,7 +117,7 @@ class TestRBTree(unittest.TestCase):
 
     def test_one_item_equal(self):
         """Test equality of one item trees"""
-        other = RBTree()
+        other = RBTree(int)
         other.add(1)
         self.assertEqual(self.one_item_tree, other,
                          "One item trees must be equal")
@@ -176,7 +176,7 @@ class TestRBTree(unittest.TestCase):
 
     def test_many_items_equal(self):
         """Test equality of many items trees"""
-        other = RBTree()
+        other = RBTree(int)
         for num in range(10):
             other.add(num)
         self.assertEqual(self.many_items_tree, other,
