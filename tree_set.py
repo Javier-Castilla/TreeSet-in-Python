@@ -1,13 +1,17 @@
 """
-TreeSet module.
+tree_set module.
 
 This module provides a TreeSet class for storing and managing a set of elements
-in a red-black tree data structure.
+in a red-black tree data structure. It also provides its base class, a
+RedBlackTree class, which is a self-balancing binary search tree. The TreeSet
+class extends the RedBlackTree class and provides additional methods for
+managing the set of elements.
 """
-import random
-from data_utils import *
+from typing import *
+from data_utils import TreeNode, SimpleStack
 from tests.tests_classes import *
 from tree_set_exceptions import *
+import random
 
 E = TypeVar('E')
 
@@ -15,13 +19,14 @@ E = TypeVar('E')
 class RedBlackTree:
     """
     Class that represents a Red-Black Tree, a self-balancing binary search
-    tree. Each node of the binary tree has an extra bit for denoting the
-    color of the node, either red or black.
+    tree. It provides guaranteed *O(log n)* time cost for the basic operations.
+    If needed to use a self-balancing tree with more operations, it is
+    recommended to use the :class:`TreeSet` class.
     """
 
     __attributes = {
         "_RedBlackTree__root", "_RedBlackTree__size",
-        "_RedBlackTree__object_type", "iterations", "count"
+        "_RedBlackTree__object_type"
     }
 
     _RED = TreeNode.TreeNodeUtils.RED
@@ -29,7 +34,6 @@ class RedBlackTree:
     _NULL = TreeNode(TreeNode.TreeNodeUtils.NULL, None, None,
                      TreeNode.TreeNodeUtils.BLACK)
 
-    @staticmethod
     def _type_validation(function):
         """
         Decorator method used to validate item type when using a TreeSet.
@@ -51,15 +55,14 @@ class RedBlackTree:
             :rtype: Any
             :raises TypeError: if the item type does not match the TreeSet type
             """
-            if not isinstance(item, self._RedBlackTree__object_type):
+            if not isinstance(item, self.object_type):
                 raise TypeError(
-                    f"Value type must be '{self._RedBlackTree__object_type}: {type(item)}'")
+                    f"Value type must be '{self.object_type}: {type(item)}'")
 
             return function(self, item)
 
         return wrapper
 
-    @staticmethod
     def _null_validation(function):
         """
         Decorator used to validate if the given value is None or not.
@@ -87,7 +90,6 @@ class RedBlackTree:
 
         return wrapper
 
-    @staticmethod
     def _check_comparable(function):
         """
         Private decorator used to check comparability of the type specified when
@@ -184,8 +186,6 @@ class RedBlackTree:
         self.__root = self._NULL
         self.__size = 0
         self.__object_type = self.__complete_comparator(generic_type)
-        self.iterations = 0
-        self.count = False
 
     @property
     def object_type(self) -> Type:
@@ -196,15 +196,6 @@ class RedBlackTree:
         :rtype: Type
         """
         return self.__object_type
-
-    def is_empty(self) -> bool:
-        """
-        Checks if the current RedBlackTree is empty or not.
-
-        :return: True if RedBlackTree is empty else False
-        :rtype: bool
-        """
-        return self.__size == 0
 
     @_null_validation
     @_type_validation
@@ -289,13 +280,6 @@ class RedBlackTree:
         self.__size -= 1
         return True
 
-    def clear(self) -> None:
-        """
-        Clears the RedBlackTree.
-        """
-        self.__root = self._NULL
-        self.__size = 0
-
     def size(self) -> int:
         """
         Returns the size of the RedBlackTree.
@@ -304,6 +288,22 @@ class RedBlackTree:
         :rtype: int
         """
         return self.__size
+
+    def is_empty(self) -> bool:
+        """
+        Checks if the current RedBlackTree is empty or not.
+
+        :return: True if RedBlackTree is empty else False
+        :rtype: bool
+        """
+        return self.__size == 0
+
+    def clear(self) -> None:
+        """
+        Clears the RedBlackTree.
+        """
+        self.__root = self._NULL
+        self.__size = 0
 
     def __fix_after_insertion(self, node: TreeNode) -> None:
         """
@@ -493,8 +493,6 @@ class RedBlackTree:
         current = self.__root
 
         while current is not self._NULL:
-            if self.count:
-                self.iterations += 1
             if current.value == value:
                 return current
 
@@ -526,6 +524,19 @@ class RedBlackTree:
                 current = current.right if inorder else current.left
             else:
                 break
+
+    def __nodes_color_arrays(self):
+        """
+        Returns the colors of the nodes in the RedBlackTree.
+
+        :return: the colors of the nodes in the RedBlackTree
+        :rtype: List[str]
+        """
+        colors = []
+        for node in self.__inorder(True):
+            colors.append(node.color)
+
+        return colors
 
     def __eq__(self, other) -> bool:
         """
@@ -637,7 +648,8 @@ class TreeSet(RedBlackTree):
 
         :param generic_type: the generic type of the class
         :type generic_type: type
-        :param: sequence: a collection to take items from and add them to the TreeSet
+        :param: sequence: a collection to take items from and add them to
+            the TreeSet
         :type sequence: Collection[E]
         :raises TypeError: if the given values does not match the instance type
         :raises NullPointerException: if the given value is None
@@ -696,7 +708,7 @@ class TreeSet(RedBlackTree):
         :return: a shallow copy of the current TreeSet instance.
         :rtype: TreeSet
         """
-        return TreeSet(self._RedBlackTree__object_type, self)
+        return TreeSet(self.object_type, self)
 
     def contains(self, value: E) -> bool:
         """
@@ -915,35 +927,8 @@ class TreeSet(RedBlackTree):
         """
         return iter(reversed(self))
 
-    def __get_color(self, value):
-        return node.color if (node := self._RedBlackTree__contains(
-            value)).value == value \
-            else None
-
-    def __array_color(self):
-        return [self.__get_color(value) for value in self]
-
 
 if __name__ == "__main__":
-    items = [i for i in range(10, 30)]
-    # items = ["a", "b", "c", "d", "d", "f", "g", "h", "i", "j", "k", "l",
-    # "m", "n", "ñ", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-    tree = TreeSet(int)
-
-    tree.add_all(items)
-    tree.add(40)
+    items = list(range(150))
+    tree = TreeSet(int, items)
     print(tree)
-
-
-    def loop_test():
-        t = TreeSet(int)
-        for _ in range(10):
-            items = [random.randint(1, 1000) for _ in range(10)]
-            t = TreeSet(int, items)
-            print("Items", items)
-            print("Tree:", t)
-            print(t.ceiling(400))
-            print("===================")
-            # t.draw_tree()
-
-    # loop_test()

@@ -1,143 +1,14 @@
 """
 data_utils module.
 
-This module provides four different minor data structures classes.
-    1. SimpleQueue
-    2. SimpleStack
-    3. Node
-    4. TreeNode
+This module provides three different minor data structures classes.
+    1. SimpleStack
+    2. Node
+    3. TreeNode
 """
 
 from enum import Enum
 from typing import *
-
-
-class SimpleQueue:
-    """
-    Class that represents a queue.
-    """
-
-    def __init__(self, value: Any = None) -> None:
-        """
-        Constructor of the class. Initializes a new instance of SimpleQueue.
-
-        :param value: the initial value to enqueue, default is None
-        :type value: Any
-        """
-        self.__first = None
-        self.__last = None
-        self.__current = None
-        self.__size = 0
-
-        if value:
-            if isinstance(value, Collection):
-                for item in value:
-                    self.enqueue(item)
-            else:
-                self.enqueue(value)
-
-    def enqueue(self, value: Any) -> None:
-        """
-        Enqueues a new value to the queue.
-
-        :param value: the value to enqueue
-        :type value: Any
-        """
-        new_node = Node(value)
-
-        if self.is_empty():
-            self.__first = self.__last = self.__current = new_node
-        else:
-            self.__last.next_node = new_node
-            self.__last = new_node
-
-        self.__size += 1
-
-    def dequeue(self) -> Any:
-        """
-        Dequeues a value from the queue.
-
-        :return: the dequeued value
-        :rtype: Any
-        :raises IndexError: if the queue is empty
-        """
-        if self.is_empty():
-            raise IndexError("Queue is already empty")
-
-        value = self.__first.value
-
-        if self.__first == self.__last:
-            self.__first = self.__last = self.__current = None
-        else:
-            self.__first = self.__current = self.__first.next_node
-
-        self.__size -= 1
-        return value
-
-    def peek(self) -> Any:
-        """
-        Returns the value at the top of the queue without removing it.
-
-        :return: the value at the top of the queue
-        :rtype: Any
-        :raises IndexError: if the queue is empty
-        """
-        if self.is_empty():
-            raise IndexError("Queue is empty")
-
-        return self.__first.value
-
-    def is_empty(self) -> bool:
-        """
-        Checks if the queue is empty.
-
-        :return: True if the queue is empty, False otherwise
-        :rtype: bool
-        """
-        return len(self) == 0
-
-    def __len__(self) -> int:
-        """
-        Returns the length of the queue.
-
-        :return: the length of the queue
-        :rtype: int
-        """
-        return sum(1 for _ in self)
-
-    def __iter__(self) -> Iterator[Any]:
-        """
-        Returns an iterator for the queue.
-
-        :return: an iterator for the queue
-        :rtype: Iterator[Any]
-        """
-        self.__current = self.__first
-        return self
-
-    def __next__(self) -> Any:
-        """
-        Returns the next value from the queue iterator.
-
-        :return: the next value from the queue iterator
-        :rtype: Any
-        :raises StopIteration: if there are no more items to return
-        """
-        if not self.__current:
-            self.__current = self.__first
-            raise StopIteration
-        item = self.__current.value
-        self.__current = self.__current.next_node
-        return item
-
-    def __str__(self) -> str:
-        """
-        Returns a string representation of the queue.
-
-        :return: a string representation of the queue
-        :rtype: str
-        """
-        return f"SimpleQueue({[node for node in self]})"
 
 
 class SimpleStack:
@@ -252,6 +123,15 @@ class SimpleStack:
         :return: a string representation of the stack
         :rtype: str
         """
+        return repr(self)
+
+    def __repr__(self):
+        """
+        Returns a string representation of the stack for debugging.
+
+        :return: a string representation of the stack
+        :rtype: str
+        """
         return f"SimpleStack({[item for item in self]})"
 
 
@@ -331,6 +211,15 @@ class Node:
         :type previous_node: Any
         """
         self.__previous_node = previous_node
+
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the node.
+
+        :return: a string representation of the node
+        :rtype: str
+        """
+        return repr(self)
 
     def __repr__(self) -> str:
         """
@@ -494,9 +383,7 @@ class TreeNode(Node):
         :return: a string representation of the node
         :rtype: str
         """
-        left = self.left if self.left is None else self.left.value
-        right = self.right if self.right is None else self.right.value
-        return f"({self.value}: {left}, {right})"
+        return repr(self)
 
     def __repr__(self) -> str:
         """
@@ -505,13 +392,19 @@ class TreeNode(Node):
         :return: a string representation of the node
         :rtype: str
         """
-        return f"TreeNode({self.value}, {self.color})"
+        return f"TreeNode({self.value}, {self.left}, {self.right}, {self.color})"
 
 
 if __name__ == "__main__":
-    t = RedBlackTree()
+    stack = SimpleStack()
 
-    for i in range(10):
-        t.add(i)
+    for num in range(10):
+        stack.push(num)
 
-    print(t)
+    print(stack)
+
+    node = Node(10)
+    print(node)
+
+    tree_node = TreeNode(10, None, None)
+    print(tree_node)

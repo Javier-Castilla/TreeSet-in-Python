@@ -1,6 +1,7 @@
 import unittest
 from tree_set import *
 from tree_set_exceptions import *
+import random
 
 
 class TestEmptyTreeSet(unittest.TestCase):

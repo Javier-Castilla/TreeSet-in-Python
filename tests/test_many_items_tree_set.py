@@ -1,5 +1,6 @@
 import unittest
 from tree_set import *
+import random
 
 
 class TestManyItemsTreeSet(unittest.TestCase):

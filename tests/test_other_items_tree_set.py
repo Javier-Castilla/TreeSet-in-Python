@@ -201,6 +201,105 @@ class TestOtherItemsTreeSet(unittest.TestCase):
         with self.assertRaises(ClassCastException):
             tree.add(Student("Student1", 1))
 
+    def test_tree_with_lazy_worker(self):
+        """
+        Test the TreeSet with LazyWorker objects. Comparators are lazy, they
+        just do not do anything.
+        """
+        tree = TreeSet(LazyWorker)
+        with self.assertRaises(ClassCastException):
+            tree.add(LazyWorker("LazyWorker1", 1, "job1", 1))
+
+    def test_tree_with_alien(self):
+        """Test the TreeSet with Alien objects. Missing __le__ comparator."""
+        tree = TreeSet(Alien)
+        ids = {random.randint(10, 40) for _ in range(10)}
+        ids = sorted(list(ids))
+        items = [
+            Martian(f"Martian{identifier}", identifier, "Green") if index % 2 == 0 else
+            Venusian(f"Venusian{identifier}", identifier, identifier * 10)
+            for index, identifier in enumerate(ids)
+        ]
+
+        for item in items:
+            self.assertTrue(tree.add(item),
+                            "Wrong value after inserting new element")
+
+        self.assertEqual(tree.size(), len(ids), "Wrong tree size")
+        self.assertFalse(tree.is_empty(), "Tree must not be empty")
+
+        tree.clear()
+        tree.add_all(items)
+
+        self.assertEqual(
+            tree.size(), len(items),
+            "Wrong tree size after clear and using add_all"
+        )
+        self.assertFalse(
+            tree.is_empty(),
+            "Tree must not be empty after clear and using add_all"
+        )
+
+        tree = TreeSet(Alien, items)
+        self.assertEqual(
+            tree.size(), len(items),
+            "Wrong tree size after using constructor with collection"
+        )
+        self.assertFalse(
+            tree.is_empty(),
+            "Tree must not be empty after using constructor with collection"
+        )
+
+        for index in range(len(items) - 1):
+            self.assertEqual(
+                tree.higher(items[index]), items[index + 1],
+                "Wrong higher value"
+            )
+
+            self.assertEqual(
+                tree.lower(items[index + 1]), items[index],
+                "Wrong lower value"
+            )
+            self.assertEqual(
+                tree.ceiling(items[index]), items[index],
+                "Wrong ceiling value"
+            )
+            self.assertEqual(
+                tree.floor(items[index]), items[index],
+                "Wrong floor value"
+            )
+
+        self.assertEqual(tree.last(), items[-1], "Wrong last value")
+
+        self.assertEqual(
+            [person for person in tree.iterator()], items,
+            "Wrong iterator values"
+        )
+        self.assertEqual(
+            [person for person in tree.descending_iterator()], items[::-1],
+            "Wrong descending iterator values"
+        )
+
+        for person in items:
+            self.assertTrue(
+                tree.contains(person),
+                "Tree must contain the element"
+            )
+
+        tree_clone = tree.clone()
+        self.assertEqual(tree, tree_clone,
+                         "Tree and clone must be equal")
+
+        for index in range(len(items)):
+            self.assertEqual(
+                tree.poll_first(), items[index],
+                "Wrong poll first value"
+            )
+            self.assertEqual(
+                tree_clone.poll_last(), items[-(index + 1)],
+                "Wrong poll last value"
+            )
+
     def test_tree_with_list(self):
         """
         Test the TreeSet with list objects.
@@ -282,8 +381,10 @@ class TestOtherItemsTreeSet(unittest.TestCase):
 
         for index in range(len(sorted_items)):
             (changed_item := sorted_items[index]).pop()
-            self.assertEqual(item := tree.floor(changed_item), changed_item, "Wrong floor value")
-            self.assertEqual(item, tree_clone.floor(changed_item), "Wrong floor value")
+            self.assertEqual(item := tree.floor(changed_item), changed_item,
+                             "Wrong floor value")
+            self.assertEqual(item, tree_clone.floor(changed_item),
+                             "Wrong floor value")
 
         for index in range(len(sorted_items)):
             self.assertEqual(

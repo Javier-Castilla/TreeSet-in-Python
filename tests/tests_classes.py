@@ -88,6 +88,7 @@ class LazyWorker(Worker):
     def __lt__(self, other):
         pass
 
+
 # EQ GT
 class Professor:
     """
@@ -159,6 +160,7 @@ class Student:
         return False
 
 
+# Abstract class
 class Alien(ABC):
     """
     Abstract class to represent an alien. Implements eq method to compare objects.
@@ -193,6 +195,7 @@ class Alien(ABC):
         pass
 
 
+# EQ LT from abstract class
 class Martian(Alien):
     """
     Class to represent a Martian. Inherits from Alien and adds a color attribute.
@@ -212,17 +215,46 @@ class Martian(Alien):
         self.__color = color
 
     def __eq__(self, other):
-        if isinstance(other, Martian):
-            return self.__color == other.color
+        if isinstance(other, Alien):
+            return self.planet == other.planet
         return False
 
     def __lt__(self, other):
-        if isinstance(other, Martian):
-            return self.color < other.color
+        if isinstance(other, Alien):
+            return self.planet < other.planet
         return False
 
+    def __repr__(self):
+        return f"Martian({self.name}, {self.planet})"
 
-if __name__ == "__main__":
-    s1 = Student("John", 1)
-    s2 = Student("Mary", 2)
-    print(id(Student.__eq__), id(object.__eq__))
+
+class Venusian(Alien):
+    """
+    Class to represent a Venusian. Inherits from Alien and adds a size attribute.
+    Implements eq and lt methods to compare objects.
+    """
+
+    def __init__(self, name, planet, size):
+        super().__init__(name, planet)
+        self.__size = size
+
+    @property
+    def size(self):
+        return self.__size
+
+    @size.setter
+    def size(self, size):
+        self.__size = size
+
+    def __eq__(self, other):
+        if isinstance(other, Alien):
+            return self.planet == other.planet
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, Alien):
+            return self.planet < other.planet
+        return False
+
+    def __repr__(self):
+        return f"Venusian({self.name}, {self.planet})"
