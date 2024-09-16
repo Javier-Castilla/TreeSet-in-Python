@@ -1,0 +1,7 @@
+tree\_gui module
+================
+
+.. automodule:: tree_gui
+   :members:
+   :undoc-members:
+   :show-inheritance:

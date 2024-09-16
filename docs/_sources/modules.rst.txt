@@ -1,0 +1,11 @@
+TreeSet-in-Python
+=================
+
+.. toctree::
+   :maxdepth: 4
+
+   data_utils
+   main
+   tree_gui
+   tree_set
+   tree_set_exceptions

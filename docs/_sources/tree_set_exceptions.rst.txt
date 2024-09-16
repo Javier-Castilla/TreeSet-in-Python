@@ -1,0 +1,7 @@
+tree\_set\_exceptions module
+============================
+
+.. automodule:: tree_set_exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:

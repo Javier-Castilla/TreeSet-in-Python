@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TreeSet-in-Python &mdash; TreeSet in Python 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TreeSet in Python
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tree_set.html">tree_set module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tree_gui.html">tree_gui module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tree_set_exceptions.html">tree_set_exceptions module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">data_utils module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TreeSet in Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TreeSet-in-Python</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="treeset-in-python">
+<h1>TreeSet-in-Python<a class="headerlink" href="#treeset-in-python" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="data_utils.html">data_utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_utils.html#data_utils.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.Node.next_node"><code class="docutils literal notranslate"><span class="pre">Node.next_node</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.Node.previous_node"><code class="docutils literal notranslate"><span class="pre">Node.previous_node</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.Node.value"><code class="docutils literal notranslate"><span class="pre">Node.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data_utils.html#data_utils.SimpleStack"><code class="docutils literal notranslate"><span class="pre">SimpleStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.SimpleStack.is_empty"><code class="docutils literal notranslate"><span class="pre">SimpleStack.is_empty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.SimpleStack.peek"><code class="docutils literal notranslate"><span class="pre">SimpleStack.peek()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.SimpleStack.pull"><code class="docutils literal notranslate"><span class="pre">SimpleStack.pull()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.SimpleStack.push"><code class="docutils literal notranslate"><span class="pre">SimpleStack.push()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="data_utils.html#data_utils.TreeNode"><code class="docutils literal notranslate"><span class="pre">TreeNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.TreeNode.TreeNodeUtils"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="data_utils.html#data_utils.TreeNode.TreeNodeUtils.BLACK"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils.BLACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="data_utils.html#data_utils.TreeNode.TreeNodeUtils.NULL"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils.NULL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="data_utils.html#data_utils.TreeNode.TreeNodeUtils.RED"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils.RED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.TreeNode.color"><code class="docutils literal notranslate"><span class="pre">TreeNode.color</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.TreeNode.left"><code class="docutils literal notranslate"><span class="pre">TreeNode.left</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="data_utils.html#data_utils.TreeNode.right"><code class="docutils literal notranslate"><span class="pre">TreeNode.right</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="main.html#main.suite"><code class="docutils literal notranslate"><span class="pre">suite()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tree_gui.html">tree_gui module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tree_gui.html#tree_gui.GUI"><code class="docutils literal notranslate"><span class="pre">GUI</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tree_set.html">tree_set module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tree_set.html#tree_set.RedBlackTree"><code class="docutils literal notranslate"><span class="pre">RedBlackTree</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.RedBlackTree.add"><code class="docutils literal notranslate"><span class="pre">RedBlackTree.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.RedBlackTree.clear"><code class="docutils literal notranslate"><span class="pre">RedBlackTree.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.RedBlackTree.is_empty"><code class="docutils literal notranslate"><span class="pre">RedBlackTree.is_empty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.RedBlackTree.object_type"><code class="docutils literal notranslate"><span class="pre">RedBlackTree.object_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.RedBlackTree.remove"><code class="docutils literal notranslate"><span class="pre">RedBlackTree.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.RedBlackTree.size"><code class="docutils literal notranslate"><span class="pre">RedBlackTree.size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tree_set.html#tree_set.TreeSet"><code class="docutils literal notranslate"><span class="pre">TreeSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.add_all"><code class="docutils literal notranslate"><span class="pre">TreeSet.add_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.ceiling"><code class="docutils literal notranslate"><span class="pre">TreeSet.ceiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.clone"><code class="docutils literal notranslate"><span class="pre">TreeSet.clone()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.contains"><code class="docutils literal notranslate"><span class="pre">TreeSet.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.descending_iterator"><code class="docutils literal notranslate"><span class="pre">TreeSet.descending_iterator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.first"><code class="docutils literal notranslate"><span class="pre">TreeSet.first()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.floor"><code class="docutils literal notranslate"><span class="pre">TreeSet.floor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.higher"><code class="docutils literal notranslate"><span class="pre">TreeSet.higher()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.iterator"><code class="docutils literal notranslate"><span class="pre">TreeSet.iterator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.last"><code class="docutils literal notranslate"><span class="pre">TreeSet.last()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.lower"><code class="docutils literal notranslate"><span class="pre">TreeSet.lower()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.poll_first"><code class="docutils literal notranslate"><span class="pre">TreeSet.poll_first()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="tree_set.html#tree_set.TreeSet.poll_last"><code class="docutils literal notranslate"><span class="pre">TreeSet.poll_last()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tree_set_exceptions.html">tree_set_exceptions module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tree_set_exceptions.html#tree_set_exceptions.ClassCastException"><code class="docutils literal notranslate"><span class="pre">ClassCastException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tree_set_exceptions.html#tree_set_exceptions.NoSuchElementException"><code class="docutils literal notranslate"><span class="pre">NoSuchElementException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tree_set_exceptions.html#tree_set_exceptions.NullPointerException"><code class="docutils literal notranslate"><span class="pre">NullPointerException</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Javier Castilla.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>data_utils module &mdash; TreeSet in Python 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8d563738"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="tree_set_exceptions module" href="tree_set_exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            TreeSet in Python
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tree_set.html">tree_set module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tree_gui.html">tree_gui module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tree_set_exceptions.html">tree_set_exceptions module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">data_utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data_utils.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.Node.next_node"><code class="docutils literal notranslate"><span class="pre">Node.next_node</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.Node.previous_node"><code class="docutils literal notranslate"><span class="pre">Node.previous_node</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.Node.value"><code class="docutils literal notranslate"><span class="pre">Node.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data_utils.SimpleStack"><code class="docutils literal notranslate"><span class="pre">SimpleStack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.SimpleStack.is_empty"><code class="docutils literal notranslate"><span class="pre">SimpleStack.is_empty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.SimpleStack.peek"><code class="docutils literal notranslate"><span class="pre">SimpleStack.peek()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.SimpleStack.pull"><code class="docutils literal notranslate"><span class="pre">SimpleStack.pull()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.SimpleStack.push"><code class="docutils literal notranslate"><span class="pre">SimpleStack.push()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#data_utils.TreeNode"><code class="docutils literal notranslate"><span class="pre">TreeNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.TreeNode.TreeNodeUtils"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data_utils.TreeNode.TreeNodeUtils.BLACK"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils.BLACK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_utils.TreeNode.TreeNodeUtils.NULL"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils.NULL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data_utils.TreeNode.TreeNodeUtils.RED"><code class="docutils literal notranslate"><span class="pre">TreeNode.TreeNodeUtils.RED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.TreeNode.color"><code class="docutils literal notranslate"><span class="pre">TreeNode.color</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.TreeNode.left"><code class="docutils literal notranslate"><span class="pre">TreeNode.left</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_utils.TreeNode.right"><code class="docutils literal notranslate"><span class="pre">TreeNode.right</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TreeSet in Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">data_utils module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/data_utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-data_utils">
+<span id="data-utils-module"></span><h1>data_utils module<a class="headerlink" href="#module-data_utils" title="Link to this heading"></a></h1>
+<p>data_utils module.</p>
+<dl class="simple">
+<dt>This module provides three different minor data structures classes.</dt><dd><ol class="arabic simple">
+<li><p>SimpleStack</p></li>
+<li><p>Node</p></li>
+<li><p>TreeNode</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="data_utils.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_utils.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_utils.Node" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that represents a node in a data structure (like a linked list or a tree).
+Each node has a value and pointers to the next and previous nodes.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="data_utils.Node.next_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">next_node</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#data_utils.Node.next_node" title="Link to this definition"></a></dt>
+<dd><p>Getter for the next node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the next node</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data_utils.Node.previous_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">previous_node</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#data_utils.Node.previous_node" title="Link to this definition"></a></dt>
+<dd><p>Getter for the previous node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the previous node</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data_utils.Node.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#data_utils.Node.value" title="Link to this definition"></a></dt>
+<dd><p>Getter for the value of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value of the node</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="data_utils.SimpleStack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_utils.</span></span><span class="sig-name descname"><span class="pre">SimpleStack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_utils.SimpleStack" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that represents a stack.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="data_utils.SimpleStack.is_empty">
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#data_utils.SimpleStack.is_empty" title="Link to this definition"></a></dt>
+<dd><p>Checks if the stack is empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the stack is empty, False otherwise</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_utils.SimpleStack.peek">
+<span class="sig-name descname"><span class="pre">peek</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#data_utils.SimpleStack.peek" title="Link to this definition"></a></dt>
+<dd><p>Returns the value at the top of the stack without removing it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value at the top of the stack</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – if the stack is empty</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_utils.SimpleStack.pull">
+<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#data_utils.SimpleStack.pull" title="Link to this definition"></a></dt>
+<dd><p>Pulls a value from the stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the pulled value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – if the stack is empty</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="data_utils.SimpleStack.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#data_utils.SimpleStack.push" title="Link to this definition"></a></dt>
+<dd><p>Pushes a new value onto the stack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>Any</em>) – the value to push</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="data_utils.TreeNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_utils.</span></span><span class="sig-name descname"><span class="pre">TreeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#data_utils.TreeNode" title="data_utils.TreeNode"><span class="pre">TreeNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#data_utils.TreeNode" title="data_utils.TreeNode"><span class="pre">TreeNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#data_utils.TreeNode.TreeNodeUtils" title="data_utils.TreeNode.TreeNodeUtils"><span class="pre">TreeNodeUtils</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TreeNodeUtils.RED</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_utils.TreeNode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#data_utils.Node" title="data_utils.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<p>Class that represents a TreeNode, which is a specialized Node that also
+includes a color property. This class is used in the RedBlackTree data
+structure.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="data_utils.TreeNode.TreeNodeUtils">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TreeNodeUtils</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_utils.TreeNode.TreeNodeUtils" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Enum class that represents the possible colors of a TreeNode in a
+RedBlackTree.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_utils.TreeNode.TreeNodeUtils.BLACK">
+<span class="sig-name descname"><span class="pre">BLACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#data_utils.TreeNode.TreeNodeUtils.BLACK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_utils.TreeNode.TreeNodeUtils.NULL">
+<span class="sig-name descname"><span class="pre">NULL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#data_utils.TreeNode.TreeNodeUtils.NULL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="data_utils.TreeNode.TreeNodeUtils.RED">
+<span class="sig-name descname"><span class="pre">RED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#data_utils.TreeNode.TreeNodeUtils.RED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data_utils.TreeNode.color">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">color</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#data_utils.TreeNode.TreeNodeUtils" title="data_utils.TreeNode.TreeNodeUtils"><span class="pre">TreeNodeUtils</span></a></em><a class="headerlink" href="#data_utils.TreeNode.color" title="Link to this definition"></a></dt>
+<dd><p>Getter for the color of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the color of the node</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#data_utils.TreeNode.TreeNodeUtils" title="data_utils.TreeNode.TreeNodeUtils">TreeNode.TreeNodeUtils</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data_utils.TreeNode.left">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">left</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#data_utils.TreeNode.left" title="Link to this definition"></a></dt>
+<dd><p>Getter for the left child of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the left child of the node</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="data_utils.TreeNode.right">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">right</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#data_utils.TreeNode.right" title="Link to this definition"></a></dt>
+<dd><p>Getter for the right child of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the right child of the node</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tree_set_exceptions.html" class="btn btn-neutral float-left" title="tree_set_exceptions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Javier Castilla.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
